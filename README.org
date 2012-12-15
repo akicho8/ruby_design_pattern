@@ -1,0 +1,129 @@
+#+OPTIONS: toc:nil num:nil author:nil creator:nil \n:nil |:t
+#+OPTIONS: @:t ::t ^:t -:t f:t *:t <:t
+
+* デザパタ覚書
+
+** Adapter
+
+   : # ダメなクラスを
+   : class Color
+   :   def red
+   :     "#00f"
+   :   end
+   : end
+   :
+   : # ラップして再利用
+   : class Palette < Color
+   :   alias blue red
+   : end
+   : Palette.new.blue # => "#00f"
+
+** シンプルなDSL
+
+   : class Expression
+   : end
+   :
+   : class Value < Expression
+   :   def initialize(value)
+   :     @value = value
+   :   end
+   :   def evaluate
+   :     @value
+   :   end
+   : end
+   :
+   : class Add < Expression
+   :   def initialize(left, right)
+   :     @left, @right = left, right
+   :   end
+   :   def evaluate
+   :     @left.evaluate + @right.evaluate
+   :   end
+   : end
+   :
+   : def A(l, r)
+   :   Add.new(Value.new(l), Value.new(r))
+   : end
+   :
+   : expr = A 1, 2
+   : expr.evaluate # => 3
+
+*** DSLの応用 - 他のコードに変換
+
+    : class Expression
+    : end
+    :
+    : class Value < Expression
+    :   attr_accessor :value
+    :   def initialize(value)
+    :     @value = value
+    :   end
+    :   def evaluate
+    :     ["mov  ax, #{@value}"]
+    :   end
+    : end
+    :
+    : class Add < Expression
+    :   def initialize(left, right)
+    :     @left, @right = left, right
+    :   end
+    :   def evaluate
+    :     code = []
+    :     code << @left.evaluate
+    :     code << "mov  dx, ax"
+    :     code << @right.evaluate
+    :     code << "add  ax, dx"
+    :   end
+    : end
+    :
+    : def A(l, r)
+    :   Add.new(Value.new(l), Value.new(r))
+    : end
+    :
+    : expr = A 1, 2
+    : puts expr.evaluate
+    : # >> mov  ax, 1
+    : # >> mov  dx, ax
+    : # >> mov  ax, 2
+    : # >> add  ax, dx
+
+** GoFのデザパタ
+
+#+ATTR_HTML: border="1" rules="all" frame="all"
+   | 名前                      | 意味                                               |
+   |---------------------------+----------------------------------------------------|
+   | Iterator                  | 1つ1つ数え上げる                                   |
+   | Adapter                   | 一皮かぶせて再利用                                 |
+   | Template Method           | 具体的な処理をサブクラスに任せる                   |
+   | Factory Method            | インスタンス作成をサブクラスに任せる               |
+   | Singleton                 | たった１つのインスタンス                           |
+   | Prototype                 | コピーしてインスタンスを作る                       |
+   | Builder                   | 複雑なインスタンスを組み立てる                     |
+   | Abstract Factory          | 関連する部品を組み合わせて部品を作る               |
+   | Bridge                    | 機能の階層と実装の階層を分ける                     |
+   | Strategy                  | アルゴリズムをごっそり切り替える                   |
+   | Composite                 | 容器と中身の同一視                                 |
+   | Decorator                 | 飾り枠と中身の同一視                               |
+   | Visitor                   | 構造を渡り歩きながら仕事をする                     |
+   | Chain of Responsibility   | 責任のたらい回し                                   |
+   | Facade                    | シンプルな窓口                                     |
+   | Mediator                  | 相手は相談役一人だけ                               |
+   | Observer                  | 状態の変化を通知する                               |
+   | Memento                   | 状態を保存する                                     |
+   | State                     | 状態をクラスとして表現する                         |
+   | Flyweight                 | 同じ物を共有して無駄を無くす                       |
+   | Proxy                     | 必要になってから作る                               |
+   | Command                   | 命令をクラスにする                                 |
+   | Interpreter               | 文法規則をクラスで表現する                         |
+   | Single Threaded Execution | この橋を渡れるのはたった一人                       |
+   | Immutable                 | 壊したくとも壊せない                               |
+   | Guarded Suspension        | 用意が出来るまで待っててね                         |
+   | Balking                   | 必要なかったらやめちゃおう                         |
+   | Producer-Consumer         | 私が作りあなたが使う                               |
+   | Read-Write Lock           | みんなで読んでもいいけど、読んでる間は書いちゃだめ |
+   | Thread-Per-Message        | この仕事、やっといてね                             |
+   | Worker Thread             | 仕事がくるまで待ち仕事がきたら働く                 |
+   | Future                    | 引き換え券を、お先にどうぞ                         |
+   | Two-Phase Terminatin      | あとかだづけしてから、おやすみなさい               |
+   | Thread-Specific Storage   | スレッドごとのコインロッカー                       |
+   | Active Object             | 非同期メッセージを受け取る、能動的なオブジェクト   |
