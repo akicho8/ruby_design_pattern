@@ -3,32 +3,51 @@
 
 * デザパタ覚書
 
+** Singleton
+
+  : class C
+  :   private_class_method :new
+  :   def self.instance
+  :     @instance ||= new
+  :   end
+  : end
+  :
+  : C.instance # => #<C:0x007f98e404a518>
+  : C.instance # => #<C:0x007f98e404a518>
+  :
+  : require "singleton"
+  : class S
+  :   include Singleton
+  : end
+  : S.instance # => #<S:0x007f98e509f558>
+  : S.instance # => #<S:0x007f98e509f558>
+
 ** Strategy
 
-  : class Random
-  :   def next
-  :     rand(7)
-  :   end
-  : end
-  :
-  : class RedOnly
-  :   def next
-  :     6
-  :   end
-  : end
-  :
-  : # テトリミノのツモはダイス次第
-  : class Player
-  :   def initialize(dice)
-  :     @dice = dice
-  :   end
-  :   def run
-  :     7.times.collect{@dice.next}
-  :   end
-  : end
-  :
-  : Player.new(Random.new).run  # => [1, 5, 4, 1, 0, 0, 6]
-  : Player.new(RedOnly.new).run # => [6, 6, 6, 6, 6, 6, 6]
+   : class Random
+   :   def next
+   :     rand(7)
+   :   end
+   : end
+   :
+   : class RedOnly
+   :   def next
+   :     6
+   :   end
+   : end
+   :
+   : # テトリミノのツモはダイス次第
+   : class Player
+   :   def initialize(dice)
+   :     @dice = dice
+   :   end
+   :   def run
+   :     7.times.collect{@dice.next}
+   :   end
+   : end
+   :
+   : Player.new(Random.new).run  # => [1, 5, 4, 1, 0, 0, 6]
+   : Player.new(RedOnly.new).run # => [6, 6, 6, 6, 6, 6, 6]
 
 ** Adapter
 
