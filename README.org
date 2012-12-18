@@ -3,24 +3,103 @@
 
 * デザパタ覚書
 
+** Observer
+
+   - オブザーバーの実行結果が必要になったときはそのクラスに依存しているのでStrategyなどに移行する
+   - Observer側にPlayerのインスタンスを渡して player.add_observer(self) などとやるのはまわりくどいので自分はやらない
+
+   : # 密結合状態を
+   : class Player
+   :   def initialize
+   :     @paint = Paint.new
+   :     @network = Network.new
+   :   end
+   :
+   :   def notify
+   :     if @paint
+   :       @paint.font(0, 0, status)
+   :     end
+   :     if @network
+   :       @network.post(status)
+   :     end
+   :   end
+   : end
+
+   : # 解消
+   : class Player
+   :   attr_accessor :observers
+   :   def initialize
+   :     @observers = []
+   :   end
+   :   def notify
+   :     @observers.each do |observer|
+   :       observer.update(self)
+   :     end
+   :   end
+   : end
+   :
+   : player = Player.new
+   : player.observers << Paint.new
+   : player.observers << Network.new
+
+*** 標準ライブラリ
+
+     : require "observer"
+     : class Player
+     :   include Observable
+     :   def notify
+     :     changed
+     :     notify_observers(self)
+     :   end
+     : end
+     :
+     : player = Player.new
+     : player.add_observer(Paint.new)
+     : player.add_observer(Network.new)
+     : player.notify
+
+     自分自身をオブザーバーにしたっていい
+
+     : require "observer"
+     : class Player
+     :   include Observable
+     :   def initialize
+     :     add_observer(self)
+     :   end
+     :   def notify
+     :     changed
+     :     notify_observers(self)
+     :   end
+     :   def update(player)
+     :     player                      # => #<Player:0x007ff9098472e0 ...>
+     :   end
+     : end
+     :
+     : player = Player.new
+     : player.notify
+
 ** Singleton
 
-  : class C
-  :   private_class_method :new
-  :   def self.instance
-  :     @instance ||= new
-  :   end
-  : end
-  :
-  : C.instance # => #<C:0x007f98e404a518>
-  : C.instance # => #<C:0x007f98e404a518>
-  :
-  : require "singleton"
-  : class S
-  :   include Singleton
-  : end
-  : S.instance # => #<S:0x007f98e509f558>
-  : S.instance # => #<S:0x007f98e509f558>
+   グローバル変数を使うぐらいなら──
+
+   : class C
+   :   private_class_method :new
+   :   def self.instance
+   :     @instance ||= new
+   :   end
+   : end
+   :
+   : C.instance # => #<C:0x007f98e404a518>
+   : C.instance # => #<C:0x007f98e404a518>
+
+*** 標準ライブラリ
+
+     : require "singleton"
+     : class C
+     :   include Singleton
+     : end
+     : C.instance # => #<C:0x007f98e509f558>
+     : C.instance # => #<C:0x007f98e509f558>
 
 ** Strategy
 
