@@ -3,80 +3,139 @@
 
 * デザパタ覚書
 
+** Decorator
+
+   このクラスの
+
+   : class User
+   :   def name
+   :     "alice"
+   :   end
+   : end
+
+   インスタンスを渡してラップするのが普通。
+
+   : class UserDecorator
+   :   def initialize(object)
+   :     @object = object
+   :   end
+   :   def to_xxx
+   :     "(#{@object.name})"
+   :   end
+   : end
+   :
+   : UserDecorator.new(User.new).to_xxx # => "(alice)"
+
+   コードをシンプルにするなら
+
+   : require "delegate"
+   : class UserDecorator3 < SimpleDelegator
+   :   def to_xxx
+   :     "(#{name})"
+   :   end
+   : end
+   :
+   : UserDecorator.new(User.new).to_xxx # => "(alice)"
+
+   というか最初から継承してみる
+
+   : class UserDecorator < User
+   :   def to_xxx
+   :     "(#{name})"
+   :   end
+   : end
+   :
+   : UserDecorator.new.to_xxx           # => "(alice)"
+
+   継承なら DelegateClass でもできるようだけど利点がわからん。Userが重複していて気持ち悪い。
+
+   : require "delegate"
+   : class UserDecorator < DelegateClass(User)
+   :   def initialize
+   :     super(User.new)
+   :   end
+   :   def to_xxx
+   :     "(#{name})"
+   :   end
+   : end
+   :
+   : UserDecorator.new.to_xxx # => "(alice)"
+
 ** Observer
 
-   - オブザーバーの実行結果が必要になったときはそのクラスに依存しているのでStrategyなどに移行する
-   - Observer側にPlayerのインスタンスを渡して player.add_observer(self) などとやるのはまわりくどいので自分はやらない
+   - 実行結果が不要なときに使う
+   - 結果が必要ならStrategyへ
+   - Observer側に player を渡して player.add_observer(self) は、くどいのでやらない
 
-   : # 密結合状態を
-   : class Player
-   :   def initialize
-   :     @paint = Paint.new
-   :     @network = Network.new
-   :   end
-   :
-   :   def notify
-   :     if @paint
-   :       @paint.font(0, 0, status)
-   :     end
-   :     if @network
-   :       @network.post(status)
-   :     end
-   :   end
-   : end
+     : # 密結合状態を
+     : class Player
+     :   def initialize
+     :     @paint = Paint.new
+     :     @network = Network.new
+     :   end
+     :
+     :   def notify
+     :     if @paint
+     :       @paint.font(0, 0, status)
+     :     end
+     :     if @network
+     :       @network.post(status)
+     :     end
+     :   end
+     : end
 
-   : # 解消
-   : class Player
-   :   attr_accessor :observers
-   :   def initialize
-   :     @observers = []
-   :   end
-   :   def notify
-   :     @observers.each do |observer|
-   :       observer.update(self)
-   :     end
-   :   end
-   : end
-   :
-   : player = Player.new
-   : player.observers << Paint.new
-   : player.observers << Network.new
+     : # 解消
+     : class Player
+     :   attr_accessor :observers
+     :   def initialize
+     :     @observers = []
+     :   end
+     :   def notify
+     :     @observers.each do |observer|
+     :       observer.update(self)
+     :     end
+     :   end
+     : end
+     :
+     : player = Player.new
+     : player.observers << Paint.new
+     : player.observers << Network.new
 
 *** 標準ライブラリ
 
-     : require "observer"
-     : class Player
-     :   include Observable
-     :   def notify
-     :     changed
-     :     notify_observers(self)
-     :   end
-     : end
-     :
-     : player = Player.new
-     : player.add_observer(Paint.new)
-     : player.add_observer(Network.new)
-     : player.notify
+    : require "observer"
+    : class Player
+    :   include Observable
+    :   def notify
+    :     changed
+    :     notify_observers(self)
+    :   end
+    : end
+    :
+    : player = Player.new
+    : player.add_observer(Paint.new)
+    : player.add_observer(Network.new)
+    : player.notify
 
-     自分自身をオブザーバーにしたっていい
+    自分をオブザーバーにしてもいい
 
-     : require "observer"
-     : class Player
-     :   include Observable
-     :   def initialize
-     :     add_observer(self)
-     :   end
-     :   def notify
-     :     changed
-     :     notify_observers(self)
-     :   end
-     :   def update(player)
-     :     player                      # => #<Player:0x007ff9098472e0 ...>
-     :   end
-     : end
-     :
-     : player = Player.new
-     : player.notify
+    : require "observer"
+    : class Player
+    :   include Observable
+    :   def initialize
+    :     add_observer(self)
+    :   end
+    :   def notify
+    :     changed
+    :     notify_observers(self)
+    :   end
+    :   def update(player)
+    :     player                      # => #<Player:0x007ff9098472e0 ...>
+    :   end
+    : end
+    :
+    : player = Player.new
+    : player.notify
 
 ** Singleton
 
@@ -94,12 +153,12 @@
 
 *** 標準ライブラリ
 
-     : require "singleton"
-     : class C
-     :   include Singleton
-     : end
-     : C.instance # => #<C:0x007f98e509f558>
-     : C.instance # => #<C:0x007f98e509f558>
+    : require "singleton"
+    : class C
+    :   include Singleton
+    : end
+    : C.instance # => #<C:0x007f98e509f558>
+    : C.instance # => #<C:0x007f98e509f558>
 
 ** Strategy
 
