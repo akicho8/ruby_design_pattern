@@ -43,4 +43,6 @@ class UserDecorator5 < DelegateClass(User)
   end
 end
 
-UserDecorator5.new.to_xxx           # => "(alice)"
+UserDecorator5.new.to_xxx # => "(alice)"
+
+UserDecorator5.ancestors # => [UserDecorator5, #<Class:0x007fdd9103b198>, Delegator, #<Module:0x007fdd910b26a8>, BasicObject]
