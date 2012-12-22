@@ -13,46 +13,46 @@
    - 以下のコードは x y の実装2つと、囲まない囲むの2つの機能を組み合わせると2x2で4つのクラスが必要になる
    - このまま拡張していって実装と機能がそれぞれ10個あると100個のクラスを作らないといけない
 
-   : class A
-   :   def run
-   :     "x"
-   :   end
-   : end
-   :
-   : class B
-   :   def run
-   :     "y"
-   :   end
-   : end
-   :
-   : class AA < A
-   :   def run
-   :     "(x)"
-   :   end
-   : end
-   :
-   : class BB < B
-   :   def run
-   :     "(y)"
-   :   end
-   : end
+     : class A
+     :   def run
+     :     "x"
+     :   end
+     : end
+     :
+     : class B
+     :   def run
+     :     "y"
+     :   end
+     : end
+     :
+     : class AA < A
+     :   def run
+     :     "(x)"
+     :   end
+     : end
+     :
+     : class BB < B
+     :   def run
+     :     "(y)"
+     :   end
+     : end
 
-   改善
+     改善
 
-   : class A
-   :   def initialize(obj)
-   :     @obj = obj
-   :   end
-   :   def run
-   :     @obj
-   :   end
-   : end
-   :
-   : class AA < A
-   :   def run
-   :     "(#{@obj})"
-   :   end
-   : end
+     : class A
+     :   def initialize(obj)
+     :     @obj = obj
+     :   end
+     :   def run
+     :     @obj
+     :   end
+     : end
+     :
+     : class AA < A
+     :   def run
+     :     "(#{@obj})"
+     :   end
+     : end
 
 ** Decorator
 
@@ -217,6 +217,8 @@
 
 ** Strategy
 
+   基本形
+
    : class Random
    :   def next
    :     rand(7)
@@ -241,6 +243,22 @@
    :
    : Player.new(Random.new).run  # => [1, 5, 4, 1, 0, 0, 6]
    : Player.new(RedOnly.new).run # => [6, 6, 6, 6, 6, 6, 6]
+
+   Rubyなら
+
+   : class Player
+   :   def initialize(&dice)
+   :     @dice = dice
+   :   end
+   :   def run
+   :     7.times.collect{@dice.call}
+   :   end
+   : end
+   :
+   : Player.new{rand(7)}.run  # => [2, 5, 5, 6, 6, 2, 0]
+   : Player.new{6}.run        # => [6, 6, 6, 6, 6, 6, 6]
+
+   これでクラスが爆発しなくなる
 
 ** Adapter
 
