@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 # Facade - シンプルな窓口
 
-# browser = Browser.open(:type => :firefox)
-# browser.command(:open, "http://www.google.co.jp")
-# binary = browser.command(:screenshot)
-# img = RMagick.convert(binary, :type => :jpg)
-# ...
+from = User.find_by_name("alice") || User.find_by_name("admin")
+to = User.find_by_name!("bob")
+transaction do
+  message = Message.new(:date => Time.current)
+  message.from = from
+  message.to = to
+  if message.valid?
+    ...
+  end
+  message.save!
+end
 
-# Image.capture("http://www.google.co.jp")
+Message.deliver(:from => "alice", :to => "bob", :body => "hello")

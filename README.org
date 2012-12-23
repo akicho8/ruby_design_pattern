@@ -5,54 +5,72 @@
 
 ** Facade
 
-   - ごちゃごちゃ呼び出さないといけないならメソッド化してインターフェイスをわかりやすくしとくってことだろう
+   何をやってんのかわからない
+
+   : from = User.find_by_name("alice") || User.find_by_name("admin")
+   : to = User.find_by_name!("bob")
+   : transaction do
+   :   message = Message.new(:date => Time.current)
+   :   message.from = from
+   :   message.to = to
+   :   message.body = "こんちは".toutf8
+   :   if message.valid?
+   :     ...
+   :   end
+   :   message.save!
+   : end
+
+   改善
+
+   : Message.deliver(:from => "alice", :to => "bob", :body => "こんちは")
 
 ** Bridge
 
-   - 機能の階層と実装の階層を分けるって言ってもStrategyと何が違うのかよくわからないけど、要はDRYにしとけば拡張が楽ちんってことらしい
-   - 以下のコードは x y の実装2つと、囲まない囲むの2つの機能を組み合わせると2x2で4つのクラスが必要になる
-   - このまま拡張していって実装と機能がそれぞれ10個あると100個のクラスを作らないといけない
+   機能の階層と実装の階層を分けるって言ってもStrategyと何が違うのかよくわからない。
+   要はDRYにしとけば拡張が楽ちんことらしい。
+   以下のコードは x y の実装2つと、囲まない囲むの2つの機能を組み合わせると2x2で4つのクラスが必要になる。
+   このまま拡張していって実装と機能がそれぞれ10個あると100個のクラスを作らないといけない。
 
-     : class A
-     :   def run
-     :     "x"
-     :   end
-     : end
-     :
-     : class B
-     :   def run
-     :     "y"
-     :   end
-     : end
-     :
-     : class AA < A
-     :   def run
-     :     "(x)"
-     :   end
-     : end
-     :
-     : class BB < B
-     :   def run
-     :     "(y)"
-     :   end
-     : end
+   : class A
+   :   def run
+   :     "x"
+   :   end
+   : end
+   :
+   : class B
+   :   def run
+   :     "y"
+   :   end
+   : end
+   :
+   : class AA < A
+   :   def run
+   :     "(x)"
+   :   end
+   : end
+   :
+   : class BB < B
+   :   def run
+   :     "(y)"
+   :   end
+   : end
 
-     改善
+   改善
 
-     : class A
-     :   def initialize(obj)
-     :     @obj = obj
-     :   end
-     :   def run
-     :     @obj
-     :   end
-     : end
-     :
-     : class AA < A
-     :   def run
-     :     "(#{@obj})"
-     :   end
-     : end
+   : class A
+   :   def initialize(obj)
+   :     @obj = obj
+   :   end
+   :   def run
+   :     @obj
+   :   end
+   : end
+   :
+   : class AA < A
+   :   def run
+   :     "(#{@obj})"
+   :   end
+   : end
 
 ** Decorator
 
@@ -99,7 +117,7 @@
    :
    : UserDecorator.new.to_xxx # => "(alice)"
 
-   継承なら DelegateClass でもできるようだけどどゆこと？？？ Userが重複していて気持ち悪い。
+   継承なら DelegateClass でもできるようだけど、意味がよくわからない。Userが重複していて気持ち悪い。
 
    : require "delegate"
    :
@@ -116,45 +134,45 @@
 
 ** Observer
 
-   - 実行結果が不要なときに使う
-   - 結果が必要ならStrategyへ
-   - Observer側に player を渡して player.add_observer(self) は、くどいのでやらない
+   実行結果が不要なときに使う。
+   結果が必要ならStrategyへ。
+   Observer側に player を渡して player.add_observer(self) は、くどいのでやらない。
 
-     密結合状態を
+   密結合状態を
 
-     : class Player
-     :   def initialize
-     :     @paint = Paint.new
-     :     @network = Network.new
-     :   end
-     :
-     :   def notify
-     :     if @paint
-     :       @paint.font(0, 0, status)
-     :     end
-     :     if @network
-     :       @network.post(status)
-     :     end
-     :   end
-     : end
+   : class Player
+   :   def initialize
+   :     @paint = Paint.new
+   :     @network = Network.new
+   :   end
+   :
+   :   def notify
+   :     if @paint
+   :       @paint.font(0, 0, status)
+   :     end
+   :     if @network
+   :       @network.post(status)
+   :     end
+   :   end
+   : end
 
-     解消
+   解消
 
-     : class Player
-     :   attr_accessor :observers
-     :   def initialize
-     :     @observers = []
-     :   end
-     :   def notify
-     :     @observers.each do |observer|
-     :       observer.update(self)
-     :     end
-     :   end
-     : end
-     :
-     : player = Player.new
-     : player.observers << Paint.new
-     : player.observers << Network.new
+   : class Player
+   :   attr_accessor :observers
+   :   def initialize
+   :     @observers = []
+   :   end
+   :   def notify
+   :     @observers.each do |observer|
+   :       observer.update(self)
+   :     end
+   :   end
+   : end
+   :
+   : player = Player.new
+   : player.observers << Paint.new
+   : player.observers << Network.new
 
 *** 標準ライブラリ
 
@@ -194,7 +212,7 @@
 
 ** Singleton
 
-   グローバル変数を使うぐらいなら──
+   グローバル変数を使うぐらいなら
 
    : class C
    :   private_class_method :new
@@ -206,14 +224,14 @@
    : C.instance # => #<C:0x007f98e404a518>
    : C.instance # => #<C:0x007f98e404a518>
 
-*** 標準ライブラリ
+   標準ライブラリを使った場合
 
-    : require "singleton"
-    : class C
-    :   include Singleton
-    : end
-    : C.instance # => #<C:0x007f98e509f558>
-    : C.instance # => #<C:0x007f98e509f558>
+   : require "singleton"
+   : class C
+   :   include Singleton
+   : end
+   : C.instance # => #<C:0x007f98e509f558>
+   : C.instance # => #<C:0x007f98e509f558>
 
 ** Strategy
 
@@ -262,14 +280,16 @@
 
 ** Adapter
 
-   : # ダメなクラスを
+   ダメなクラスを
+
    : class Color
    :   def red
    :     "#00f"
    :   end
    : end
-   :
-   : # ラップして再利用
+
+   ラップして再利用
+
    : class Palette < Color
    :   alias blue red
    : end
