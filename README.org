@@ -3,6 +3,18 @@
 
 * デザパタ覚書
 
+** Visitor
+
+   : Pathname.glob("**/*.rb") do |filename|
+   :   p filename
+   : end
+
+   : NiconicoCrawler.run do |video|
+   :   if video.mylist >= 10000 && video.title.match(/初音ミク/)
+   :     open("#{video.title}.mp4", "w"){|f|f << video.read}
+   :   end
+   : end
+
 ** Flyweight
 
    : module Wave
