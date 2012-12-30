@@ -3,6 +3,22 @@
 
 * デザパタ覚書
 
+** Template Method
+
+   : class Base
+   :   def build
+   :     "(#{body})"
+   :   end
+   : end
+   :
+   : class App < Base
+   :   def body
+   :     "ok"
+   :   end
+   : end
+   :
+   : App.new.build                   # => "(ok)"
+
 ** Iterator
 
    i が邪魔
@@ -14,7 +30,7 @@
    :   i += 1
    : end
 
-   準備
+   ここで Iterator
 
    : class Iterator
    :   def initialize(object)
@@ -35,7 +51,7 @@
    :   end
    : end
 
-   これで i が消えた
+   i が消えた
 
    : it = ary.iterator
    : while it.has_next?
@@ -54,8 +70,6 @@
    : end
    :
    : ary.iterator{|v|p v}
-
-   以上が each のなかでやっていること
 
 ** Mement
 
