@@ -3,6 +3,93 @@
 
 * デザパタ覚書
 
+** Factory Method
+
+   こういうのはあっとゆうまに search メソッドが肥大化する。
+   で、Userのクラスメソッドとしてメソッドを分離するという *間違ったリファクタリング* を行ってしまいがち。
+
+   : class User
+   :   def self.search(query)
+   :     ["name like ?", "%#{query}%"]
+   :   end
+   : end
+   :
+   : User.search("alice")                     # => ["name like ?", "%alice%"]
+
+   そうなりそうなら次のように改善
+
+   : class User
+   :   def self.search(*args)
+   :     UserSearch.new(self, *args).run
+   :   end
+   : end
+   :
+   : class UserSearch
+   :   def initialize(model, query)
+   :     @model = model
+   :     @query = query
+   :   end
+   :   def run
+   :     ["name like ?", "%#{@query}%"]
+   :   end
+   : end
+   :
+   : User.search("alice")   # => ["name like ?", "%alice%"]
+
+   UserSearch の中でいくらメソッドを増やしても元のUserには影響がない。
+
+   次は例が悪いけど @color から変換するメソッドを Player 自体に入れてしまって Player がクラスがカオスになってしまうケース。
+
+   : class Player
+   :   attr_accessor :color
+   :   def initialize
+   :     @color = :blue
+   :   end
+   : end
+
+   ここでプレイヤーの色を #00F で返したかったので rgb メソッド定義した。これがダメ。
+
+   : class Player
+   :   def rgb
+   :     if @color == :blue
+   :       "#00F"
+   :     end
+   :   end
+   : end
+
+   改善
+
+   : class ColorInfo
+   :   attr_accessor :color
+   :   def initialize(color)
+   :     @color = color
+   :   end
+   :   def rgb
+   :     "#00F"
+   :   end
+   : end
+   :
+   : class Player
+   :   def color_info
+   :     ColorInfo.new(@color)
+   :   end
+   : end
+   :
+   : Player.new.color_info.rgb            # => "#00F"
+
+   こうすればいくらでも窮屈な状態から脱出できる。
+   もし、青が欲しければ ColorInfo に足せばいい。
+
+   : class ColorInfo
+   :   def human_name
+   :     "青"
+   :   end
+   : end
+   :
+   : Player.new.color_info.human_name     # => "青"
+
+   もっと言うなら最初から @color は ColorInfo のインスタンスにしときゃいい。
+
 ** Chain of responsibility
 
    : class Chainable
