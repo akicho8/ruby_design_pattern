@@ -3,6 +3,22 @@
 
 * デザパタ覚書
 
+** Abstract Factory
+
+   : class C
+   :   def run
+   :     A.new + B.new
+   :   end
+   : end
+
+   ↓
+
+   : class C
+   :   def run
+   :     @factory.new_x + @factory.new_y
+   :   end
+   : end
+
 ** Factory Method
 
    こういうのはあっとゆうまに search メソッドが肥大化する。
@@ -89,6 +105,8 @@
    : Player.new.color_info.human_name     # => "青"
 
    もっと言うなら最初から @color は ColorInfo のインスタンスにしときゃいい。
+
+   解釈間違っているかも。Factory Method じゃなくて単なる移譲？
 
 ** Chain of responsibility
 
