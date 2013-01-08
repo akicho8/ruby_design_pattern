@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 9. Future - 引き換え券を、お先にどうぞ
+# Future - 引き換え券を、お先にどうぞ
 
 def request(count, c)
   Thread.start do

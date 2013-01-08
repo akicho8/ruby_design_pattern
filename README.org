@@ -3,6 +3,13 @@
 
 * デザパタ覚書
 
+** Thread Specific Storage
+
+   Thread.current["a"] はスレッド内グローバル変数
+
+   : Thread.start{Thread.current["a"] = 1}.join
+   : Thread.start{Thread.current["a"]}.join.value    # => nil
+
 ** Future 引き換え券を、お先にどうぞ
 
    : def request(count, c)
@@ -1090,5 +1097,5 @@
    | Worker Thread             | 仕事がくるまで待ち仕事がきたら働く                 |
    | Future                    | 引き換え券を、お先にどうぞ                         |
    | Two-Phase Terminatin      | あとかだづけしてから、おやすみなさい               |
-   | Thread-Specific Storage   | スレッドごとのコインロッカー                       |
+   | Thread-Specific Storage   | スレッド内グローバル変数                       |
    | Active Object             | 非同期メッセージを受け取る、能動的なオブジェクト   |
