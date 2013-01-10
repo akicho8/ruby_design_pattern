@@ -3,45 +3,60 @@
 
 * デザパタ覚書
 
+** Thread Per Message
+
+   : class User
+   :   def request(*args)
+   :     Thread.start(*args){|x, t|sleep(t);p x}
+   :   end
+   : end
+   :
+   : host = User.new
+   : host.request("a", 0.2)
+   : host.request("b", 0.1)
+   : (Thread.list - [Thread.main]).each(&:join)
+   : # >> "b"
+   : # >> "a"
+
 ** Guarded Suspention - スレッド間のデータ送受信
 
-  : require "thread"
-  :
-  : queue = Queue.new
-  :
-  : send_num = 10
-  :
-  : sender = Thread.start do
-  :   Thread.current[:data] = []
-  :   send_num.times do |i|
-  :     sleep(rand(0..0.01))
-  :     queue << i
-  :     Thread.current[:data] << i
-  :   end
-  : end
-  :
-  : receiver = Thread.start do
-  :   Thread.current[:data] = []
-  :   send_num.times do
-  :     sleep(rand(0..0.001))
-  :     # pop出来ないとスレッドが自動停止してくれる。popだけどFIFO。間違いそう。
-  :     Thread.current[:data] << queue.pop
-  :   end
-  : end
-  :
-  : sender.join
-  : receiver.join
-  :
-  : # 正常にデータが受け取れているか確認
-  : sender[:data]   # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-  : receiver[:data] # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+   : require "thread"
+   :
+   : queue = Queue.new
+   :
+   : send_num = 10
+   :
+   : sender = Thread.start do
+   :   Thread.current[:data] = []
+   :   send_num.times do |i|
+   :     sleep(rand(0..0.01))
+   :     queue << i
+   :     Thread.current[:data] << i
+   :   end
+   : end
+   :
+   : receiver = Thread.start do
+   :   Thread.current[:data] = []
+   :   send_num.times do
+   :     sleep(rand(0..0.001))
+   :     # pop出来ないとスレッドが自動停止してくれる。popだけどFIFO。間違いそう。
+   :     Thread.current[:data] << queue.pop
+   :   end
+   : end
+   :
+   : sender.join
+   : receiver.join
+   :
+   : # 正常にデータが受け取れているか確認
+   : sender[:data]   # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+   : receiver[:data] # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 ** Thread Specific Storage
 
    Thread.current["a"] はスレッド内グローバル変数
 
    : Thread.start{Thread.current["a"] = 1}.join
-   : Thread.start{Thread.current["a"]}.join.value    # => nil
+   : Thread.start{Thread.current["a"]}.value    # => nil
 
 ** Future 引き換え券を、お先にどうぞ
 
@@ -263,7 +278,7 @@
 ** Proxy
 
    decoratorに似ているけど decoratorほどデコレートしないし便利メソッドを追加しない。
-   元のインスタンスを「呼ぶ」「呼ばない」「まねる」「あとで呼ぶ」ぐらいしかない。
+   元のインスタンスを *呼ぶ* *呼ばない* *まねる* *あとで呼ぶ* ぐらいしかない。
 
    : class User
    :   attr_accessor :name, :point
@@ -1126,7 +1141,7 @@
    | Balking                   | 必要なかったらやめる                               |
    | Producer-Consumer         | 私が作りあなたが使う                               |
    | Read-Write Lock           | みんなで読んでもいいけど、読んでる間は書いちゃだめ |
-   | Thread-Per-Message        | この仕事、やっといてね                             |
+   | Thread-Per-Message        | この仕事、やっといて                             |
    | Worker Thread             | 仕事がくるまで待ち仕事がきたら働く                 |
    | Future                    | 引き換え券を、お先にどうぞ                         |
    | Two-Phase Terminatin      | あとかだづけしてから、おやすみなさい               |

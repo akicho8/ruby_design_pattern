@@ -2,7 +2,7 @@
 # Thread-Specific Storage - スレッド内グローバル変数
 
 Thread.start{Thread.current["a"] = 1}.join
-Thread.start{Thread.current["a"]}.join.value    # => nil
+Thread.start{Thread.current["a"]}.value    # => nil
 
 # 他の例
 
