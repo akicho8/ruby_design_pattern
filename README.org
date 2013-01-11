@@ -3,6 +3,14 @@
 
 * デザパタ覚書
 
+** Two Phase Terminatin
+
+   : Thread.start do
+   :   begin
+   :   rescue
+   :   end
+   : end.join
+
 ** Thread Per Message
 
    : class User
