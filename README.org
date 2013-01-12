@@ -3,6 +3,43 @@
 
 * デザパタ覚書
 
+** Active Object - 非同期メッセージを受け取る
+
+   どんなときに有用か？
+
+   : class C
+   :   def process
+   :     1 + 2
+   :   end
+   : end
+   :
+   : obj = C.new
+   : obj.process
+
+   ここで、すぐに実行する必要がない 1 + 2 の処理が重すぎる場合。
+
+   : class C
+   :   attr_accessor :queue
+   :
+   :   def initialize
+   :     @queue = Queue.new
+   :     Thread.start do
+   :       loop { @queue.pop.call }  # バックグランド処理を永遠と回す
+   :     end
+   :   end
+   :
+   :   def process
+   :     @queue << proc{p 1 + 2}
+   :   end
+   : end
+   :
+   : obj = C.new
+   : obj.process
+   :
+   : nil until obj.queue.empty?
+
+   C.process の中の処理が変わっただけでインタフェースはそのまま、というところが重要
+
 ** Two Phase Terminatin
 
    : Thread.start do
@@ -28,8 +65,6 @@
 
 ** Guarded Suspention - スレッド間のデータ送受信
 
-   : require "thread"
-   :
    : queue = Queue.new
    :
    : send_num = 10
