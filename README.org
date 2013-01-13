@@ -3,6 +3,50 @@
 
 * デザパタ覚書
 
+**  Balking (ボーキング) - 実行できるまで待たない
+
+  待つのではなく、すぐに *リターン* する。待つ場合は Guarded Suspention になる。
+  一つのインスタンスの複数のスレッドで実行しているとき一部だけ排他制御を行うには synchronize ブロックで囲む。
+
+  以下の例は a b c を順番に発動していく。
+  ただ a の処理が 0.1 秒かかっているため、直後に発動した b は a が処理中のためリターンしている。
+  aの処理が終わったころに発動した c は実行できていることがわかる。
+
+  : class C
+  :   include Mutex_m
+  :
+  :   def initialize
+  :     super
+  :     @change = false
+  :   end
+  :
+  :   def execute(str, t)
+  :     synchronize do
+  :       if @change
+  :         p "処理中のため#{str}はスキップ"
+  :         return
+  :       end
+  :       @change = true
+  :
+  :       p str
+  :       sleep(t) # sleepはsynchronizeの中で行わないとエラーになる
+  :
+  :       @change = false
+  :     end
+  :   end
+  : end
+  :
+  : x = C.new
+  : threads = []
+  : threads << Thread.start{x.execute("a", 0.1)}
+  : threads << Thread.start{x.execute("b", 0)}
+  : sleep(0.1)
+  : threads << Thread.start{x.execute("c", 0)}
+  : threads.collect(&:join)
+  : # >> "a"
+  : # >> "処理中のためbはスキップ"
+  : # >> "c"
+
 ** Active Object - 非同期メッセージを受け取る
 
    どんなときに有用か？
@@ -63,7 +107,7 @@
    : # >> "b"
    : # >> "a"
 
-** Guarded Suspention - スレッド間のデータ送受信
+** Guarded Suspention - 実行できるまで待つ
 
    : queue = Queue.new
    :
@@ -1181,7 +1225,7 @@
    | Single Threaded Execution | この橋を渡れるのはたった一人                       |
    | Immutable                 | 壊したくとも壊せない                               |
    | Guarded Suspension        | 用意が出来るまで待つ                               |
-   | Balking                   | 必要なかったらやめる                               |
+   | Balking                   | 不要であればすぐにリターンする                               |
    | Producer-Consumer         | 私が作りあなたが使う                               |
    | Read-Write Lock           | みんなで読んでもいいけど、読んでる間は書いちゃだめ |
    | Thread-Per-Message        | この仕事、やっといて                             |
