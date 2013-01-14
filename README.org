@@ -3,49 +3,54 @@
 
 * デザパタ覚書
 
-**  Balking (ボーキング) - 実行できるまで待たない
+  - スレッドに処理を投げる→戻値必要 → Future
+  - スレッドに処理を投げる→戻値不要 → Thread Per Message
+  - スレッド内で処理できるまで待つ → Guarded Suspention
+  - スレッド内で処理できるまで待たない → Balking
 
-  待つのではなく、すぐに *リターン* する。待つ場合は Guarded Suspention になる。
-  一つのインスタンスの複数のスレッドで実行しているとき一部だけ排他制御を行うには synchronize ブロックで囲む。
+** Balking (ボーキング) - 実行できるまで待たない
 
-  以下の例は a b c を順番に発動していく。
-  ただ a の処理が 0.1 秒かかっているため、直後に発動した b は a が処理中のためリターンしている。
-  aの処理が終わったころに発動した c は実行できていることがわかる。
+   待つのではなく、すぐに *リターン* する。待つ場合は Guarded Suspention になる。
+   一つのインスタンスの複数のスレッドで実行しているとき一部だけ排他制御を行うには synchronize ブロックで囲む。
 
-  : class C
-  :   include Mutex_m
-  :
-  :   def initialize
-  :     super
-  :     @change = false
-  :   end
-  :
-  :   def execute(str, t)
-  :     synchronize do
-  :       if @change
-  :         p "処理中のため#{str}はスキップ"
-  :         return
-  :       end
-  :       @change = true
-  :
-  :       p str
-  :       sleep(t) # sleepはsynchronizeの中で行わないとエラーになる
-  :
-  :       @change = false
-  :     end
-  :   end
-  : end
-  :
-  : x = C.new
-  : threads = []
-  : threads << Thread.start{x.execute("a", 0.1)}
-  : threads << Thread.start{x.execute("b", 0)}
-  : sleep(0.1)
-  : threads << Thread.start{x.execute("c", 0)}
-  : threads.collect(&:join)
-  : # >> "a"
-  : # >> "処理中のためbはスキップ"
-  : # >> "c"
+   以下の例は a b c を順番に発動していく。
+   ただ a の処理が 0.1 秒かかっているため、直後に発動した b は a が処理中のためリターンしている。
+   aの処理が終わったころに発動した c は実行できていることがわかる。
+
+   : class C
+   :   include Mutex_m
+   :
+   :   def initialize
+   :     super
+   :     @change = false
+   :   end
+   :
+   :   def execute(str, t)
+   :     synchronize do
+   :       if @change
+   :         p "処理中のため#{str}はスキップ"
+   :         return
+   :       end
+   :       @change = true
+   :
+   :       p str
+   :       sleep(t) # sleepはsynchronizeの中で行わないとエラーになる
+   :
+   :       @change = false
+   :     end
+   :   end
+   : end
+   :
+   : x = C.new
+   : threads = []
+   : threads << Thread.start{x.execute("a", 0.1)}
+   : threads << Thread.start{x.execute("b", 0)}
+   : sleep(0.1)
+   : threads << Thread.start{x.execute("c", 0)}
+   : threads.collect(&:join)
+   : # >> "a"
+   : # >> "処理中のためbはスキップ"
+   : # >> "c"
 
 ** Active Object - 非同期メッセージを受け取る
 
@@ -92,21 +97,6 @@
    :   end
    : end.join
 
-** Thread Per Message
-
-   : class User
-   :   def request(*args)
-   :     Thread.start(*args){|x, t|sleep(t);p x}
-   :   end
-   : end
-   :
-   : host = User.new
-   : host.request("a", 0.2)
-   : host.request("b", 0.1)
-   : (Thread.list - [Thread.main]).each(&:join)
-   : # >> "b"
-   : # >> "a"
-
 ** Guarded Suspention - 実行できるまで待つ
 
    : queue = Queue.new
@@ -145,24 +135,29 @@
    : Thread.start{Thread.current["a"] = 1}.join
    : Thread.start{Thread.current["a"]}.value    # => nil
 
-** Future 引き換え券を、お先にどうぞ
+** Thread Per Message - 戻値不要
 
-   : def request(count, c)
-   :   Thread.start do
-   :     cake = ""
-   :     count.times{Thread.pass; cake << c}
-   :     cake
-   :   end
+   : def request(x)
+   :   Thread.start(x){|x|p x}
+   : end
+   :
+   : request("a")
+   : request("b")
+   :
+   : (Thread.list - [Thread.main]).each(&:join)
+   : # >> "a"
+   : # >> "b"
+
+** Future - 戻値必要
+
+   : def request(x)
+   :   Thread.start(x){|x|x}
    : end
    :
    : t = []
-   : t << request(2, "A")
-   : t << request(3, "B")
-   : t << request(4, "C")
-   : t.each{|e|e.join}
-   : t.collect(&:value)              # => ["AA", "BBB", "CCCC"]
-
-   どゆこと？
+   : t << request("A")
+   : t << request("B")
+   : t.collect(&:value) # => ["A", "B"]
 
 ** Mediator
 
@@ -1230,7 +1225,7 @@
    | Read-Write Lock           | みんなで読んでもいいけど、読んでる間は書いちゃだめ |
    | Thread-Per-Message        | この仕事、やっといて                             |
    | Worker Thread             | 仕事がくるまで待ち仕事がきたら働く                 |
-   | Future                    | 引き換え券を、お先にどうぞ                         |
+   | Future                    | スレッドに処理を投げてその戻値が必要なとき                         |
    | Two-Phase Terminatin      | あとかだづけしてから、おやすみなさい               |
    | Thread-Specific Storage   | スレッド内グローバル変数                           |
    | Active Object             | 非同期メッセージを受け取る、能動的なオブジェクト   |

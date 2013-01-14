@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
-# Future - 引き換え券を、お先にどうぞ
+# Future - 戻値必要
 
-def request(count, c)
-  Thread.start do
-    cake = ""
-    count.times{Thread.pass; cake << c}
-    cake
-  end
+def request(x)
+  Thread.start(x){|x|x}
 end
 
 t = []
-t << request(2, "A")
-t << request(3, "B")
-t << request(4, "C")
-t.each{|e|e.join}
-t.collect(&:value)              # => ["AA", "BBB", "CCCC"]
+t << request("A")
+t << request("B")
+t.collect(&:value) # => ["A", "B"]

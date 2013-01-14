@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-# Thread-Per-Message - この仕事、やっといて
+# Thread-Per-Message - 戻値不要
 
-class User
-  def request(*args)
-    Thread.start(*args){|x, t|sleep(t);p x}
-  end
+def request(x)
+  Thread.start(x){|x|p x}
 end
 
-host = User.new
-host.request("a", 0.2)
-host.request("b", 0.1)
+request("a")
+request("b")
+
 (Thread.list - [Thread.main]).each(&:join)
-# >> "b"
 # >> "a"
+# >> "b"
