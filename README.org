@@ -91,11 +91,23 @@
 
 ** Two Phase Terminatin
 
-   : Thread.start do
-   :   begin
-   :   rescue
+   外から Thread.kill するんじゃなくて止まるように指示
+
+   : t = Thread.start do
+   :   2.times do |i|
+   :     if Thread.current["interrupt"]
+   :       break
+   :     end
+   :     p "処理中: #{i}"
+   :     sleep(0.2)
    :   end
-   : end.join
+   :   p "終了処理"
+   : end
+   : sleep(0.1)
+   : t["interrupt"] = true
+   : t.join
+   : # >> "処理中: 0"
+   : # >> "終了処理"
 
 ** Guarded Suspention - 実行できるまで待つ
 
@@ -1220,12 +1232,12 @@
    | Single Threaded Execution | この橋を渡れるのはたった一人                       |
    | Immutable                 | 壊したくとも壊せない                               |
    | Guarded Suspension        | 用意が出来るまで待つ                               |
-   | Balking                   | 不要であればすぐにリターンする                               |
+   | Balking                   | 不要であればすぐにリターンする                     |
    | Producer-Consumer         | 私が作りあなたが使う                               |
    | Read-Write Lock           | みんなで読んでもいいけど、読んでる間は書いちゃだめ |
-   | Thread-Per-Message        | この仕事、やっといて                             |
+   | Thread-Per-Message        | この仕事、やっといて                               |
    | Worker Thread             | 仕事がくるまで待ち仕事がきたら働く                 |
-   | Future                    | スレッドに処理を投げてその戻値が必要なとき                         |
-   | Two-Phase Terminatin      | あとかだづけしてから、おやすみなさい               |
+   | Future                    | スレッドに処理を投げてその戻値が必要なとき         |
+   | Two-Phase Terminatin      | 外から Thread.kill せず、止まるように指示          |
    | Thread-Specific Storage   | スレッド内グローバル変数                           |
    | Active Object             | 非同期メッセージを受け取る、能動的なオブジェクト   |
