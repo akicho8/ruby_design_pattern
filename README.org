@@ -3,10 +3,13 @@
 
 * デザパタ覚書
 
-  - スレッドに処理を投げる→戻値必要 → Future
-  - スレッドに処理を投げる→戻値不要 → Thread Per Message
-  - スレッド内で処理できるまで待つ → Guarded Suspention
-  - スレッド内で処理できるまで待たない → Balking
+#+ATTR_HTML: border="1" rules="all" frame="all"
+   | 用途                                 | 種類               |
+   |--------------------------------------+--------------------|
+   | スレッドに処理を投げる→戻値必要     | Future             |
+   | スレッドに処理を投げる→戻値不要     | Thread Per Message |
+   | スレッド内で処理できるまで→待つ     | Guarded Suspention |
+   | スレッド内で処理できるまで→待たない | Balking            |
 
 ** Balking (ボーキング) - 実行できるまで待たない
 
