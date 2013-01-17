@@ -3,64 +3,41 @@
 
 require "thread"
 
-# 仕事
-class Request
-  attr_reader :number
-
-  def initialize(name, number)
-    @name = name
-    @number = number
-  end
-
-  def execute
-    sleep(1.0 / rand(100))
-    to_s
-  end
-
-  def to_s
-    "[Request from #{@name} No.#{@number}]"
-  end
-end
-
-# 仕事の依頼をする人
-def client_thread(*arg)
-  Thread.new(*arg) do |name, channel, num|
-    num.times do |i|
-      channel << Request.new(name, i)
-      sleep(1.0 / rand(1000))
-    end
-  end
-end
-
-# 仲介役だけどサイズ分だけ処理するスレッドを生成する
 class Channel < SizedQueue
-  def initialize(size, check)
+  attr_reader :threads
+
+  def initialize(size)
     super(size)
-    @t = []
-    size.times do |i|
-      @t << Thread.new do
+    @threads = size.times.collect do |i|
+      Thread.start(i) do |i|
         loop do
           request = pop
-          check << request.number
-          # p ["Worker-#{i}", request.execute]
+          p "スレッド#{i}が#{request}を担当"
+          sleep(1)
         end
       end
     end
   end
-  def kill
-    @t.each(&:kill)
-  end
 end
 
-check = []
-channel = Channel.new(2, check)
-ct = []
-ct << client_thread("Alice", channel, 5)
-ct << client_thread("Bobby", channel, 5)
-ct.each{|e|e.join}
-while check.size < 10; end      # これを入れて処理スレッドと同期を取る
-channel.kill
-p check.sort
-p ((0...5).to_a * 2).sort
-# >> [0, 0, 1, 1, 2, 2, 3, 3, 4, 4]
-# >> [0, 0, 1, 1, 2, 2, 3, 3, 4, 4]
+channel = Channel.new(1)
+t = Time.now
+4.times{|i|channel << i}
+nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
+puts "%.1f s" % (Time.now - t)
+
+channel = Channel.new(4)
+t = Time.now
+4.times{|i|channel << i}
+nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
+puts "%.1f s" % (Time.now - t)
+# >> "スレッド0が0を担当"
+# >> "スレッド0が1を担当"
+# >> "スレッド0が2を担当"
+# >> "スレッド0が3を担当"
+# >> 3.3 s
+# >> "スレッド1が0を担当"
+# >> "スレッド0が1を担当"
+# >> "スレッド3が2を担当"
+# >> "スレッド2が3を担当"
+# >> 0.8 s

@@ -4,12 +4,57 @@
 * デザパタ覚書
 
 #+ATTR_HTML: border="1" rules="all" frame="all"
-   | 用途                                 | 種類               |
-   |--------------------------------------+--------------------|
-   | スレッドに処理を投げる→戻値必要     | Future             |
-   | スレッドに処理を投げる→戻値不要     | Thread Per Message |
-   | スレッド内で処理できるまで→待つ     | Guarded Suspention |
-   | スレッド内で処理できるまで→待たない | Balking            |
+  | 用途                                 | 種類               |
+  |--------------------------------------+--------------------|
+  | スレッドに処理を投げる→戻値必要     | Future             |
+  | スレッドに処理を投げる→戻値不要     | Thread Per Message |
+  | スレッド内で処理できるまで→待つ     | Guarded Suspention |
+  | スレッド内で処理できるまで→待たない | Balking            |
+
+**  Worker Thread - 仕事がくるまで待ち仕事がきたら働く
+
+    : class Channel < SizedQueue
+    :   attr_reader :threads
+    :
+    :   def initialize(size)
+    :     super(size)
+    :     @threads = size.times.collect do |i|
+    :       Thread.start(i) do |i|
+    :         loop do
+    :           request = pop
+    :           p "スレッド#{i}が#{request}を担当"
+    :           sleep(1)
+    :         end
+    :       end
+    :     end
+    :   end
+    : end
+
+    1つのワーカーだけだと 3.3 秒。(4秒になってないのは、たぶん最後の sleep(1) が開始した時点で status == "sleep" になってるから？)
+
+    : channel = Channel.new(1)
+    : t = Time.now
+    : 4.times{|i|channel << i}
+    : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
+    : puts "%.1f s" % (Time.now - t)
+    : # >> "スレッド0が0を担当"
+    : # >> "スレッド0が1を担当"
+    : # >> "スレッド0が2を担当"
+    : # >> "スレッド0が3を担当"
+    : # >> 3.3 s
+
+    4つのワーカーだと処理が分散してすぐ終わる
+
+    : channel = Channel.new(4)
+    : t = Time.now
+    : 4.times{|i|channel << i}
+    : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
+    : puts "%.1f s" % (Time.now - t)
+    : # >> "スレッド1が0を担当"
+    : # >> "スレッド0が1を担当"
+    : # >> "スレッド3が2を担当"
+    : # >> "スレッド2が3を担当"
+    : # >> 0.8 s
 
 ** Balking (ボーキング) - 実行できるまで待たない
 
