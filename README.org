@@ -4,12 +4,83 @@
 * デザパタ覚書
 
 #+ATTR_HTML: border="1" rules="all" frame="all"
-  | 用途                                 | 種類               |
-  |--------------------------------------+--------------------|
-  | スレッドに処理を投げる→戻値必要     | Future             |
-  | スレッドに処理を投げる→戻値不要     | Thread Per Message |
-  | スレッド内で処理できるまで→待つ     | Guarded Suspention |
-  | スレッド内で処理できるまで→待たない | Balking            |
+  | 用途                                 | 種類                                |
+  |--------------------------------------+-------------------------------------|
+  | スレッドに処理を投げる→戻値必要     | Future                              |
+  | スレッドに処理を投げる→戻値不要     | Thread Per Message                  |
+  | スレッド内で処理できるまで→待つ     | Guarded Suspention or Worker Thread |
+  | スレッド内で処理できるまで→待たない | Balking                             |
+
+** Read Write Lock
+
+   : class Buffer
+   :   def initialize
+   :     @sync = Sync.new
+   :     @str = ""
+   :   end
+   :
+   :   def write(_str)
+   :     @sync.synchronize(:EX) do
+   :       _str.chars.with_index do |c, i|
+   :         sleep(0.0001)
+   :         @str[i] = c
+   :       end
+   :     end
+   :   end
+   :
+   :   def read
+   :     @sync.synchronize(:SH) do
+   :       @str.size.times.collect{|i|
+   :         sleep(0.001)
+   :         @str[i]
+   :       }.join
+   :     end
+   :   end
+   : end
+
+   書き込みスレッドと、読み込みスレッドを並列で起動して、お互いが干渉するようにする
+
+   : buffer = Buffer.new
+   : w = Thread.start do
+   :   ("A".."Z").cycle{|c|
+   :     buffer.write(c.to_s * 64)
+   :     sleep(0.001)
+   :   }
+   : end
+   : r = Thread.start do
+   :   10.times do
+   :     sleep(0.001)
+   :     p buffer.read
+   :   end
+   : end
+   : r.join
+   : w.kill
+
+   でも結果は壊れてない
+
+   : # >> "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+   : # >> "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+   : # >> "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+   : # >> "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+   : # >> "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+   : # >> "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+   : # >> "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
+   : # >> "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+   : # >> "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
+   : # >> "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
+
+   @sync.synchronize ブロックを使わなかった場合は以下の通り
+
+   : # >> AAAAAAA
+   : # >> BBBBBBBBBBCCCCCCCCCCCDDDDDDDDDDDEEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGG
+   : # >> IIIIIIIIIIJJJJJJJJJJJKKKKKKKKKKKLLLLLLLLLLMMMMMMMMMMMNNNNNNNNNNO
+   : # >> PPPPPPPPPPQQQQQQQQQQQRRRRRRRRRRRSSSSSSSSSSTTTTTTTTTTTUUUUUUUUUUU
+   : # >> WWWWWWWWWWXXXXXXXXXXXYYYYYYYYYYYYZZZZZZZZZZAAAAAAAAAAABBBBBBBBBB
+   : # >> DDDDDDDDDDDEEEEEEEEEEEEFFFFFFFFFFFGGGGGGGGGGHHHHHHHHHHHIIIIIIIII
+   : # >> JJKKKKKKKKKKKLLLLLLLLLLLMMMMMMMMMMNNNNNNNNNNNOOOOOOOOOOOPPPPPPPP
+   : # >> QQRRRRRRRRRRRSSSSSSSSSSTTTTTTTTTTTUUUUUUUUUUVVVVVVVVVVVWWWWWWWWW
+   : # >> XXYYYYYYYYYYYZZZZZZZZZZZAAAAAAAAAAABBBBBBBBBBBCCCCCCCCCCCDDDDDDD
+   : # >> EEEEFFFFFFFFFFFGGGGGGGGGGGHHHHHHHHHHHIIIIIIIIIIIJJJJJJJJJJJKKKKK
 
 **  Worker Thread - 仕事がくるまで待ち仕事がきたら働く
 
@@ -1282,7 +1353,7 @@
    | Guarded Suspension        | 用意が出来るまで待つ                               |
    | Balking                   | 不要であればすぐにリターンする                     |
    | Producer-Consumer         | 私が作りあなたが使う                               |
-   | Read-Write Lock           | みんなで読んでもいいけど、読んでる間は書いちゃだめ |
+   | Read-Write Lock           | read中はwrite禁止 |
    | Thread-Per-Message        | この仕事、やっといて                               |
    | Worker Thread             | 仕事がくるまで待ち仕事がきたら働く                 |
    | Future                    | スレッドに処理を投げてその戻値が必要なとき         |
