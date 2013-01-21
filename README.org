@@ -12,6 +12,27 @@
   | スレッド内で処理できるまで→待たない | Balking                             |
   | 生産スレ→SizedQueue→使用スレ       | Producer Consumer                   |
 
+** Null Object
+
+   : class Logger
+   :   def info(str)
+   :     str
+   :   end
+   : end
+   :
+   : logger = Logger.new
+   : logger.info("x")                # => "x"
+
+   logger を無効にする
+
+   : class NullObject
+   :   def info(str)
+   :   end
+   : end
+
+   : logger = NullObject.new
+   : logger.info("x")                # => nil
+
 ** Producer Consumer
 
    生産スレが作ってキューに入れて使用スレがpopする。
