@@ -4,44 +4,45 @@
 * デザパタ覚書
 
 #+ATTR_HTML: border="1" rules="all" frame="all"
-   | 名前                      | 意味                                       |
-   |---------------------------+--------------------------------------------|
-   | Iterator                  | 1つ1つ数え上げる                           |
-   | Adapter                   | 一皮かぶせて再利用                         |
-   | Template Method           | 具体的な処理をサブクラスに任せる           |
-   | Factory Method            | インスタンス作成をサブクラスに任せる       |
-   | Singleton                 | たった１つのインスタンス                   |
-   | Prototype                 | コピーしてインスタンスを作る               |
-   | Builder                   | 複雑なインスタンスを組み立てる             |
-   | Abstract Factory          | 関連する部品を組み合わせて部品を作る       |
-   | Bridge                    | 機能の階層と実装の階層を分ける             |
-   | Strategy                  | アルゴリズムをごっそり切り替える           |
-   | Composite                 | 容器と中身の同一視                         |
-   | Decorator                 | 飾り枠と中身の同一視                       |
-   | Visitor                   | 構造を渡り歩きながら仕事をする             |
-   | Chain of Responsibility   | 責任のたらい回し                           |
-   | Facade                    | シンプルな窓口                             |
-   | Mediator                  | 相手は相談役一人だけ                       |
-   | Observer                  | 状態の変化を通知する                       |
-   | Memento                   | 状態を保存する                             |
-   | State                     | 状態をクラスとして表現する                 |
-   | Flyweight                 | 同じ物を共有して無駄を無くす               |
-   | Proxy                     | 必要になってから作る                       |
-   | Command                   | 命令をクラスにする                         |
-   | Interpreter               | 文法規則をクラスで表現する                 |
-   | Single Threaded Execution | この橋を渡れるのはたった一人               |
-   | Immutable                 | 壊したくとも壊せない                       |
-   | Guarded Suspension        | 用意が出来るまで待つ                       |
-   | Balking                   | 不要であればすぐにリターンする             |
-   | Producer-Consumer         | 私が作りあなたが使う                       |
-   | Read-Write Lock           | read中はwrite禁止                          |
-   | Thread-Per-Message        | この仕事、やっといて                       |
-   | Worker Thread             | 仕事がくるまで待ち仕事がきたら働く         |
-   | Future                    | スレッドに処理を投げてその戻値が必要なとき |
-   | Two-Phase Terminatin      | 外から Thread.kill せず、止まるように指示  |
-   | Thread-Specific Storage   | スレッド内グローバル変数                   |
-   | Null Object               | なにもしないオブジェクトにしてかわす       |
-   | Object pool               | 生成に時間がかかるものを使い回して高速化   |
+  | 名前                      | 意味                                       |
+  |---------------------------+--------------------------------------------|
+  | Iterator                  | 1つ1つ数え上げる                           |
+  | Adapter                   | 一皮かぶせて再利用                         |
+  | Template Method           | 具体的な処理をサブクラスに任せる           |
+  | Factory Method            | インスタンス作成をサブクラスに任せる       |
+  | Singleton                 | たった１つのインスタンス                   |
+  | Prototype                 | コピーしてインスタンスを作る               |
+  | Builder                   | 複雑なインスタンスを組み立てる             |
+  | Abstract Factory          | 関連する部品を組み合わせて部品を作る       |
+  | Bridge                    | 機能の階層と実装の階層を分ける             |
+  | Strategy                  | アルゴリズムをごっそり切り替える           |
+  | Composite                 | 容器と中身の同一視                         |
+  | Decorator                 | 飾り枠と中身の同一視                       |
+  | Visitor                   | 構造を渡り歩きながら仕事をする             |
+  | Chain of Responsibility   | 責任のたらい回し                           |
+  | Facade                    | シンプルな窓口                             |
+  | Mediator                  | 相手は相談役一人だけ                       |
+  | Observer                  | 状態の変化を通知する                       |
+  | Memento                   | 状態を保存する                             |
+  | State                     | 状態をクラスとして表現する                 |
+  | Flyweight                 | 同じ物を共有して無駄を無くす               |
+  | Proxy                     | 必要になってから作る                       |
+  | Command                   | 命令をクラスにする                         |
+  | Interpreter               | 文法規則をクラスで表現する                 |
+  | Single Threaded Execution | この橋を渡れるのはたった一人               |
+  | Immutable                 | 壊したくとも壊せない                       |
+  | Guarded Suspension        | 用意が出来るまで待つ                       |
+  | Balking                   | 不要であればすぐにリターンする             |
+  | Producer-Consumer         | 私が作りあなたが使う                       |
+  | Read-Write Lock           | read中はwrite禁止                          |
+  | Thread-Per-Message        | この仕事、やっといて                       |
+  | Worker Thread             | 仕事がくるまで待ち仕事がきたら働く         |
+  | Future                    | スレッドに処理を投げてその戻値が必要なとき |
+  | Two-Phase Terminatin      | 外から Thread.kill せず、止まるように指示  |
+  | Thread-Specific Storage   | スレッド内グローバル変数                   |
+  | Null Object               | なにもしないオブジェクトにしてかわす       |
+  | Object pool               | 生成に時間がかかるものを使い回して高速化   |
+  | Pluggable Selector         | やっつけポルモルフィック                   |
 
 #+ATTR_HTML: border="1" rules="all" frame="all"
   | 用途                                 | 種類                                |
@@ -52,41 +53,62 @@
   | スレッド内で処理できるまで→待たない | Balking                             |
   | 生産スレ→SizedQueue→使用スレ       | Producer Consumer                   |
 
+** Pluggable Selector
+
+   やっつけポルモルフィック(？)
+   まだよくわかってない
+
+   : class C
+   :   def initialize(command)
+   :     @command = command
+   :   end
+   :
+   :   def execute
+   :     send(@command)
+   :   end
+   :
+   :   def command_x
+   :     :a
+   :   end
+   : end
+   :
+   : C.new(:command_x).execute       # => :a
+
 ** Object pool
 
-  : class X
-  :   attr_accessor :active
-  : end
-  :
-  : class C
-  :   attr_accessor :pool
-  :
-  :   def initialize
-  :     @size = 2
-  :     @pool = []
-  :   end
-  :
-  :   def new_x
-  :     x = @pool.find{|e|!e.active}
-  :     unless x
-  :       if @pool.size < @size
-  :         x = X.new
-  :         @pool << x
-  :       end
-  :     end
-  :     if x
-  :       x.active = true
-  :     end
-  :     x
-  :   end
-  : end
-  :
-  : i = C.new
-  : a = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
-  : b = i.new_x                  # => #<X:0x007fd1cb08d140 @active=true>
-  : c = i.new_x                  # => nil
-  : a.active = false
-  : c = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
+   : class X
+   :   attr_accessor :active
+   : end
+   :
+   : class C
+   :   attr_accessor :pool
+   :
+   :   def initialize
+   :     @size = 2
+   :     @pool = []
+   :   end
+   :
+   :   def new_x
+   :     x = @pool.find{|e|!e.active}
+   :     unless x
+   :       if @pool.size < @size
+   :         x = X.new
+   :         @pool << x
+   :       end
+   :     end
+   :     if x
+   :       x.active = true
+   :     end
+   :     x
+   :   end
+   : end
+   :
+   : i = C.new
+   : a = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
+   : b = i.new_x                  # => #<X:0x007fd1cb08d140 @active=true>
+   : c = i.new_x                  # => nil
+   : a.active = false
+   : c = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
 
 ** Null Object
 
