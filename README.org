@@ -42,7 +42,8 @@
   | Thread-Specific Storage   | スレッド内グローバル変数                   |
   | Null Object               | なにもしないオブジェクトにしてかわす       |
   | Object pool               | 生成に時間がかかるものを使い回して高速化   |
-  | Pluggable Selector         | やっつけポルモルフィック                   |
+  | Pluggable Selector        | やっつけポルモルフィック(？)               |
+  | Before/After              | 後処理を必ず実行する                       |
 
 #+ATTR_HTML: border="1" rules="all" frame="all"
   | 用途                                 | 種類                                |
@@ -52,6 +53,20 @@
   | スレッド内で処理できるまで→待つ     | Guarded Suspention or Worker Thread |
   | スレッド内で処理できるまで→待たない | Balking                             |
   | 生産スレ→SizedQueue→使用スレ       | Producer Consumer                   |
+
+** Before/After
+
+   : begin
+   :   p "before"
+   :   1 / 0
+   : rescue => error
+   :   p error
+   : ensure
+   :   p "after"
+   : end
+   : # >> "before"
+   : # >> #<ZeroDivisionError: divided by 0>
+   : # >> "after"
 
 ** Pluggable Selector
 
