@@ -249,50 +249,50 @@
    : # >> XXYYYYYYYYYYYZZZZZZZZZZZAAAAAAAAAAABBBBBBBBBBBCCCCCCCCCCCDDDDDDD
    : # >> EEEEFFFFFFFFFFFGGGGGGGGGGGHHHHHHHHHHHIIIIIIIIIIIJJJJJJJJJJJKKKKK
 
-**  Worker Thread - 仕事がくるまで待ち仕事がきたら働く
+** Worker Thread - 仕事がくるまで待ち仕事がきたら働く
 
-    : class Channel < SizedQueue
-    :   attr_reader :threads
-    :
-    :   def initialize(size)
-    :     super(size)
-    :     @threads = size.times.collect do |i|
-    :       Thread.start(i) do |i|
-    :         loop do
-    :           request = pop
-    :           p "スレッド#{i}が#{request}を担当"
-    :           sleep(1)
-    :         end
-    :       end
-    :     end
-    :   end
-    : end
+   : class Channel < SizedQueue
+   :   attr_reader :threads
+   :
+   :   def initialize(size)
+   :     super(size)
+   :     @threads = size.times.collect do |i|
+   :       Thread.start(i) do |i|
+   :         loop do
+   :           request = pop
+   :           p "スレッド#{i}が#{request}を担当"
+   :           sleep(1)
+   :         end
+   :       end
+   :     end
+   :   end
+   : end
 
-    1つのワーカーだけだと 3.3 秒。(4秒になってないのは、たぶん最後の sleep(1) が開始した時点で status == "sleep" になってるから？)
+   1つのワーカーだけだと 3.3 秒。(4秒になってないのは、たぶん最後の sleep(1) が開始した時点で status == "sleep" になってるから？)
 
-    : channel = Channel.new(1)
-    : t = Time.now
-    : 4.times{|i|channel << i}
-    : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
-    : puts "%.1f s" % (Time.now - t)
-    : # >> "スレッド0が0を担当"
-    : # >> "スレッド0が1を担当"
-    : # >> "スレッド0が2を担当"
-    : # >> "スレッド0が3を担当"
-    : # >> 3.3 s
+   : channel = Channel.new(1)
+   : t = Time.now
+   : 4.times{|i|channel << i}
+   : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
+   : puts "%.1f s" % (Time.now - t)
+   : # >> "スレッド0が0を担当"
+   : # >> "スレッド0が1を担当"
+   : # >> "スレッド0が2を担当"
+   : # >> "スレッド0が3を担当"
+   : # >> 3.3 s
 
-    4つのワーカーだと処理が分散してすぐ終わる
+   4つのワーカーだと処理が分散してすぐ終わる
 
-    : channel = Channel.new(4)
-    : t = Time.now
-    : 4.times{|i|channel << i}
-    : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
-    : puts "%.1f s" % (Time.now - t)
-    : # >> "スレッド1が0を担当"
-    : # >> "スレッド0が1を担当"
-    : # >> "スレッド3が2を担当"
-    : # >> "スレッド2が3を担当"
-    : # >> 0.8 s
+   : channel = Channel.new(4)
+   : t = Time.now
+   : 4.times{|i|channel << i}
+   : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
+   : puts "%.1f s" % (Time.now - t)
+   : # >> "スレッド1が0を担当"
+   : # >> "スレッド0が1を担当"
+   : # >> "スレッド3が2を担当"
+   : # >> "スレッド2が3を担当"
+   : # >> 0.8 s
 
 ** Balking (ボーキング) - 実行できるまで待たない
 
@@ -613,7 +613,7 @@
 
    もっと言うなら最初から @color は ColorInfo のインスタンスにしときゃいい。
 
-   解釈間違っているかも。Factory Method じゃなくて単なる移譲？
+   これは Factory Method でなく *委譲を使ったAdapter* のような気がしてきた。。。わからん。
 
 ** Chain of responsibility
 
@@ -1403,22 +1403,57 @@
 
 ** Adapter
 
-   ダメなクラスを
-
-   : class Color
-   :   def red
-   :     "#00f"
+   : class C
+   :   def f1
+   :     "x"
    :   end
    : end
 
-   ラップして再利用
+   継承版
 
-   : class Palette < Color
-   :   alias blue red
+   : class C2 < C
+   :   def f2
+   :     f1 * 2
+   :   end
    : end
-   : Palette.new.blue # => "#00f"
 
-** シンプルなDSL
+   委譲版
+
+   : class C3
+   :   def initialize
+   :     @c = C.new
+   :   end
+   :
+   :   def f1
+   :     @c.f1
+   :   end
+   :
+   :   def f2
+   :     f1 * 2
+   :   end
+   : end
+
+   f1 メソッドを書くのが面倒なとき
+
+   : require "delegate"
+   :
+   : class C4 < SimpleDelegator
+   :   def initialize
+   :     super(C.new)
+   :   end
+   :
+   :   def f2
+   :     f1 * 2
+   :   end
+   : end
+
+   : [C2.new.f1, C2.new.f2]      # => ["x", "xx"]
+   : [C3.new.f1, C3.new.f2]      # => ["x", "xx"]
+   : [C4.new.f1, C4.new.f2]      # => ["x", "xx"]
+
+** Interpreter
+
+   シンプルなDSL
 
    : class Expression
    : end
@@ -1448,42 +1483,42 @@
    : expr = A 1, 2
    : expr.evaluate # => 3
 
-*** DSLの応用 - 他のコードに変換
+   他のコードに変換
 
-    : class Expression
-    : end
-    :
-    : class Value < Expression
-    :   attr_accessor :value
-    :   def initialize(value)
-    :     @value = value
-    :   end
-    :   def evaluate
-    :     ["mov  ax, #{@value}"]
-    :   end
-    : end
-    :
-    : class Add < Expression
-    :   def initialize(left, right)
-    :     @left, @right = left, right
-    :   end
-    :   def evaluate
-    :     code = []
-    :     code << @left.evaluate
-    :     code << "mov  dx, ax"
-    :     code << @right.evaluate
-    :     code << "add  ax, dx"
-    :   end
-    : end
-    :
-    : def A(l, r)
-    :   Add.new(Value.new(l), Value.new(r))
-    : end
-    :
-    : expr = A 1, 2
-    : puts expr.evaluate
-    : # >> mov  ax, 1
-    : # >> mov  dx, ax
-    : # >> mov  ax, 2
-    : # >> add  ax, dx
+   : class Expression
+   : end
+   :
+   : class Value < Expression
+   :   attr_accessor :value
+   :   def initialize(value)
+   :     @value = value
+   :   end
+   :   def evaluate
+   :     ["mov  ax, #{@value}"]
+   :   end
+   : end
+   :
+   : class Add < Expression
+   :   def initialize(left, right)
+   :     @left, @right = left, right
+   :   end
+   :   def evaluate
+   :     code = []
+   :     code << @left.evaluate
+   :     code << "mov  dx, ax"
+   :     code << @right.evaluate
+   :     code << "add  ax, dx"
+   :   end
+   : end
+   :
+   : def A(l, r)
+   :   Add.new(Value.new(l), Value.new(r))
+   : end
+   :
+   : expr = A 1, 2
+   : puts expr.evaluate
+   : # >> mov  ax, 1
+   : # >> mov  dx, ax
+   : # >> mov  ax, 2
+   : # >> add  ax, dx
 
