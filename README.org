@@ -30,7 +30,7 @@
   | Command                   | 命令をクラスにする                         |
   | Interpreter               | 文法規則をクラスで表現する                 |
   | Single Threaded Execution | この橋を渡れるのはたった一人               |
-  | Immutable                 | 壊したくとも壊せない                       |
+  | Immutable                 | 排他制御不要なオブジェクト                       |
   | Guarded Suspension        | 用意が出来るまで待つ                       |
   | Balking                   | 不要であればすぐにリターンする             |
   | Producer-Consumer         | 私が作りあなたが使う                       |
@@ -53,6 +53,25 @@
   | スレッド内で処理できるまで→待つ     | Guarded Suspention or Worker Thread |
   | スレッド内で処理できるまで→待たない | Balking                             |
   | 生産スレ→SizedQueue→使用スレ       | Producer Consumer                   |
+
+** Immutable
+
+   スレッドから参照するオブジェクトの内容が変わる可能性があるなら排他制御が必要だけど、
+   そのオブジェクトが不変(イミュータブル)ならば排他制御が必要がないということ。たぶん。
+
+   Javaの本だとセッターがないものと書かれているけど、rubyの場合はreaderからreplaceすれば書き換えられるので気持ち程度にfreezeしてみた。
+
+   : class C
+   :   attr_reader :v
+   :   def initialize(v)
+   :     @v = v
+   :     @v.freeze
+   :   end
+   : end
+   :
+   : a = C.new("x")
+   : a.v.replace("y") rescue $! # => #<RuntimeError: can't modify frozen String>
+   : a.v += "y" rescue $!       # => #<NoMethodError: undefined method `v=' for #<C:0x007fc18c885338 @v="x">>
 
 ** Before/After
 
