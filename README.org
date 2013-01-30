@@ -54,6 +54,32 @@
   | スレッド内で処理できるまで→待たない | Balking                             |
   | 生産スレ→SizedQueue→使用スレ       | Producer Consumer                   |
 
+** Single Threaded Execution
+
+   排他制御のこと
+
+   : mutex = Mutex.new
+   : a = 0
+   : b = 0
+   : 2.times.collect do
+   :   Thread.start do
+   :     2.times do
+   :       mutex.synchronize do
+   :         a += 1
+   :         Thread.pass
+   :         b += 1
+   :         p [a, b, (a == b)]
+   :       end
+   :     end
+   :   end
+   : end.each(&:join)
+   : # >> [1, 1, true]
+   : # >> [2, 2, true]
+   : # >> [3, 3, true]
+   : # >> [4, 4, true]
+
+   明示的にパスしても synchronize ブロック内はスレッドが切り替わらないことがわかる。
+
 ** Immutable
 
    スレッドから参照するオブジェクトの内容が変わる可能性があるなら排他制御が必要だけど、
