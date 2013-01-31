@@ -30,7 +30,7 @@
   | Command                   | 命令をクラスにする                         |
   | Interpreter               | 文法規則をクラスで表現する                 |
   | Single Threaded Execution | この橋を渡れるのはたった一人               |
-  | Immutable                 | 排他制御不要なオブジェクト                       |
+  | Immutable                 | 排他制御不要なオブジェクト                 |
   | Guarded Suspension        | 用意が出来るまで待つ                       |
   | Balking                   | 不要であればすぐにリターンする             |
   | Producer-Consumer         | 私が作りあなたが使う                       |
@@ -44,6 +44,7 @@
   | Object pool               | 生成に時間がかかるものを使い回して高速化   |
   | Pluggable Selector        | やっつけポルモルフィック(？)               |
   | Before/After              | 後処理を必ず実行する                       |
+  | Single Threaded Execution | 排他制御のこと                             |
 
 #+ATTR_HTML: border="1" rules="all" frame="all"
   | 用途                                 | 種類                                |
@@ -95,9 +96,10 @@
    :   end
    : end
    :
-   : a = C.new("x")
+   : a = C.new("x").freeze
    : a.v.replace("y") rescue $! # => #<RuntimeError: can't modify frozen String>
-   : a.v += "y" rescue $!       # => #<NoMethodError: undefined method `v=' for #<C:0x007fc18c885338 @v="x">>
+   : a.v += "y" rescue $!       # => #<NoMethodError: undefined method `v=' for #<C:0x007fbfc3903910 @v="x">>
+   : a.v                        # => "x"
 
 ** Before/After
 
@@ -149,9 +151,9 @@
    :   end
    :
    :   def new_x
-   :     x = @pool.find{|e|!e.active}
-   :     unless x
-   :       if @pool.size < @size
+   :     x = @pool.find{|e|!e.active}  # pool から稼働してないものを探す
+   :     unless x                      # なければ
+   :       if @pool.size < @size       # pool の空きがあれば、新たに作成
    :         x = X.new
    :         @pool << x
    :       end
@@ -1171,22 +1173,19 @@
 
 ** Facade
 
-   何をやってんのかわからない
+   例えばこんなのは
 
-   : from = User.find_by_name("alice") || User.find_by_name("admin")
-   : to = User.find_by_name!("bob")
-   : transaction do
-   :   message = Message.new(:date => Time.current)
-   :   message.from = from
-   :   message.to = to
-   :   message.body = "こんちは".toutf8
-   :   if message.valid?
-   :     ...
-   :   end
+   : from = User.find_by_name("alice")
+   : to = User.find_by_name("bob")
+   : message = Message.new
+   : message.from = from
+   : message.to = to
+   : message.body = "こんちは"
+   : if message.valid?
    :   message.save!
    : end
 
-   改善
+   以下のように書きやすくまとめる。だけ？
 
    : Message.deliver(:from => "alice", :to => "bob", :body => "こんちは")
 
@@ -1566,4 +1565,3 @@
    : # >> mov  dx, ax
    : # >> mov  ax, 2
    : # >> add  ax, dx
-

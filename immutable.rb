@@ -9,6 +9,7 @@ class C
   end
 end
 
-a = C.new("x")
+a = C.new("x").freeze
 a.v.replace("y") rescue $! # => #<RuntimeError: can't modify frozen String>
-a.v += "y" rescue $!       # => #<NoMethodError: undefined method `v=' for #<C:0x007fb7d2885338 @v="x">>
+a.v += "y" rescue $!       # => #<NoMethodError: undefined method `v=' for #<C:0x007fbfc3903910 @v="x">>
+a.v                        # => "x"
