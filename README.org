@@ -3,33 +3,45 @@
 
 * デザパタ覚書
 
+  一般
+
+#+ATTR_HTML: border="1" rules="all" frame="all"
+  | 名前                    | 意味                                     |
+  |-------------------------+------------------------------------------|
+  | Iterator                | 1つ1つ数え上げる                         |
+  | Adapter                 | 一皮かぶせて再利用                       |
+  | Template Method         | 具体的な処理をサブクラスに任せる         |
+  | Factory Method          | インスタンス作成をサブクラスに任せる     |
+  | Singleton               | たった１つのインスタンス                 |
+  | Prototype               | コピーしてインスタンスを作る             |
+  | Builder                 | 複雑なインスタンスを組み立てる           |
+  | Abstract Factory        | 関連する部品を組み合わせて部品を作る     |
+  | Bridge                  | 機能の階層と実装の階層を分ける           |
+  | Strategy                | アルゴリズムをごっそり切り替える         |
+  | Composite               | 容器と中身の同一視                       |
+  | Decorator               | 飾り枠と中身の同一視                     |
+  | Visitor                 | 構造を渡り歩きながら仕事をする           |
+  | Chain of Responsibility | 責任のたらい回し                         |
+  | Facade                  | シンプルな窓口                           |
+  | Mediator                | 相手は相談役一人だけ                     |
+  | Observer                | 状態の変化を通知する                     |
+  | Memento                 | 状態を保存する                           |
+  | State                   | 状態をクラスとして表現する               |
+  | Flyweight               | 同じ物を共有して無駄を無くす             |
+  | Proxy                   | 必要になってから作る                     |
+  | Command                 | 命令をクラスにする                       |
+  | Interpreter             | 文法規則をクラスで表現する               |
+  | Null Object             | なにもしないオブジェクトにしてかわす     |
+  | Object pool             | 生成に時間がかかるものを使い回して高速化 |
+  | Pluggable Selector      | やっつけポルモルフィック(？)             |
+  | Before/After            | 後処理を必ず実行する                     |
+
+  スレッド用
+
 #+ATTR_HTML: border="1" rules="all" frame="all"
   | 名前                      | 意味                                       |
   |---------------------------+--------------------------------------------|
-  | Iterator                  | 1つ1つ数え上げる                           |
-  | Adapter                   | 一皮かぶせて再利用                         |
-  | Template Method           | 具体的な処理をサブクラスに任せる           |
-  | Factory Method            | インスタンス作成をサブクラスに任せる       |
-  | Singleton                 | たった１つのインスタンス                   |
-  | Prototype                 | コピーしてインスタンスを作る               |
-  | Builder                   | 複雑なインスタンスを組み立てる             |
-  | Abstract Factory          | 関連する部品を組み合わせて部品を作る       |
-  | Bridge                    | 機能の階層と実装の階層を分ける             |
-  | Strategy                  | アルゴリズムをごっそり切り替える           |
-  | Composite                 | 容器と中身の同一視                         |
-  | Decorator                 | 飾り枠と中身の同一視                       |
-  | Visitor                   | 構造を渡り歩きながら仕事をする             |
-  | Chain of Responsibility   | 責任のたらい回し                           |
-  | Facade                    | シンプルな窓口                             |
-  | Mediator                  | 相手は相談役一人だけ                       |
-  | Observer                  | 状態の変化を通知する                       |
-  | Memento                   | 状態を保存する                             |
-  | State                     | 状態をクラスとして表現する                 |
-  | Flyweight                 | 同じ物を共有して無駄を無くす               |
-  | Proxy                     | 必要になってから作る                       |
-  | Command                   | 命令をクラスにする                         |
-  | Interpreter               | 文法規則をクラスで表現する                 |
-  | Single Threaded Execution | この橋を渡れるのはたった一人               |
+  | Single Threaded Execution | 排他制御のこと                             |
   | Immutable                 | 排他制御不要なオブジェクト                 |
   | Guarded Suspension        | 用意が出来るまで待つ                       |
   | Balking                   | 不要であればすぐにリターンする             |
@@ -41,10 +53,6 @@
   | Two-Phase Terminatin      | 外から Thread.kill せず、止まるように指示  |
   | Thread-Specific Storage   | スレッド内グローバル変数                   |
   | Null Object               | なにもしないオブジェクトにしてかわす       |
-  | Object pool               | 生成に時間がかかるものを使い回して高速化   |
-  | Pluggable Selector        | やっつけポルモルフィック(？)               |
-  | Before/After              | 後処理を必ず実行する                       |
-  | Single Threaded Execution | 排他制御のこと                             |
 
 #+ATTR_HTML: border="1" rules="all" frame="all"
   | 用途                                 | 種類                                |
