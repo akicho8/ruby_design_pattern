@@ -23,7 +23,7 @@ end
 end
 
 class Player
-  def create_mement
+  def create_memento
     @cards.clone
   end
 
@@ -34,13 +34,13 @@ end
 
 3.times do
   player = Player.new
-  mement = nil
+  memento = nil
   5.times do
     player.take
     if player.score < 21
-      mement = player.create_mement
+      memento = player.create_memento
     elsif player.score > 21
-      player.restore_memento(mement)
+      player.restore_memento(memento)
     end
   end
   player.score                  # => 18, 19, 15

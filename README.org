@@ -18,12 +18,12 @@
   | Abstract Factory        | A.new ではなく @factory.new_a 的なやつ                    |
   | Strategy                | テトリミノのツモ                                          |
   | Composite               | def x; @commands.collect(&:x); end                        |
-  | Decorator               | 飾り枠と中身の同一視                                      |
+  | Decorator               | to_html をつけたいけど元のクラスは汚したくないとき用      |
   | Visitor                 | Pathname.glob("**/*.rb"){...}                             |
   | Chain of Responsibility | resolve? なら受ける。(順にリンクしてないといけないか疑問) |
   | Facade                  | 単にメソッド化？                                          |
   | Mediator                | A と B で困ったら Mediator クラスが必要                   |
-  | Mement                  | 前の状態に戻りたいとき用                                  |
+  | Memento                  | 前の状態に戻りたいとき用                                  |
   | State                   | 一段階層を深くしてフラットにインスタンスを切り替える      |
   | Flyweight               | メモ化のこと                                              |
   | Proxy                   | 必要になってから作る                                      |
@@ -699,7 +699,7 @@
    : alice.support("1+2は？") # => "3"
    : alice.support("2*3は？") # => "6"
    : alice.support("2/1は？") # => "知らん"
-   :
+
 ** Proxy
 
    decoratorに似ているけど decoratorほどデコレートしないし便利メソッドを追加しない。
@@ -947,7 +947,7 @@
    :
    : ary.iterator{|v|p v}
 
-** Mement
+** Memento
 
    簡易ブラックジャックを行うプレイヤー
 
@@ -977,10 +977,10 @@
    :   player.score                  # => 33, 37, 52
    : end
 
-   そこでMementパターン
+   そこでMementoパターン
 
    : class Player
-   :   def create_mement
+   :   def create_memento
    :     @cards.clone
    :   end
    :
@@ -993,13 +993,13 @@
 
    : 3.times do
    :   player = Player.new
-   :   mement = nil
+   :   memento = nil
    :   5.times do
    :     player.take
    :     if player.score < 21
-   :       mement = player.create_mement
+   :       memento = player.create_memento
    :     elsif player.score > 21
-   :       player.restore_memento(mement)
+   :       player.restore_memento(memento)
    :     end
    :   end
    :   player.score                  # => 18, 19, 15
@@ -1272,7 +1272,7 @@
    :
    : UserDecorator.new(User.new).to_xxx # => "(alice)"
 
-   というか最初から継承してみる
+   というか最初から以下の継承すればいいような気がするけどこれだと既存のインスタンスをラップすることができない。
 
    : class UserDecorator < User
    :   def to_xxx
@@ -1282,7 +1282,7 @@
    :
    : UserDecorator.new.to_xxx # => "(alice)"
 
-   継承なら DelegateClass でもできるようだけど利点がよくわからない。Userが重複しているのが気持ち悪い。
+   継承なら DelegateClass でもできるようだけどこれまた利点がわからない。Userが重複していて気持ち悪いのが気になる。
 
    : require "delegate"
    :
