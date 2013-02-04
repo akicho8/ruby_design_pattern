@@ -19,21 +19,21 @@
   | Strategy                | テトリミノのツモ                                          |
   | Composite               | def x; @commands.collect(&:x); end                        |
   | Decorator               | to_html をつけたいけど元のクラスは汚したくないとき用      |
-  | Visitor                 | Pathname.glob("**/*.rb"){...}                             |
+  | Visitor                 | Pathname.glob("*.rb"){...}                                |
   | Chain of Responsibility | resolve? なら受ける。(順にリンクしてないといけないか疑問) |
   | Facade                  | 単にメソッド化？                                          |
   | Mediator                | A と B で困ったら Mediator クラスが必要                   |
-  | Memento                  | 前の状態に戻りたいとき用                                  |
+  | Memento                 | 前の状態に戻りたいとき用                                  |
   | State                   | 一段階層を深くしてフラットにインスタンスを切り替える      |
   | Flyweight               | メモ化のこと                                              |
   | Proxy                   | 必要になってから作る                                      |
   | Command                 | 命令をクラスにする                                        |
   | Interpreter             | 文法規則をクラスで表現する                                |
   | Null Object             | なにもしないオブジェクトにしてかわす                      |
-  | Object pool             | 生成に時間がかかるものを使い回して高速化                  |
+  | Object Pool             | 生成に時間がかかるものを使い回して高速化                  |
   | Pluggable Selector      | やっつけポルモルフィック(？)                              |
   | Before/After            | 後処理を必ず実行する                                      |
-  | Factory Method          | ？                                                        |
+  | Factory Method          | new を別オブジェクトが行うだけ(？)                        |
   | Bridge                  | ？                                                        |
 
   スレッド用
@@ -42,7 +42,7 @@
   | 名前                      | 備考                                  |
   |---------------------------+---------------------------------------|
   | Single Threaded Execution | 排他制御 → する                      |
-  | Immutable                 | 排他制御 → しない                    |
+  | Immutable                 | 排他制御 → しないでいい              |
   | Guarded Suspension        | 処理できるまで → 待つ (別に増えない) |
   | Worker Thread             | 処理できるまで → 待つ (増えると速い) |
   | Balking                   | 処理できるまで → 待たない            |
@@ -134,7 +134,7 @@
    :
    : C.new(:command_x).execute       # => :a
 
-** Object pool
+** Object Pool
 
    : class X
    :   attr_accessor :active
@@ -573,92 +573,23 @@
 
 ** Factory Method
 
-   こういうのはあっとゆうまに search メソッドが肥大化する。
-   で、Userのクラスメソッドとしてメソッドを分離するという *間違ったリファクタリング* を行ってしまいがち。
-
-   : class User
-   :   def self.search(query)
-   :     ["name like ?", "%#{query}%"]
+   : class X
+   : end
+   :
+   : class F
+   :   def create
+   :     X.new
    :   end
    : end
    :
-   : User.search("alice")                     # => ["name like ?", "%alice%"]
-
-   そうなりそうなら次のように改善
-
-   : class User
-   :   def self.search(*args)
-   :     UserSearch.new(self, *args).run
+   : class C
+   :   attr_accessor :v
+   :   def initialize(f)
+   :     @v = f.create
    :   end
    : end
    :
-   : class UserSearch
-   :   def initialize(model, query)
-   :     @model = model
-   :     @query = query
-   :   end
-   :   def run
-   :     ["name like ?", "%#{@query}%"]
-   :   end
-   : end
-   :
-   : User.search("alice")   # => ["name like ?", "%alice%"]
-
-   UserSearch の中でいくらメソッドを増やしても元のUserには影響がない。
-
-   次は例が悪いけど @color から変換するメソッドを Player 自体に入れてしまって Player がクラスがカオスになってしまうケース。
-
-   : class Player
-   :   attr_accessor :color
-   :   def initialize
-   :     @color = :blue
-   :   end
-   : end
-
-   ここでプレイヤーの色を #00F で返したかったので rgb メソッド定義した。これがダメ。
-
-   : class Player
-   :   def rgb
-   :     if @color == :blue
-   :       "#00F"
-   :     end
-   :   end
-   : end
-
-   改善
-
-   : class ColorInfo
-   :   attr_accessor :color
-   :   def initialize(color)
-   :     @color = color
-   :   end
-   :   def rgb
-   :     "#00F"
-   :   end
-   : end
-   :
-   : class Player
-   :   def color_info
-   :     ColorInfo.new(@color)
-   :   end
-   : end
-   :
-   : Player.new.color_info.rgb            # => "#00F"
-
-   こうすればいくらでも窮屈な状態から脱出できる。
-   もし、青が欲しければ ColorInfo に足せばいい。
-
-   : class ColorInfo
-   :   def human_name
-   :     "青"
-   :   end
-   : end
-   :
-   : Player.new.color_info.human_name     # => "青"
-
-   もっと言うなら最初から @color は ColorInfo のインスタンスにしときゃいい。
-
-   これは Factory Method でなく *委譲を使ったAdapter* のような気がしてきた。。。わからん。
+   : C.new(F.new).v                  # => #<X:0x007fb213905a98>
 
 ** Chain of Responsibility
 
@@ -1492,6 +1423,93 @@
    : [C2.new.f1, C2.new.f2]      # => ["x", "xx"]
    : [C3.new.f1, C3.new.f2]      # => ["x", "xx"]
    : [C4.new.f1, C4.new.f2]      # => ["x", "xx"]
+
+*** Factory Method だと思っていたら Adapter だったもの
+
+    こういうのはあっとゆうまに search メソッドが肥大化する。
+    で、Userのクラスメソッドとしてメソッドを分離するという *間違ったリファクタリング* を行ってしまいがち。
+
+    : class User
+    :   def self.search(query)
+    :     ["name like ?", "%#{query}%"]
+    :   end
+    : end
+    :
+    : User.search("alice")                     # => ["name like ?", "%alice%"]
+
+    そうなりそうなら次のように改善
+
+    : class User
+    :   def self.search(*args)
+    :     UserSearch.new(self, *args).run
+    :   end
+    : end
+    :
+    : class UserSearch
+    :   def initialize(model, query)
+    :     @model = model
+    :     @query = query
+    :   end
+    :   def run
+    :     ["name like ?", "%#{@query}%"]
+    :   end
+    : end
+    :
+    : User.search("alice")   # => ["name like ?", "%alice%"]
+
+    UserSearch の中でいくらメソッドを増やしても元のUserには影響がない。
+
+    次は例が悪いけど @color から変換するメソッドを Player 自体に入れてしまって Player がクラスがカオスになってしまうケース。
+
+    : class Player
+    :   attr_accessor :color
+    :   def initialize
+    :     @color = :blue
+    :   end
+    : end
+
+    ここでプレイヤーの色を #00F で返したかったので rgb メソッド定義した。これがダメ。
+
+    : class Player
+    :   def rgb
+    :     if @color == :blue
+    :       "#00F"
+    :     end
+    :   end
+    : end
+
+    改善
+
+    : class ColorInfo
+    :   attr_accessor :color
+    :   def initialize(color)
+    :     @color = color
+    :   end
+    :   def rgb
+    :     "#00F"
+    :   end
+    : end
+    :
+    : class Player
+    :   def color_info
+    :     ColorInfo.new(@color)
+    :   end
+    : end
+    :
+    : Player.new.color_info.rgb            # => "#00F"
+
+    こうすればいくらでも窮屈な状態から脱出できる。
+    もし、青が欲しければ ColorInfo に足せばいい。
+
+    : class ColorInfo
+    :   def human_name
+    :     "青"
+    :   end
+    : end
+    :
+    : Player.new.color_info.human_name     # => "青"
+
+    もっと言うなら最初から @color は ColorInfo のインスタンスにしときゃいい。
 
 ** Interpreter
 
