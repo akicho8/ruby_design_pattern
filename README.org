@@ -128,6 +128,8 @@
 
 *** Object Pool
 
+    メモ化というより容量と速度のトレードオフみたいなところがポイント。
+
     : class X
     :   attr_accessor :active
     : end
@@ -617,6 +619,9 @@
     :   player.score                  # => 18, 19, 15
     : end
 
+    この例の場合なら単純に clone してそれを戻してもいい。
+    少し用途が違うような気もするけど Marshal.load(Marshal.dump(player)) や marshal_dump marshal_load も考えとく。
+
 *** Visitor
 
     : Pathname.glob("**/*.rb") do |filename|
@@ -630,6 +635,8 @@
     : end
 
 *** Flyweight
+
+    メモ化すること。インスタンスプールとも言う。
 
     : module Wave
     :   def self.load(file)
@@ -1262,7 +1269,9 @@
     : # >> mov  dx, ax
     : # >> mov  ax, 2
     : # >> add  ax, dx
+
 ** スレッド用
+
 *** Single Threaded Execution
 
     排他制御のこと
