@@ -30,7 +30,7 @@
    | Interpreter             | 文法規則をクラスで表現する                                |
    | Null Object             | なにもしないオブジェクトにしてかわす                      |
    | Object Pool             | 生成に時間がかかるものを使い回して高速化                  |
-   | Pluggable Selector      | やっつけポルモルフィック(？)                              |
+   | Pluggable Selector      | 横着ポルモルフィック(？)                              |
    | Before/After            | 後処理を必ず実行する                                      |
    | Factory Method          | new を別オブジェクトが行うだけ(？)                        |
    | Bridge                  | 要はDRYにしとけば拡張が楽ちんってことっぽい               |
@@ -89,7 +89,7 @@
     :
     : nil until obj.queue.empty?
 
-    C.process の中の処理が変わっただけでインタフェースはそのまま、というところが重要
+    C#process の中の処理が変わっただけでインタフェースはそのまま、というところが重要
 
 *** Before/After
 
@@ -107,8 +107,7 @@
 
 *** Pluggable Selector
 
-    やっつけポルモルフィック(？)
-    まだよくわかってない
+    横着ポルモルフィック(？) よくわかってない。一つのメソッドが巨大化しそうなときとかに、別のクラスを作るのが面倒という理由で似たような書き方をしてしまう。どうなんだろう。
 
     : class C
     :   def initialize(command)
@@ -129,6 +128,7 @@
 *** Object Pool
 
     メモ化というより容量と速度のトレードオフみたいなところがポイント。
+    たくさんプールすると速いけどメモリを多用してしまうみたいな。
 
     : class X
     :   attr_accessor :active
@@ -184,6 +184,8 @@
 
     : logger = NullObject.new
     : logger.info("x")                # => nil
+
+    富豪的な感が好い
 
 *** Mediator
 
@@ -1552,7 +1554,7 @@
     : # >> "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
     : # >> "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
 
-    @sync.synchronize ブロックを使わなかった場合は以下の通り
+    @sync.synchronize ブロックを使わなかった場合
 
     : # >> AAAAAAA
     : # >> BBBBBBBBBBCCCCCCCCCCCDDDDDDDDDDDEEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGG
