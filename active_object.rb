@@ -4,7 +4,7 @@
 require "thread"
 
 class C
-  def process
+  def process # !> previous definition of process was here
     1 + 2
   end
 end
@@ -24,7 +24,7 @@ class C
     end
   end
 
-  def process
+  def process # !> method redefined; discarding old process
     @queue << proc{p 1 + 2}
   end
 end
@@ -32,5 +32,4 @@ end
 obj = C.new
 obj.process
 nil until obj.queue.empty?
-
 # >> 3

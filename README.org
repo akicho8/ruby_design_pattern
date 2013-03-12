@@ -14,7 +14,7 @@
    | Singleton               | インスタンスをグローバル変数にしたいとき用                |
    | Prototype               | new ではなく clone で                                     |
    | Builder                 | xml.body{xml.p("x")}                                      |
-   | Abstract Factory        | A.new ではなく @factory.new_a 的なやつ                    |
+   | Abstract Factory        | クラスをごっそり動的に替える                              |
    | Strategy                | テトリミノのツモ                                          |
    | Composite               | def x; @commands.collect(&:x); end                        |
    | Decorator               | to_html をつけたいけど元のクラスは汚したくないとき用      |
@@ -30,7 +30,7 @@
    | Interpreter             | 文法規則をクラスで表現する                                |
    | Null Object             | なにもしないオブジェクトにしてかわす                      |
    | Object Pool             | 生成に時間がかかるものを使い回して高速化                  |
-   | Pluggable Selector      | 横着ポルモルフィック(？)                              |
+   | Pluggable Selector      | 横着ポルモルフィック(？)                                  |
    | Before/After            | 後処理を必ず実行する                                      |
    | Factory Method          | new を別オブジェクトが行うだけ(？)                        |
    | Bridge                  | 要はDRYにしとけば拡張が楽ちんってことっぽい               |
@@ -242,6 +242,8 @@
 
 *** Abstract Factory
 
+    都合が悪くなってきたから A と B をハードコーディングしているのをやめようってこと
+
     : class C
     :   def run
     :     A.new + B.new
@@ -255,6 +257,58 @@
     :     @factory.new_x + @factory.new_y
     :   end
     : end
+
+    将棋のDSLのところから抜粋した例
+
+    Builder#build では10個ぐらいのクラスを使ってあれこれする。
+    最初は A.new("x") と書けばいいけど、別の挙動になって欲しいときは。
+    「Aクラス」と、ハードコーディングされていることが問題になってくる。
+    そこで FactorySet1 などで「Aクラスの」部分を動的にする。
+    動的にするのが目的なので方法はなんでもいいはず。
+    ruby なら A 自体を引数で渡せばいいし。
+    Java だとそういうことはできないから new_a のなかで A.new を呼ぶことになってるはず。
+
+    : class Builder
+    :   def initialize(factory)
+    :     @factory = factory
+    :   end
+    :   def build
+    :     @factory.new_a("x").build
+    :   end
+    : end
+    :
+    : class A
+    :   def initialize(value)
+    :     @value = value
+    :   end
+    :   def build
+    :     "(#{@value})"
+    :   end
+    : end
+    :
+    : class FactorySet1
+    :   def new_a(*args)
+    :     A.new(*args)
+    :   end
+    : end
+    :
+    : class B
+    :   def initialize(value)
+    :     @value = value
+    :   end
+    :   def build
+    :     "<#{@value}>"
+    :   end
+    : end
+    :
+    : class FactorySet2
+    :   def new_a(*args)
+    :     B.new(*args)
+    :   end
+    : end
+    :
+    : Builder.new(FactorySet1.new).build # => "(x)"
+    : Builder.new(FactorySet2.new).build # => "<x>"
 
 *** Factory Method
 
