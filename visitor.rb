@@ -9,6 +9,6 @@ end
 # 擬似コード
 # NiconicoCrawler.run do |video|
 #   if video.mylist >= 10000
-#     open(video.title, "w"){|f|f << video.read}
+#     video.download
 #   end
 # end

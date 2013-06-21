@@ -373,7 +373,7 @@
 *** Proxy
 
     decoratorに似ているけど decoratorほどデコレートしないし便利メソッドを追加しない。
-    元のインスタンスを *呼ぶ* *呼ばない* *まねる* *あとで呼ぶ* ぐらいしかない。
+    元のインスタンスを *呼ぶ* or *呼ばない* or *まねる* or *あとで呼ぶ* ぐらいしかない。
 
     : class User
     :   attr_accessor :name, :point
@@ -686,7 +686,7 @@
 
     : NiconicoCrawler.run do |video|
     :   if video.mylist >= 10000 && video.title.match(/初音ミク/)
-    :     open("#{video.title}.mp4", "w"){|f|f << video.read}
+    :     video.download
     :   end
     : end
 
