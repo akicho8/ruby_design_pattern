@@ -63,7 +63,7 @@
     :     1 + 2
     :   end
     : end
-    :
+    : 
     : obj = C.new
     : obj.process
 
@@ -71,22 +71,22 @@
 
     : class C
     :   attr_accessor :queue
-    :
+    : 
     :   def initialize
     :     @queue = Queue.new
     :     Thread.start do
     :       loop { @queue.pop.call }  # バックグランド処理を永遠と回す
     :     end
     :   end
-    :
+    : 
     :   def process
     :     @queue << proc{p 1 + 2}
     :   end
     : end
-    :
+    : 
     : obj = C.new
     : obj.process
-    :
+    : 
     : nil until obj.queue.empty?
 
     C#process の中の処理が変わっただけでインタフェースはそのまま、というところが重要
@@ -113,16 +113,16 @@
     :   def initialize(command)
     :     @command = command
     :   end
-    :
+    : 
     :   def execute
     :     send(@command)
     :   end
-    :
+    : 
     :   def command_x
     :     :a
     :   end
     : end
-    :
+    : 
     : C.new(:command_x).execute       # => :a
 
 *** Object Pool
@@ -133,15 +133,15 @@
     : class X
     :   attr_accessor :active
     : end
-    :
+    : 
     : class C
     :   attr_accessor :pool
-    :
+    : 
     :   def initialize
     :     @size = 2
     :     @pool = []
     :   end
-    :
+    : 
     :   def new_x
     :     x = @pool.find{|e|!e.active}  # pool から稼働してないものを探す
     :     unless x                      # なければ
@@ -156,7 +156,7 @@
     :     x
     :   end
     : end
-    :
+    : 
     : i = C.new
     : a = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
     : b = i.new_x                  # => #<X:0x007fd1cb08d140 @active=true>
@@ -171,7 +171,7 @@
     :     str
     :   end
     : end
-    :
+    : 
     : logger = Logger.new
     : logger.info("x")                # => "x"
 
@@ -199,7 +199,7 @@
     :     @b.visible = @state
     :   end
     : end
-    :
+    : 
     : class B
     :   attr_accessor :visible
     : end
@@ -216,7 +216,7 @@
     :     @b.visible = @a.state
     :   end
     : end
-    :
+    : 
     : class A
     :   attr_accessor :state
     :   def initialize(mediator)
@@ -227,7 +227,7 @@
     :     @mediator.changed
     :   end
     : end
-    :
+    : 
     : class B
     :   attr_accessor :visible
     :   def initialize(mediator)
@@ -276,7 +276,7 @@
     :     @factory.new_a("x").build
     :   end
     : end
-    :
+    : 
     : class A
     :   def initialize(value)
     :     @value = value
@@ -285,13 +285,13 @@
     :     "(#{@value})"
     :   end
     : end
-    :
+    : 
     : class FactorySet1
     :   def new_a(*args)
     :     A.new(*args)
     :   end
     : end
-    :
+    : 
     : class B
     :   def initialize(value)
     :     @value = value
@@ -300,13 +300,13 @@
     :     "<#{@value}>"
     :   end
     : end
-    :
+    : 
     : class FactorySet2
     :   def new_a(*args)
     :     B.new(*args)
     :   end
     : end
-    :
+    : 
     : Builder.new(FactorySet1.new).build # => "(x)"
     : Builder.new(FactorySet2.new).build # => "<x>"
 
@@ -314,20 +314,20 @@
 
     : class X
     : end
-    :
+    : 
     : class F
     :   def create
     :     X.new
     :   end
     : end
-    :
+    : 
     : class C
     :   attr_accessor :v
     :   def initialize(f)
     :     @v = f.create
     :   end
     : end
-    :
+    : 
     : C.new(F.new).v                  # => #<X:0x007fb213905a98>
 
 *** Chain of Responsibility
@@ -346,7 +346,7 @@
     :     end
     :   end
     : end
-    :
+    : 
     : class Alice < Chainable
     :   def resolve?(q)
     :     q == "1+2は？"
@@ -355,7 +355,7 @@
     :     "3"
     :   end
     : end
-    :
+    : 
     : class Bob < Chainable
     :   def resolve?(q)
     :     q == "2*3は？"
@@ -364,7 +364,7 @@
     :     "6"
     :   end
     : end
-    :
+    : 
     : alice = Alice.new(Bob.new)
     : alice.support("1+2は？") # => "3"
     : alice.support("2*3は？") # => "6"
@@ -390,15 +390,15 @@
 
     : class UserProxy
     :   BlackList = ["alice"]
-    :
+    : 
     :   def initialize(user)
     :     @user = user
     :   end
-    :
+    : 
     :   def point
     :     @user.point
     :   end
-    :
+    : 
     :   def method_missing(*args)
     :     if BlackList.include?(@user.name)
     :       return
@@ -406,11 +406,11 @@
     :     @user.send(*args)
     :   end
     : end
-    :
+    : 
     : user = User.new("alice")
     : user.deposit(1)
     : user.point                      # => 1
-    :
+    : 
     : user = UserProxy.new(User.new("alice"))
     : user.deposit(1)
     : user.point                      # => 0
@@ -436,7 +436,7 @@
     :     @printer.print(str)
     :   end
     : end
-    :
+    : 
     : class RealPrinter
     :   def initialize
     :     puts "とてつもなく時間がかかる初期化処理..."
@@ -448,7 +448,7 @@
     :     str
     :   end
     : end
-    :
+    : 
     : printer = VirtualPrinter.new
     : printer.name        # => "BJ10V"
     : printer.print("ok") # => "ok"
@@ -461,19 +461,19 @@
     :     raise NotImplementedError, "#{__method__} is not implemented"
     :   end
     : end
-    :
+    : 
     : class FooCommand < Command
     :   def execute
     :     "a"
     :   end
     : end
-    :
+    : 
     : class BarCommand < Command
     :   def execute
     :     "b"
     :   end
     : end
-    :
+    : 
     : class CompositeCommand < Command
     :   def initialize
     :     @commands = []
@@ -485,11 +485,11 @@
     :     @commands.collect(&:execute)
     :   end
     : end
-    :
+    : 
     : command = CompositeCommand.new
     : command << FooCommand.new
     : command << BarCommand.new
-    :
+    : 
     : command.execute                 # => ["a", "b"]
 
     コードブロックを使ってクラス爆発を防ぐ
@@ -502,10 +502,10 @@
     :     @command.call
     :   end
     : end
-    :
+    : 
     : command << BazCommand.new{"c"}
     : command << BazCommand.new{"d"}
-    :
+    : 
     : command.execute                 # => ["a", "b", "c", "d"]
 
 *** Prototype
@@ -517,7 +517,7 @@
     : class Fish < Plankton; end                     # 魚 < プランクトン
     : class Monkey < Fish; def speek?; true end; end # 猿 < 魚
     : class Human < Monkey; end                      # 人間 < 猿
-    :
+    : 
     : Human.new.speek?                # => true
 
     プロトタイプベース。JavaScript はこのタイプ。
@@ -533,7 +533,7 @@
 
     : class Piece < Struct.new(:name)
     : end
-    :
+    : 
     : class Box
     :   attr_accessor :showcase
     :   def initialize
@@ -545,7 +545,7 @@
     :     @showcase[name].clone
     :   end
     : end
-    :
+    : 
     : box = Box.new
     : box.create(:rook).name     # => "飛"
 
@@ -556,13 +556,13 @@
     :     "(#{body})"
     :   end
     : end
-    :
+    : 
     : class App < Base
     :   def body
     :     "ok"
     :   end
     : end
-    :
+    : 
     : App.new.build                   # => "(ok)"
 
 *** Iterator
@@ -590,7 +590,7 @@
     :     @object[@index].tap{@index += 1}
     :   end
     : end
-    :
+    : 
     : class Array
     :   def iterator
     :     Iterator.new(self)
@@ -614,7 +614,7 @@
     :     end
     :   end
     : end
-    :
+    : 
     : ary.iterator{|v|p v}
 
 *** Memento
@@ -623,15 +623,15 @@
 
     : class Player
     :   attr_accessor :cards
-    :
+    : 
     :   def initialize
     :     @cards = []
     :   end
-    :
+    : 
     :   def take
     :     @cards << rand(1..13)
     :   end
-    :
+    : 
     :   def score
     :     @cards.reduce(&:+)
     :   end
@@ -653,7 +653,7 @@
     :   def create_memento
     :     @cards.clone
     :   end
-    :
+    : 
     :   def restore_memento(object)
     :     @cards = object.clone
     :   end
@@ -700,14 +700,14 @@
     :     file
     :   end
     : end
-    :
+    : 
     : class Sound
     :   def self.get(name)
     :     @cache ||= {}
     :     @cache[name] ||= Wave.load("#{name}.wav")
     :   end
     : end
-    :
+    : 
     : Sound.get("blue")               # => "blue.wav"
     : Sound.get("cyan")               # => "cyan.wav"
     : Sound.get("blue")               # => "blue.wav"
@@ -718,7 +718,7 @@
 
     : class Node
     :   attr_reader :name, :nodes
-    :
+    : 
     :   def initialize(name)
     :     @name = name
     :     @nodes = []
@@ -745,19 +745,19 @@
 
     : class Builder
     :   attr_reader :root
-    :
+    : 
     :   def self.build(*args, &block)
     :     new(*args).tap(&block).root
     :   end
-    :
+    : 
     :   def initialize(root = nil)
     :     @root = root || Node.new("root")
     :   end
-    :
+    : 
     :   def <<(name)
     :     @root.nodes << Node.new(name)
     :   end
-    :
+    : 
     :   def directory(name)
     :     node = Node.new(name)
     :     yield self.class.new(node)
@@ -818,13 +818,13 @@
     :     "営業中"
     :   end
     : end
-    :
+    : 
     : class CloseState
     :   def board
     :     "準備中"
     :   end
     : end
-    :
+    : 
     : class Shop
     :   def change_state(hour)
     :     if (11..17).include?(hour)
@@ -837,7 +837,7 @@
     :     @state.board
     :   end
     : end
-    :
+    : 
     : shop = Shop.new
     : shop.change_state(10)
     : shop.board                      # => "準備中"
@@ -874,19 +874,19 @@
     :     "x"
     :   end
     : end
-    :
+    : 
     : class B
     :   def run
     :     "y"
     :   end
     : end
-    :
+    : 
     : class AA < A
     :   def run
     :     "(x)"
     :   end
     : end
-    :
+    : 
     : class BB < B
     :   def run
     :     "(y)"
@@ -903,7 +903,7 @@
     :     @obj
     :   end
     : end
-    :
+    : 
     : class AA < A
     :   def run
     :     "(#{@obj})"
@@ -932,19 +932,19 @@
     :     "(#{@object.name})"
     :   end
     : end
-    :
+    : 
     : UserDecorator.new(User.new).to_xxx # => "(alice)"
 
     もっとシンプルにするなら
 
     : require "delegate"
-    :
+    : 
     : class UserDecorator < SimpleDelegator
     :   def to_xxx
     :     "(#{name})"
     :   end
     : end
-    :
+    : 
     : UserDecorator.new(User.new).to_xxx # => "(alice)"
 
     というか最初から以下の継承すればいいような気がするけどこれだと既存のインスタンスをラップすることができない。
@@ -954,13 +954,13 @@
     :     "(#{name})"
     :   end
     : end
-    :
+    : 
     : UserDecorator.new.to_xxx # => "(alice)"
 
     継承なら DelegateClass でもできるようだけどこれまた利点がわからない。Userが重複していて気持ち悪いのが気になる。
 
     : require "delegate"
-    :
+    : 
     : class UserDecorator < DelegateClass(User)
     :   def initialize
     :     super(User.new)
@@ -969,7 +969,7 @@
     :     "(#{name})"
     :   end
     : end
-    :
+    : 
     : UserDecorator.new.to_xxx # => "(alice)"
 
 *** Observer
@@ -985,7 +985,7 @@
     :     @paint = Paint.new
     :     @network = Network.new
     :   end
-    :
+    : 
     :   def notify
     :     if @paint
     :       @paint.font(0, 0, status)
@@ -1009,7 +1009,7 @@
     :     end
     :   end
     : end
-    :
+    : 
     : player = Player.new
     : player.observers << Paint.new
     : player.observers << Network.new
@@ -1024,7 +1024,7 @@
      :     notify_observers(self)
      :   end
      : end
-     :
+     : 
      : player = Player.new
      : player.add_observer(Paint.new)
      : player.add_observer(Network.new)
@@ -1046,7 +1046,7 @@
      :     player                      # => #<Player:0x007ff9098472e0 ...>
      :   end
      : end
-     :
+     : 
      : player = Player.new
      : player.notify
 
@@ -1060,7 +1060,7 @@
     :     @instance ||= new
     :   end
     : end
-    :
+    : 
     : C.instance # => #<C:0x007f98e404a518>
     : C.instance # => #<C:0x007f98e404a518>
 
@@ -1082,13 +1082,13 @@
     :     rand(7)
     :   end
     : end
-    :
+    : 
     : class RedOnly
     :   def next
     :     6
     :   end
     : end
-    :
+    : 
     : # テトリミノのツモはダイス次第
     : class Player
     :   def initialize(dice)
@@ -1098,7 +1098,7 @@
     :     7.times.collect{@dice.next}
     :   end
     : end
-    :
+    : 
     : Player.new(Random.new).run  # => [1, 5, 4, 1, 0, 0, 6]
     : Player.new(RedOnly.new).run # => [6, 6, 6, 6, 6, 6, 6]
 
@@ -1112,7 +1112,7 @@
     :     7.times.collect{@dice.call}
     :   end
     : end
-    :
+    : 
     : Player.new{rand(7)}.run  # => [2, 5, 5, 6, 6, 2, 0]
     : Player.new{6}.run        # => [6, 6, 6, 6, 6, 6, 6]
 
@@ -1140,11 +1140,11 @@
     :   def initialize
     :     @c = C.new
     :   end
-    :
+    : 
     :   def f1
     :     @c.f1
     :   end
-    :
+    : 
     :   def f2
     :     f1 * 2
     :   end
@@ -1153,12 +1153,12 @@
     f1 メソッドを書くのが面倒なとき
 
     : require "delegate"
-    :
+    : 
     : class C4 < SimpleDelegator
     :   def initialize
     :     super(C.new)
     :   end
-    :
+    : 
     :   def f2
     :     f1 * 2
     :   end
@@ -1178,7 +1178,7 @@
      :     ["name like ?", "%#{query}%"]
      :   end
      : end
-     :
+     : 
      : User.search("alice")                     # => ["name like ?", "%alice%"]
 
      そうなりそうなら次のように改善
@@ -1188,7 +1188,7 @@
      :     UserSearch.new(self, *args).run
      :   end
      : end
-     :
+     : 
      : class UserSearch
      :   def initialize(model, query)
      :     @model = model
@@ -1198,7 +1198,7 @@
      :     ["name like ?", "%#{@query}%"]
      :   end
      : end
-     :
+     : 
      : User.search("alice")   # => ["name like ?", "%alice%"]
 
      UserSearch の中でいくらメソッドを増やしても元のUserには影響がない。
@@ -1233,13 +1233,13 @@
      :     "#00F"
      :   end
      : end
-     :
+     : 
      : class Player
      :   def color_info
      :     ColorInfo.new(@color)
      :   end
      : end
-     :
+     : 
      : Player.new.color_info.rgb            # => "#00F"
 
      こうすればいくらでも窮屈な状態から脱出できる。
@@ -1250,7 +1250,7 @@
      :     "青"
      :   end
      : end
-     :
+     : 
      : Player.new.color_info.human_name     # => "青"
 
      もっと言うなら最初から @color は ColorInfo のインスタンスにしときゃいい。
@@ -1261,7 +1261,7 @@
 
     : class Expression
     : end
-    :
+    : 
     : class Value < Expression
     :   def initialize(value)
     :     @value = value
@@ -1270,7 +1270,7 @@
     :     @value
     :   end
     : end
-    :
+    : 
     : class Add < Expression
     :   def initialize(left, right)
     :     @left, @right = left, right
@@ -1279,11 +1279,11 @@
     :     @left.evaluate + @right.evaluate
     :   end
     : end
-    :
+    : 
     : def A(l, r)
     :   Add.new(Value.new(l), Value.new(r))
     : end
-    :
+    : 
     : expr = A 1, 2
     : expr.evaluate # => 3
 
@@ -1291,7 +1291,7 @@
 
     : class Expression
     : end
-    :
+    : 
     : class Value < Expression
     :   attr_accessor :value
     :   def initialize(value)
@@ -1301,7 +1301,7 @@
     :     ["mov  ax, #{@value}"]
     :   end
     : end
-    :
+    : 
     : class Add < Expression
     :   def initialize(left, right)
     :     @left, @right = left, right
@@ -1314,11 +1314,11 @@
     :     code << "add  ax, dx"
     :   end
     : end
-    :
+    : 
     : def A(l, r)
     :   Add.new(Value.new(l), Value.new(r))
     : end
-    :
+    : 
     : expr = A 1, 2
     : puts expr.evaluate
     : # >> mov  ax, 1
@@ -1368,7 +1368,7 @@
     :     @v.freeze
     :   end
     : end
-    :
+    : 
     : a = C.new("x").freeze
     : a.v.replace("y") rescue $! # => #<RuntimeError: can't modify frozen String>
     : a.v += "y" rescue $!       # => #<NoMethodError: undefined method `v=' for #<C:0x007fbfc3903910 @v="x">>
@@ -1377,9 +1377,9 @@
 *** Guarded Suspention - 実行できるまで待つ
 
     : queue = Queue.new
-    :
+    : 
     : send_num = 10
-    :
+    : 
     : sender = Thread.start do
     :   Thread.current[:data] = []
     :   send_num.times do |i|
@@ -1388,7 +1388,7 @@
     :     Thread.current[:data] << i
     :   end
     : end
-    :
+    : 
     : receiver = Thread.start do
     :   Thread.current[:data] = []
     :   send_num.times do
@@ -1397,10 +1397,10 @@
     :     Thread.current[:data] << queue.pop
     :   end
     : end
-    :
+    : 
     : sender.join
     : receiver.join
-    :
+    : 
     : # 正常にデータが受け取れているか確認
     : sender[:data]   # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     : receiver[:data] # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -1409,7 +1409,7 @@
 
     : class Channel < SizedQueue
     :   attr_reader :threads
-    :
+    : 
     :   def initialize(size)
     :     super(size)
     :     @threads = size.times.collect do |i|
@@ -1461,12 +1461,12 @@
 
     : class C
     :   include Mutex_m
-    :
+    : 
     :   def initialize
     :     super
     :     @change = false
     :   end
-    :
+    : 
     :   def execute(str, t)
     :     synchronize do
     :       if @change
@@ -1474,15 +1474,15 @@
     :         return
     :       end
     :       @change = true
-    :
+    : 
     :       p str
     :       sleep(t) # sleepはsynchronizeの中で行わないとエラーになる
-    :
+    : 
     :       @change = false
     :     end
     :   end
     : end
-    :
+    : 
     : x = C.new
     : threads = []
     : threads << Thread.start{x.execute("a", 0.1)}
@@ -1499,10 +1499,10 @@
     : def request(x)
     :   Thread.start(x){|x|p x}
     : end
-    :
+    : 
     : request("a")
     : request("b")
-    :
+    : 
     : (Thread.list - [Thread.main]).each(&:join)
     : # >> "a"
     : # >> "b"
@@ -1512,7 +1512,7 @@
     : def request(x)
     :   Thread.start(x){|x|x}
     : end
-    :
+    : 
     : t = []
     : t << request("A")
     : t << request("B")
@@ -1557,7 +1557,7 @@
     :     @sync = Sync.new
     :     @str = ""
     :   end
-    :
+    : 
     :   def write(_str)
     :     @sync.synchronize(:EX) do
     :       _str.chars.with_index do |c, i|
@@ -1566,7 +1566,7 @@
     :       end
     :     end
     :   end
-    :
+    : 
     :   def read
     :     @sync.synchronize(:SH) do
     :       @str.size.times.collect{|i|
