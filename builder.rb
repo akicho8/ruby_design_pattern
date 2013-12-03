@@ -9,7 +9,7 @@ class Node
   end
 end
 
-# わかりにくい
+# 汚い
 
 root = Node.new("root")
 root.nodes << Node.new("a")
@@ -27,37 +27,28 @@ root.nodes.last.nodes.last.nodes.collect{|e|e.name} # => ["g", "h"]
 
 # 改善
 
-class Builder
-  attr_reader :root
-
-  def self.build(*args, &block)
-    new(*args).tap(&block).root
-  end
-
-  def initialize(root = nil)
-    @root = root || Node.new("root")
-  end
-
-  def <<(name)
-    @root.nodes << Node.new(name)
-  end
-
-  def directory(name)
-    node = Node.new(name)
-    yield self.class.new(node)
-    @root.nodes << node
+class Node
+  def add(name, &block)
+    tap do
+      node = self.class.new(name)
+      @nodes << node
+      if block_given?
+        node.instance_eval(&block)
+      end
+    end
   end
 end
 
-root = Builder.build do |o|
-  o << "a"
-  o << "b"
-  o.directory("c") do |c|
-    c << "d"
-    c << "e"
-    c.directory("f") do |f|
-      f << "g"
-      f << "h"
+root = Node.new("root")
+root.instance_eval do
+  add "a"
+  add "b"
+  add "c" do
+    add "d"
+    add "e"
+    add "f" do
+      add "g"
+      add "h"
     end
   end
 end
