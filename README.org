@@ -5,7 +5,7 @@
 ** 一般
 
 #+ATTR_HTML: border="1" rules="all" frame="all"
-   | 名前                    | 備考                                                      |
+   | 名前                    | 概要                                                      |
    |-------------------------+-----------------------------------------------------------|
    | Adapter                 | メソッドが足りなくて階層的に増やすときに使う(重要)        |
    | Observer                | 通知元は通知先のことを知らないでよいことが前提            |
@@ -34,6 +34,7 @@
    | Before/After            | 後処理を必ず実行する                                      |
    | Factory Method          | new を別オブジェクトが行うだけ(？)                        |
    | Bridge                  | 要はDRYにしとけば拡張が楽ちんってことっぽい               |
+   | Typed Message           | GUIでよくある、SDL::Event::Quit みたいなあれ              |
 
 ** スレッド用
 
@@ -89,7 +90,7 @@
     : 
     : nil until obj.queue.empty?
 
-    C#process の中の処理が変わっただけでインタフェースはそのまま、というところが重要
+    C#process の中の処理が変わっただけで *インタフェースはそのまま*
 
 *** Before/After
 
@@ -107,7 +108,9 @@
 
 *** Pluggable Selector
 
-    横着ポルモルフィック(？) よくわかってない。一つのメソッドが巨大化しそうなときとかに、別のクラスを作るのが面倒という理由で似たような書き方をしてしまう。どうなんだろう。
+    よくわかってない。
+    一つのメソッドが巨大化しそうなときとかに、別のクラスを作るのが面倒という理由で似たような書き方をしてしまう。
+    どうなんだろう？
 
     : class C
     :   def initialize(command)
@@ -185,7 +188,7 @@
     : logger = NullObject.new
     : logger.info("x")                # => nil
 
-    富豪的な感が好い
+    富豪的な感がよい
 
 *** Mediator
 
@@ -457,9 +460,6 @@
 *** Command + Composite
 
     : class Command
-    :   def execute
-    :     raise NotImplementedError, "#{__method__} is not implemented"
-    :   end
     : end
     : 
     : class FooCommand < Command
@@ -617,6 +617,8 @@
     : 
     : ary.iterator{|v|p v}
 
+    each とほぼ同じになった
+
 *** Memento
 
     簡易ブラックジャックを行うプレイヤー
@@ -680,12 +682,10 @@
 
 *** Visitor
 
-    : Pathname.glob("**/*.rb") do |filename|
-    :   p filename
-    : end
+    : Pathname.glob("**/*.rb") {|f| }
 
-    : NiconicoCrawler.run do |video|
-    :   if video.mylist >= 10000 && video.title.match(/初音ミク/)
+    : Niconico.crawler do |video|
+    :   if video.mylist >= 10000
     :     video.download
     :   end
     : end
@@ -725,7 +725,7 @@
     :   end
     : end
 
-    汚い
+    見た目が汚い
 
     : root = Node.new("root")
     : root.nodes << Node.new("a")
@@ -741,7 +741,7 @@
     : root.nodes.last.nodes.collect{|e|e.name}            # => ["d", "e", "f"]
     : root.nodes.last.nodes.last.nodes.collect{|e|e.name} # => ["g", "h"]
 
-    改善
+    ↓改善
 
     : class Node
     :   def add(name, &block)
@@ -782,25 +782,16 @@
      これだと面倒なので
 
      : mail = Mail.new
-     : mail.from    = Mail::AddressContainer.new("alice <alice@example.net>")
-     : mail.to      = Mail::AddressContainer.new("bob <bob@example.net>")
-     : mail.subject = "題名"
-     : mail.body    = Mail::Body.new("本文")
+     : mail.to = Mail::AddressContainer.new("alice <alice@example.net>")
 
      改善
 
      : mail = Mail.new
-     : mail.from    = "alice <alice@example.net>"
-     : mail.to      = "bob <alice@example.net>"
-     : mail.subject = "題名"
-     : mail.body    = "本文"
+     : mail.to = "alice <alice@example.net>"
 
      内部でこっそりインスタンスを生成している
 
-     : mail.from.class    # => Mail::AddressContainer
      : mail.to.class      # => Mail::AddressContainer
-     : mail.subject.class # => String
-     : mail.body.class    # => Mail::Body
 
 *** State
 
@@ -839,19 +830,17 @@
 
     例えばこんなのは
 
-    : from = User.find_by_name("alice")
-    : to = User.find_by_name("bob")
-    : message = Message.new
-    : message.from = from
-    : message.to = to
-    : message.body = "こんちは"
+    : message = Message.new(:date => Time.now)
+    : message.from = User.find_by_name("alice")
+    : message.to   = User.find_by_name("bob")
+    : message.body = "..."
     : if message.valid?
     :   message.save!
     : end
 
     以下のように書きやすくまとめる。だけ？
 
-    : Message.deliver(:from => "alice", :to => "bob", :body => "こんちは")
+    : Message.deliver(:from => "alice", :to => "bob", :body => "...")
 
 *** Bridge
 
@@ -1027,7 +1016,7 @@
      : class Player
      :   include Observable
      :   def initialize
-     :     add_observer(self)
+     :     add_observer(self) # add_observer(self, :draw) のように通知メソッド変更可
      :   end
      :   def notify
      :     changed
@@ -1063,6 +1052,14 @@
     : end
     : C.instance # => #<C:0x007f98e509f558>
     : C.instance # => #<C:0x007f98e509f558>
+
+    そこまできばらなくても次のようなコードで充分なことも多い
+
+    : module M
+    :   extend self
+    :   def func
+    :   end
+    : end
 
 *** Strategy
 
@@ -1316,6 +1313,57 @@
     : # >> mov  dx, ax
     : # >> mov  ax, 2
     : # >> add  ax, dx
+
+*** Typed Message
+
+    : class MouseMotion
+    : end
+    : 
+    : class App
+    :   def receive(e)
+    :     case e
+    :     when MouseMotion
+    :     end
+    :   end
+    : end
+    : 
+    : app = App.new
+    : app.receive(MouseMotion.new)
+
+*** Cache Manager
+
+    : class Cache
+    :   attr_accessor :max, :pool
+    : 
+    :   def initialize
+    :     @max = 2
+    :     @pool = []
+    :   end
+    : 
+    :   def fetch(key)
+    :     v = nil
+    :     if index = @pool.find_index{|e|e[:key] == key}
+    :       v = @pool.slice!(index)[:val]
+    :     else
+    :       v = yield
+    :     end
+    :     @pool = ([:key => key, :val => v] + @pool).take(@max)
+    :     v
+    :   end
+    : end
+    : 
+    : cache = Cache.new
+    : cache.fetch(:a){1}              # => 1
+    : cache.pool                      # => [{:key=>:a, :val=>1}]
+    : cache.fetch(:b){1}              # => 1
+    : cache.pool                      # => [{:key=>:b, :val=>1}, {:key=>:a, :val=>1}]
+    : cache.fetch(:a){2}              # => 1
+    : cache.pool                      # => [{:key=>:a, :val=>1}, {:key=>:b, :val=>1}]
+    : cache.fetch(:c){1}              # => 1
+    : cache.pool                      # => [{:key=>:c, :val=>1}, {:key=>:a, :val=>1}]
+
+    a b で pool は b a の順になり、次の a で a b になり、次の c で c a b になる。
+    が、キャッシュサイズは 2 なので b が死んで c a
 
 ** スレッド用
 
@@ -1638,4 +1686,3 @@
 
     : Thread.start{Thread.current["a"] = 1}.join
     : Thread.start{Thread.current["a"]}.value    # => nil
-

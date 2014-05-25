@@ -4,9 +4,6 @@
 # Command は呼び出し元も関心がなければ、結果にも関心がない(？)
 
 class Command
-  def execute
-    raise NotImplementedError, "#{__method__} is not implemented"
-  end
 end
 
 class FooCommand < Command

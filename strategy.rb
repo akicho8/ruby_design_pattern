@@ -21,7 +21,7 @@ class Player
   end
 end
 
-Player.new(Random.new).run  # => [3, 1, 4, 1, 2, 3, 6]
+Player.new(Random.new).run  # => [0, 0, 1, 2, 0, 2, 4]
 Player.new(RedOnly.new).run # => [6, 6, 6, 6, 6, 6, 6]
 
 # RandomやRedOnlyを作るのが面倒→クラスの爆発
@@ -35,5 +35,5 @@ class Player2
   end
 end
 
-Player2.new{rand(7)}.run  # => [2, 5, 5, 6, 6, 2, 0]
+Player2.new{rand(7)}.run  # => [0, 3, 1, 1, 2, 4, 2]
 Player2.new{6}.run        # => [6, 6, 6, 6, 6, 6, 6]

@@ -50,7 +50,7 @@ player.observers << Network.new
 require "observer"
 class Player
   include Observable
-  def notify # !> previous definition of notify was here
+  def notify
     changed
     notify_observers(self)
   end
@@ -65,16 +65,18 @@ require "observer"
 class Player
   include Observable
   def initialize
-    add_observer(self)
+    add_observer(self, :update)
   end
   def notify
     changed
     notify_observers(self)
   end
   def update(player)
-    player                      # => #<Player:0x007ff9098472e0 ...>
+    player                      # => #<Player:0x007f82ea10f170 @observer_peers={#<Player:0x007f82ea10f170 ...>=>:update}, @observer_state=true>
   end
 end
 
 player = Player.new
 player.notify
+# >> [#<Player:0x007f82ea10f968 @observers=[], @observer_peers={#<Paint:0x007f82ea10f918>=>:update, #<Network:0x007f82ea10f8c8>=>:update}, @observer_state=true>]
+# >> [#<Player:0x007f82ea10f968 @observers=[], @observer_peers={#<Paint:0x007f82ea10f918>=>:update, #<Network:0x007f82ea10f8c8>=>:update}, @observer_state=true>]
