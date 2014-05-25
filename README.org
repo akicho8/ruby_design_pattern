@@ -35,6 +35,7 @@
    | Factory Method          | new を別オブジェクトが行うだけ(？)                        |
    | Bridge                  | 要はDRYにしとけば拡張が楽ちんってことっぽい               |
    | Typed Message           | GUIでよくある、SDL::Event::Quit みたいなあれ              |
+   | Cache Manager           | 使ったキャッシュは先頭に移動                              |
 
 ** スレッド用
 
