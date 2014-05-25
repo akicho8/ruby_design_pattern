@@ -14,7 +14,7 @@
    | Singleton               | インスタンスをグローバル変数にしたいとき用                |
    | Prototype               | new ではなく clone で                                     |
    | Builder                 | xml.body{xml.p("x")}                                      |
-   | Abstract Factory        | クラスをごっそり動的に替える                              |
+   | Abstract Factory        | クラスをハードコーディングしない                          |
    | Strategy                | テトリミノのツモ                                          |
    | Composite               | def x; @commands.collect(&:x); end                        |
    | Decorator               | to_html をつけたいけど元のクラスは汚したくないとき用      |
@@ -36,6 +36,7 @@
    | Bridge                  | 要はDRYにしとけば拡張が楽ちんってことっぽい               |
    | Typed Message           | GUIでよくある、SDL::Event::Quit みたいなあれ              |
    | Cache Manager           | 使ったキャッシュは先頭に移動                              |
+   | Component Bus           | Observer が Subject を握っている                          |
 
 ** スレッド用
 
@@ -957,7 +958,8 @@
 
     実行結果が不要なときに使う。
     結果が必要ならStrategyへ。
-    Observer側に player を渡して player.add_observer(self) は、くどいのでやらない。
+    Observer 側に player (Subject) を渡して player.add_observer(self) は、まわりくどいのでやらない。
+    Observer に player を握らせたら Component Bus パターンになるっぽい。
 
     密結合状態を
 
@@ -1030,6 +1032,34 @@
      : 
      : player = Player.new
      : player.notify
+
+*** Component Bus
+
+    Observer たちがデータ共有したいので、Subject を共有することにしたパターンらしい。
+    http://www002.upp.so-net.ne.jp/ys_oota/mdp/ComponentBus/ 参照。
+
+    : class Player
+    :   include Observable
+    :   attr_accessor :data
+    :   def notify
+    :     changed
+    :     notify_observers
+    :   end
+    : end
+    : 
+    : class Display
+    :   def initialize(player)
+    :     player.add_observer(self)
+    :     @player = player    # Subjectを握っている
+    :   end
+    :   def update
+    :   end
+    :   def data
+    :     @player.data
+    :   end
+    : end
+
+    汎用性のあった Observer が Subject 依存になるデメリットも考慮すること。
 
 *** Singleton
 
@@ -1317,6 +1347,10 @@
 
 *** Typed Message
 
+    GUIアプリでイベント起きるといろんなものが飛んできて美しくないswitch文ができてしまうあれ
+
+    http://www002.upp.so-net.ne.jp/ys_oota/mdp/TypedMessage/index.htm 参照
+
     : class MouseMotion
     : end
     : 
@@ -1332,6 +1366,8 @@
     : app.receive(MouseMotion.new)
 
 *** Cache Manager
+
+    http://www002.upp.so-net.ne.jp/ys_oota/mdp/CacheManager/index.htm 参照
 
     : class Cache
     :   attr_accessor :max, :pool
