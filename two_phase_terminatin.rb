@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Two-Phase Terminatin
 
 t = Thread.start do

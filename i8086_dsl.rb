@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # アセンブラのコードを吐くDSL
 
 class Expression

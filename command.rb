@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Strategy は結果に関心がある
 # Observer は呼び出し元に関心がある
 # Command は呼び出し元も関心がなければ、結果にも関心がない(？)
@@ -45,7 +44,7 @@ class BazCommand < Command
   end
 end
 
-command << BazCommand.new{"c"}
-command << BazCommand.new{"d"}
+command << BazCommand.new {"c"}
+command << BazCommand.new {"d"}
 
 command.execute                 # => ["a", "b", "c", "d"]

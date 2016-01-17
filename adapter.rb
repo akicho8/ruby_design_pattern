@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 class C
   def f1
     "x"

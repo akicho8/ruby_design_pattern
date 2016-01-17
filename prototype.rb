@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # クラスベース
 
 class Cell; end                                # 細胞
@@ -15,7 +13,7 @@ Human.new.speek?                # => true
 cell = Object.new
 plankton = cell.clone
 fish = plankton.clone
-monkey = fish.clone.tap{|o|def o.speek?; true end}
+monkey = fish.clone.tap {|o|def o.speek?; true end}
 human = monkey.clone
 human.speek?                    # => true
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # 8. Worker Thread - 仕事がくるまで待ち仕事がきたら働く
 
 require "thread"
@@ -22,13 +21,13 @@ end
 
 channel = Channel.new(1)
 t = Time.now
-4.times{|i|channel << i}
+4.times {|i|channel << i}
 nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
 puts "%.1f s" % (Time.now - t)
 
 channel = Channel.new(4)
 t = Time.now
-4.times{|i|channel << i}
+4.times {|i|channel << i}
 nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
 puts "%.1f s" % (Time.now - t)
 # >> "スレッド0が0を担当"

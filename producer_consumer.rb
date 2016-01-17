@@ -1,17 +1,16 @@
-# -*- coding: utf-8 -*-
 # Producer Consumer
 
 require "thread"
 
 queue = SizedQueue.new(1)
-producer = Thread.start{
+producer = Thread.start {
   4.times {|i|
     p ["作成", i]
     queue.push(i)
   }
   p "作成側は先に終了"
 }
-consumer = Thread.start{
+consumer = Thread.start {
   4.times {
     p ["使用", queue.pop]
     sleep(0.01)

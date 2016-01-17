@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Single Threaded Execution - この橋を渡れるのはたった１人
 
 require "thread"

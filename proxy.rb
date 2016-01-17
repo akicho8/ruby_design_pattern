@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 class User
   attr_accessor :name, :point
   def initialize(name)

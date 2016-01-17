@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # http://www002.upp.so-net.ne.jp/ys_oota/mdp/Cache/index.htm
 
 class Cache
@@ -11,7 +10,7 @@ class Cache
 
   def fetch(key)
     v = nil
-    if index = @pool.find_index{|e|e[:key] == key}
+    if index = @pool.find_index {|e|e[:key] == key}
       v = @pool.slice!(index)[:val]
     else
       v = yield

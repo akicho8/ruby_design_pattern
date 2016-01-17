@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Read-Write Lock - read中はwrite禁止
 
 require "sync"
@@ -20,7 +19,7 @@ class Buffer
 
   def read
     @sync.synchronize(:SH) do
-      @str.size.times.collect{|i|
+      @str.size.times.collect {|i|
         sleep(0.001)
         @str[i]
       }.join
@@ -30,7 +29,7 @@ end
 
 buffer = Buffer.new
 w = Thread.start do
-  ("A".."Z").cycle{|c|
+  ("A".."Z").cycle {|c|
     buffer.write(c.to_s * 64)
     sleep(0.001)
   }

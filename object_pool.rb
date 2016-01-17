@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Object pool
 
 class X
@@ -14,7 +13,7 @@ class C
   end
 
   def new_x
-    x = @pool.find{|e|!e.active}
+    x = @pool.find {|e|!e.active}
     unless x
       if @pool.size < @size
         x = X.new

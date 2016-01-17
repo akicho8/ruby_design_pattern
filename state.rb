@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 class OpenState
   def board
     "営業中"

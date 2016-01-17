@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 class A
   attr_accessor :state
   def initialize(b)

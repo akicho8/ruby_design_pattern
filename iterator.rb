@@ -7,7 +7,7 @@ class Iterator
     @index < @object.size
   end
   def next
-    @object[@index].tap{@index += 1}
+    @object[@index].tap {@index += 1}
   end
 end
 
@@ -40,7 +40,7 @@ class Array
 end
 
 ary = ["a", "b", "c"]
-ary.iterator{|v|p v}
+ary.iterator {|v|p v}
 
 ["a", "b", "c"].each do |v|
   p v

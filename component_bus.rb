@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # http://www002.upp.so-net.ne.jp/ys_oota/mdp/ComponentBus/
 require "observer"
 

@@ -13,7 +13,7 @@
    | Template Method         | new のこと                                                |
    | Singleton               | インスタンスをグローバル変数にしたいとき用                |
    | Prototype               | new ではなく clone で                                     |
-   | Builder                 | xml.body{xml.p("x")}                                      |
+   | Builder                 | xml.body {xml.p("x")}                                     |
    | Abstract Factory        | クラスをハードコーディングしない                          |
    | Strategy                | テトリミノのツモ                                          |
    | Composite               | def x; @commands.collect(&:x); end                        |
@@ -37,6 +37,7 @@
    | Typed Message           | GUIでよくある、SDL::Event::Quit みたいなあれ              |
    | Cache Manager           | 使ったキャッシュは先頭に移動                              |
    | Component Bus           | Observer が Subject を握っている                          |
+   | Composed Method         | メソッド化してなんなら再利用できるようにする              |
 
 ** スレッド用
 
@@ -83,7 +84,7 @@
     :   end
     : 
     :   def process
-    :     @queue << proc{p 1 + 2}
+    :     @queue << proc {p 1 + 2}
     :   end
     : end
     : 
@@ -148,7 +149,7 @@
     :   end
     : 
     :   def new_x
-    :     x = @pool.find{|e|!e.active}  # pool から稼働してないものを探す
+    :     x = @pool.find {|e|!e.active}  # pool から稼働してないものを探す
     :     unless x                      # なければ
     :       if @pool.size < @size       # pool の空きがあれば、新たに作成
     :         x = X.new
@@ -505,8 +506,8 @@
     :   end
     : end
     : 
-    : command << BazCommand.new{"c"}
-    : command << BazCommand.new{"d"}
+    : command << BazCommand.new {"c"}
+    : command << BazCommand.new {"d"}
     : 
     : command.execute                 # => ["a", "b", "c", "d"]
 
@@ -527,7 +528,7 @@
     : cell = Object.new
     : plankton = cell.clone
     : fish = plankton.clone
-    : monkey = fish.clone.tap{|o|def o.speek?; true end}
+    : monkey = fish.clone.tap {|o|def o.speek?; true end}
     : human = monkey.clone
     : human.speek?                    # => true
 
@@ -589,7 +590,7 @@
     :     @index < @object.size
     :   end
     :   def next
-    :     @object[@index].tap{@index += 1}
+    :     @object[@index].tap {@index += 1}
     :   end
     : end
     : 
@@ -617,7 +618,7 @@
     :   end
     : end
     : 
-    : ary.iterator{|v|p v}
+    : ary.iterator {|v|p v}
 
     each とほぼ同じになった
 
@@ -739,9 +740,9 @@
     : f.nodes << Node.new("g")
     : f.nodes << Node.new("h")
 
-    : root.nodes.collect{|e|e.name}                       # => ["a", "b", "c"]
-    : root.nodes.last.nodes.collect{|e|e.name}            # => ["d", "e", "f"]
-    : root.nodes.last.nodes.last.nodes.collect{|e|e.name} # => ["g", "h"]
+    : root.nodes.collect {|e|e.name}                       # => ["a", "b", "c"]
+    : root.nodes.last.nodes.collect {|e|e.name}            # => ["d", "e", "f"]
+    : root.nodes.last.nodes.last.nodes.collect {|e|e.name} # => ["g", "h"]
 
     ↓改善
 
@@ -775,9 +776,9 @@
 
     結果も同じ
 
-    : root.nodes.collect{|e|e.name}                       # => ["a", "b", "c"]
-    : root.nodes.last.nodes.collect{|e|e.name}            # => ["d", "e", "f"]
-    : root.nodes.last.nodes.last.nodes.collect{|e|e.name} # => ["g", "h"]
+    : root.nodes.collect {|e|e.name}                       # => ["a", "b", "c"]
+    : root.nodes.last.nodes.collect {|e|e.name}            # => ["d", "e", "f"]
+    : root.nodes.last.nodes.last.nodes.collect {|e|e.name} # => ["g", "h"]
 
 **** mail gem の例
 
@@ -1114,7 +1115,7 @@
     :     @dice = dice
     :   end
     :   def run
-    :     7.times.collect{@dice.next}
+    :     7.times.collect {@dice.next}
     :   end
     : end
     : 
@@ -1128,12 +1129,12 @@
     :     @dice = dice
     :   end
     :   def run
-    :     7.times.collect{@dice.call}
+    :     7.times.collect {@dice.call}
     :   end
     : end
     : 
-    : Player.new{rand(7)}.run  # => [2, 5, 5, 6, 6, 2, 0]
-    : Player.new{6}.run        # => [6, 6, 6, 6, 6, 6, 6]
+    : Player.new {rand(7)}.run  # => [2, 5, 5, 6, 6, 2, 0]
+    : Player.new {6}.run        # => [6, 6, 6, 6, 6, 6, 6]
 
     これでクラスが爆発しなくなる
 
@@ -1379,7 +1380,7 @@
     : 
     :   def fetch(key)
     :     v = nil
-    :     if index = @pool.find_index{|e|e[:key] == key}
+    :     if index = @pool.find_index {|e|e[:key] == key}
     :       v = @pool.slice!(index)[:val]
     :     else
     :       v = yield
@@ -1504,7 +1505,7 @@
 
     : channel = Channel.new(1)
     : t = Time.now
-    : 4.times{|i|channel << i}
+    : 4.times {|i|channel << i}
     : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
     : puts "%.1f s" % (Time.now - t)
     : # >> "スレッド0が0を担当"
@@ -1517,7 +1518,7 @@
 
     : channel = Channel.new(4)
     : t = Time.now
-    : 4.times{|i|channel << i}
+    : 4.times {|i|channel << i}
     : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
     : puts "%.1f s" % (Time.now - t)
     : # >> "スレッド1が0を担当"
@@ -1561,10 +1562,10 @@
     : 
     : x = C.new
     : threads = []
-    : threads << Thread.start{x.execute("a", 0.1)}
-    : threads << Thread.start{x.execute("b", 0)}
+    : threads << Thread.start {x.execute("a", 0.1)}
+    : threads << Thread.start {x.execute("b", 0)}
     : sleep(0.1)
-    : threads << Thread.start{x.execute("c", 0)}
+    : threads << Thread.start {x.execute("c", 0)}
     : threads.collect(&:join)
     : # >> "a"
     : # >> "処理中のためbはスキップ"
@@ -1601,14 +1602,14 @@
     以下の例はSizedQueueのサイズが1しかないのでconsumerがpopしてくれないと次をpushできない。
 
     : queue = SizedQueue.new(1)
-    : producer = Thread.start{
+    : producer = Thread.start {
     :   4.times {|i|
     :     p ["作成", i]
     :     queue.push(i)
     :   }
     :   p "作成側は先に終了"
     : }
-    : consumer = Thread.start{
+    : consumer = Thread.start {
     :   4.times {
     :     p ["使用", queue.pop]
     :     sleep(0.01)
@@ -1645,7 +1646,7 @@
     : 
     :   def read
     :     @sync.synchronize(:SH) do
-    :       @str.size.times.collect{|i|
+    :       @str.size.times.collect {|i|
     :         sleep(0.001)
     :         @str[i]
     :       }.join
@@ -1657,7 +1658,7 @@
 
     : buffer = Buffer.new
     : w = Thread.start do
-    :   ("A".."Z").cycle{|c|
+    :   ("A".."Z").cycle {|c|
     :     buffer.write(c.to_s * 64)
     :     sleep(0.001)
     :   }
@@ -1721,5 +1722,5 @@
 
     Thread.current["a"] はスレッド内グローバル変数
 
-    : Thread.start{Thread.current["a"] = 1}.join
-    : Thread.start{Thread.current["a"]}.value    # => nil
+    : Thread.start {Thread.current["a"] = 1}.join
+    : Thread.start {Thread.current["a"]}.value    # => nil

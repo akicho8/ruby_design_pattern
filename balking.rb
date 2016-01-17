@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Balking - 不要であればすぐにリターンする
 
 require "mutex_m"
@@ -28,10 +27,10 @@ end
 
 x = C.new
 threads = []
-threads << Thread.start{x.execute("a", 0.1)}
-threads << Thread.start{x.execute("b", 0)}
+threads << Thread.start {x.execute("a", 0.1)}
+threads << Thread.start {x.execute("b", 0)}
 sleep(0.1)
-threads << Thread.start{x.execute("c", 0)}
+threads << Thread.start {x.execute("c", 0)}
 threads.collect(&:join)
 # >> "a"
 # >> "処理中のためbはスキップ"

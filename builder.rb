@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Builder - 複雑なインスタンスを組み立てる
 
 class Node
@@ -21,9 +20,9 @@ c.nodes << (f = Node.new("f"))
 f.nodes << Node.new("g")
 f.nodes << Node.new("h")
 
-root.nodes.collect{|e|e.name}                       # => ["a", "b", "c"]
-root.nodes.last.nodes.collect{|e|e.name}            # => ["d", "e", "f"]
-root.nodes.last.nodes.last.nodes.collect{|e|e.name} # => ["g", "h"]
+root.nodes.collect {|e|e.name}                       # => ["a", "b", "c"]
+root.nodes.last.nodes.collect {|e|e.name}            # => ["d", "e", "f"]
+root.nodes.last.nodes.last.nodes.collect {|e|e.name} # => ["g", "h"]
 
 # 改善
 
@@ -53,6 +52,6 @@ root.instance_eval do
   end
 end
 
-root.nodes.collect{|e|e.name}                       # => ["a", "b", "c"]
-root.nodes.last.nodes.collect{|e|e.name}            # => ["d", "e", "f"]
-root.nodes.last.nodes.last.nodes.collect{|e|e.name} # => ["g", "h"]
+root.nodes.collect {|e|e.name}                       # => ["a", "b", "c"]
+root.nodes.last.nodes.collect {|e|e.name}            # => ["d", "e", "f"]
+root.nodes.last.nodes.last.nodes.collect {|e|e.name} # => ["g", "h"]

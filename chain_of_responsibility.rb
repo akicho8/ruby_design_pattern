@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Chain Of Responsibility
 # ・各オブジェクトは resolve? で処理可能かどうかまず返答する
 # ・処理できるなら対応

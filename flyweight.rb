@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Flyweight - 同じ物を共有して無駄を無くす
 
 module Wave

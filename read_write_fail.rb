@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # 書き込み中に読み込んでしまう失敗例
 
 class Buffer
@@ -14,7 +13,7 @@ class Buffer
   end
 
   def read
-    @str.size.times.collect{|i|
+    @str.size.times.collect {|i|
       sleep(0.001)
       @str[i]
     }.join
@@ -23,7 +22,7 @@ end
 
 buffer = Buffer.new
 w = Thread.start do
-  ("A".."Z").cycle{|c|
+  ("A".."Z").cycle {|c|
     buffer.write(c.to_s * 64)
     sleep(0.001)
   }

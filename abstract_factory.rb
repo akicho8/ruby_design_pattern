@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Abstract Factory - 関連する部品を組み合わせて部品を作る
 
 class A

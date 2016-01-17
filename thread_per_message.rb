@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Thread-Per-Message - 戻値不要
 
 def request(x)

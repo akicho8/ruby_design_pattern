@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Guarded Suspention - 用意が出来るまで待つ
 
 require "thread"

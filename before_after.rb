@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # before/after
 begin
   p "before"

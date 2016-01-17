@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 class Paint
   def update(*args)
     p args

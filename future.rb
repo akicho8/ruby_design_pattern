@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Future - 戻値必要
 
 def request(x)

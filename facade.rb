@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Facade - シンプルな窓口
 
 from = User.find_by_name("alice") || User.find_by_name("admin")

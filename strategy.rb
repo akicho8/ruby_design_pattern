@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 class Random
   def next
     rand(7)
@@ -17,7 +16,7 @@ class Player
     @dice = dice
   end
   def run
-    7.times.collect{@dice.next}
+    7.times.collect {@dice.next}
   end
 end
 
@@ -31,9 +30,9 @@ class Player2
     @dice = dice
   end
   def run
-    7.times.collect{@dice.call}
+    7.times.collect {@dice.call}
   end
 end
 
-Player2.new{rand(7)}.run  # => [0, 3, 1, 1, 2, 4, 2]
-Player2.new{6}.run        # => [6, 6, 6, 6, 6, 6, 6]
+Player2.new {rand(7)}.run  # => [0, 3, 1, 1, 2, 4, 2]
+Player2.new {6}.run        # => [6, 6, 6, 6, 6, 6, 6]
