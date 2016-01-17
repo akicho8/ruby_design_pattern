@@ -1223,7 +1223,7 @@
 
      UserSearch の中でいくらメソッドを増やしても元のUserには影響がない。
 
-     次は例が悪いけど @color から変換するメソッドを Player 自体に入れてしまって Player がクラスがカオスになってしまうケース。
+     次は例が悪いけど @color から変換するメソッドを Player 自体に入れてしまって Player クラスがカオスになってしまうケース。
 
      : class Player
      :   attr_accessor :color
