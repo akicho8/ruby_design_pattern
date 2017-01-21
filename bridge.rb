@@ -33,6 +33,7 @@ class A
   def initialize(obj)
     @obj = obj
   end
+
   def run
     @obj
   end

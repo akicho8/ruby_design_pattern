@@ -67,6 +67,7 @@ class UserSearch
     @model = model
     @query = query
   end
+
   def run
     ["name like ?", "%#{@query}%"]
   end
@@ -97,9 +98,11 @@ end
 
 class ColorInfo
   attr_accessor :color
+
   def initialize(color)
     @color = color
   end
+
   def rgb
     "#00F"
   end

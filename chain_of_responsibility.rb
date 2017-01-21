@@ -7,6 +7,7 @@ class Chainable
   def initialize(_next = nil)
     @_next = _next
   end
+
   def support(q)
     if resolve?(q)
       answer(q)
@@ -22,6 +23,7 @@ class Alice < Chainable
   def resolve?(q)
     q == "1+2は？"
   end
+
   def answer(q)
     "3"
   end
@@ -31,6 +33,7 @@ class Bob < Chainable
   def resolve?(q)
     q == "2*3は？"
   end
+
   def answer(q)
     "6"
   end

@@ -21,9 +21,11 @@ class CompositeCommand < Command
   def initialize
     @commands = []
   end
+
   def <<(command)
     @commands << command
   end
+
   def execute
     @commands.collect(&:execute)
   end
@@ -39,6 +41,7 @@ class BazCommand < Command
   def initialize(&block)
     @command = block
   end
+
   def execute
     @command.call
   end

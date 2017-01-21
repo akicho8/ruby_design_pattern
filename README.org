@@ -200,6 +200,7 @@
     :     @b = b
     :     @state = true
     :   end
+    : 
     :   def changed
     :     @b.visible = @state
     :   end
@@ -217,6 +218,7 @@
     :     @a = A.new(self)
     :     @b = B.new(self)
     :   end
+    : 
     :   def changed
     :     @b.visible = @a.state
     :   end
@@ -226,9 +228,9 @@
     :   attr_accessor :state
     :   def initialize(mediator)
     :     @mediator = mediator
-    :     @state = true
-    :   end
-    :   def changed
+    :     @state = true    :   end
+    : 
+    :   def  changed
     :     @mediator.changed
     :   end
     : end
@@ -277,6 +279,7 @@
     :   def initialize(factory)
     :     @factory = factory
     :   end
+    : 
     :   def build
     :     @factory.new_a("x").build
     :   end
@@ -286,7 +289,8 @@
     :   def initialize(value)
     :     @value = value
     :   end
-    :   def build
+    : 
+    :   deff build
     :     "(#{@value})"
     :   end
     : end
@@ -301,7 +305,8 @@
     :   def initialize(value)
     :     @value = value
     :   end
-    :   def build
+    : 
+    :   deff build
     :     "<#{@value}>"
     :   end
     : end
@@ -341,7 +346,8 @@
     :   def initialize(_next = nil)
     :     @_next = _next
     :   end
-    :   def support(q)
+    : 
+    :   deff support(q)
     :     if resolve?(q)
     :       answer(q)
     :     elsif @_next
@@ -356,6 +362,7 @@
     :   def resolve?(q)
     :     q == "1+2は？"
     :   end
+    : 
     :   def answer(q)
     :     "3"
     :   end
@@ -365,7 +372,8 @@
     :   def resolve?(q)
     :     q == "2*3は？"
     :   end
-    :   def answer(q)
+    : 
+    :   defef answer(q)
     :     "6"
     :   end
     : end
@@ -386,6 +394,7 @@
     :     @name = name
     :     @point = 0
     :   end
+    : 
     :   def deposit(amount)
     :     @point += amount
     :   end
@@ -426,6 +435,7 @@
     :   def name
     :     "BJ10V"
     :   end
+    : 
     :   def print(str)
     :   end
     : end
@@ -436,6 +446,7 @@
     :   def name
     :     "BJ10V"
     :   end
+    : 
     :   def print(str)
     :     @printer ||= RealPrinter.new
     :     @printer.print(str)
@@ -446,9 +457,11 @@
     :   def initialize
     :     puts "とてつもなく時間がかかる初期化処理..."
     :   end
+    : 
     :   def name
     :     "BJ10V"
     :   end
+    : 
     :   def print(str)
     :     str
     :   end
@@ -480,9 +493,11 @@
     :   def initialize
     :     @commands = []
     :   end
+    : 
     :   def <<(command)
     :     @commands << command
     :   end
+    : 
     :   def execute
     :     @commands.collect(&:execute)
     :   end
@@ -500,6 +515,7 @@
     :   def initialize(&block)
     :     @command = block
     :   end
+    : 
     :   def execute
     :     @command.call
     :   end
@@ -543,6 +559,7 @@
     :       :rook => Piece.new("飛"),
     :     }
     :   end
+    : 
     :   def create(name)
     :     @showcase[name].clone
     :   end
@@ -585,9 +602,11 @@
     :     @object = object
     :     @index = 0
     :   end
+    : 
     :   def has_next?
     :     @index < @object.size
     :   end
+    : 
     :   def next
     :     @object[@index].tap {@index += 1}
     :   end
@@ -817,6 +836,7 @@
     :       @state = CloseState.new
     :     end
     :   end
+    : 
     :   def board
     :     @state.board
     :   end
@@ -840,16 +860,16 @@
     :   message.save!
     : end
 
-    以下のように書きやすくまとめる。だけ？
+    以下のように書きやすくまとめるというだけ？
 
     : Message.deliver(:from => "alice", :to => "bob", :body => "...")
 
 *** Bridge
 
-    機能の階層と実装の階層を分けるって言ってもStrategyと何が違うのかよくわからない。
-    要はDRYにしとけば拡張が楽ちんことらしい。
+    機能の階層と実装の階層を分けるって言っても Strategy と何が違うのかよくわからない。
+    要は DRY にしとけば拡張が楽ちんということらしい。
     以下のコードは x y の実装2つと、囲まない囲むの2つの機能を組み合わせると2x2で4つのクラスが必要になる。
-    このまま拡張していって実装と機能がそれぞれ10個あると100個のクラスを作らないといけない。
+    このまま拡張していって実装と機能がそれぞれ10個あると100個のクラスを作らないといけなくなる。
 
     : class A
     :   def run
@@ -881,6 +901,7 @@
     :   def initialize(obj)
     :     @obj = obj
     :   end
+    : 
     :   def run
     :     @obj
     :   end
@@ -894,7 +915,7 @@
 
 *** Decorator
 
-    proxyにそっくりだけど、遅延実行や実行条件には関心がない。
+    proxyにそっくりだけど遅延実行や実行条件には関心がない。
 
     このクラスの
 
@@ -910,6 +931,7 @@
     :   def initialize(object)
     :     @object = object
     :   end
+    : 
     :   def to_xxx
     :     "(#{@object.name})"
     :   end
@@ -939,7 +961,7 @@
     : 
     : UserDecorator.new.to_xxx # => "(alice)"
 
-    継承なら DelegateClass でもできるようだけどこれまた利点がわからない。Userが重複していて気持ち悪いのが気になる。
+    継承なら DelegateClass でもできるようだけど利点がわからない。Userが重複していて気持ち悪いのがやや気になる。
 
     : require "delegate"
     : 
@@ -947,6 +969,7 @@
     :   def initialize
     :     super(User.new)
     :   end
+    : 
     :   def to_xxx
     :     "(#{name})"
     :   end
@@ -957,8 +980,8 @@
 *** Observer
 
     実行結果が不要なときに使う。
-    結果が必要ならStrategyへ。
-    Observer 側に player (Subject) を渡して player.add_observer(self) は、まわりくどいのでやらない。
+    結果が必要なら Strategy へ。
+    Observer 側に player (Subject) を渡して player.add_observer(self) は、まわりくどいので自分はやらない。
     Observer に player を握らせたら Component Bus パターンになるっぽい。
 
     密結合状態を
@@ -986,6 +1009,7 @@
     :   def initialize
     :     @observers = []
     :   end
+    : 
     :   def notify
     :     @observers.each do |observer|
     :       observer.update(self)
@@ -1000,8 +1024,10 @@
 **** 標準ライブラリ
 
      : require "observer"
+     : 
      : class Player
      :   include Observable
+     : 
      :   def notify
      :     changed
      :     notify_observers(self)
@@ -1013,18 +1039,21 @@
      : player.add_observer(Network.new)
      : player.notify
 
-     自分をオブザーバーにしてもいい
+     なんなら自分をオブザーバーにしてもいい
 
      : require "observer"
      : class Player
      :   include Observable
+     : 
      :   def initialize
      :     add_observer(self) # add_observer(self, :draw) のように通知メソッド変更可
      :   end
+     : 
      :   def notify
      :     changed
      :     notify_observers(self)
      :   end
+     : 
      :   def update(player)
      :     player                      # => #<Player:0x007ff9098472e0 ...>
      :   end
@@ -1040,7 +1069,9 @@
 
     : class Player
     :   include Observable
+    : 
     :   attr_accessor :data
+    : 
     :   def notify
     :     changed
     :     notify_observers
@@ -1052,8 +1083,10 @@
     :     player.add_observer(self)
     :     @player = player    # Subjectを握っている
     :   end
+    : 
     :   def update
     :   end
+    : 
     :   def data
     :     @player.data
     :   end
@@ -1078,9 +1111,11 @@
     標準ライブラリを使った場合
 
     : require "singleton"
+    : 
     : class C
     :   include Singleton
     : end
+    : 
     : C.instance # => #<C:0x007f98e509f558>
     : C.instance # => #<C:0x007f98e509f558>
 
@@ -1088,6 +1123,7 @@
 
     : module M
     :   extend self
+    : 
     :   def func
     :   end
     : end
@@ -1113,6 +1149,7 @@
     :   def initialize(dice)
     :     @dice = dice
     :   end
+    : 
     :   def run
     :     7.times.collect { @dice.next }
     :   end
@@ -1127,6 +1164,7 @@
     :   def initialize(&dice)
     :     @dice = dice
     :   end
+    : 
     :   def run
     :     7.times.collect { @dice.call }
     :   end
@@ -1213,6 +1251,7 @@
      :     @model = model
      :     @query = query
      :   end
+     : 
      :   def run
      :     ["name like ?", "%#{@query}%"]
      :   end
@@ -1245,9 +1284,11 @@
 
      : class ColorInfo
      :   attr_accessor :color
+     : 
      :   def initialize(color)
      :     @color = color
      :   end
+     : 
      :   def rgb
      :     "#00F"
      :   end
@@ -1285,6 +1326,7 @@
     :   def initialize(value)
     :     @value = value
     :   end
+    : 
     :   def evaluate
     :     @value
     :   end
@@ -1294,6 +1336,7 @@
     :   def initialize(left, right)
     :     @left, @right = left, right
     :   end
+    : 
     :   def evaluate
     :     @left.evaluate + @right.evaluate
     :   end
@@ -1316,6 +1359,7 @@
     :   def initialize(value)
     :     @value = value
     :   end
+    : 
     :   def evaluate
     :     ["mov  ax, #{@value}"]
     :   end
@@ -1325,6 +1369,7 @@
     :   def initialize(left, right)
     :     @left, @right = left, right
     :   end
+    : 
     :   def evaluate
     :     code = []
     :     code << @left.evaluate

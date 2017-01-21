@@ -54,6 +54,7 @@ class Builder
   def initialize(factory)
     @factory = factory
   end
+
   def build
     @factory.new_a("x").build
   end
@@ -63,6 +64,7 @@ class A
   def initialize(value)
     @value = value
   end
+
   def build
     "(#{@value})"
   end
@@ -78,6 +80,7 @@ class B
   def initialize(value)
     @value = value
   end
+
   def build
     "<#{@value}>"
   end
