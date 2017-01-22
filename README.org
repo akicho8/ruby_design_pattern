@@ -199,6 +199,7 @@ end
 #+BEGIN_SRC ruby
 logger = NullObject.new
 logger.info("x")                # => nil
+#+END_SRC
 
     富豪的な感がよい
 
@@ -1540,7 +1541,7 @@ puts expr.evaluate
 
 *** Typed Message
 
-    GUIアプリでイベント起きるといろんなものが飛んできて美しくないswitch文ができてしまうあれ
+    GUIアプリでイベント起きるといろんなものが飛んできて美しくないswitch文ができてしまうアレのこと
 
     http://www002.upp.so-net.ne.jp/ys_oota/mdp/TypedMessage/index.htm 参照
 
