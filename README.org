@@ -1,10 +1,6 @@
-#+OPTIONS: toc:nil num:nil author:nil creator:nil \n:nil |:t
-#+OPTIONS: @:t ::t ^:t -:t f:t *:t <:t
-
 * デザインパターン覚え書き
 ** 一般
 
-#+ATTR_HTML: border="1" rules="all" frame="all"
    | 名前                    | 概要                                                      |
    |-------------------------+-----------------------------------------------------------|
    | Adapter                 | メソッドが足りなくて階層的に増やすときに使う(重要)        |
@@ -41,7 +37,6 @@
 
 ** スレッド用
 
-#+ATTR_HTML: border="1" rules="all" frame="all"
    | 名前                      | 備考                                  |
    |---------------------------+---------------------------------------|
    | Single Threaded Execution | 排他制御 → する                      |
@@ -62,52 +57,58 @@
 
     どんなときに有用か？
 
-    : class C
-    :   def process
-    :     1 + 2
-    :   end
-    : end
-    : 
-    : obj = C.new
-    : obj.process
+#+BEGIN_SRC ruby
+class C
+  def process
+    1 + 2
+  end
+end
+
+obj = C.new
+obj.process
+#+END_SRC
 
     ここで、すぐに実行する必要がない 1 + 2 の処理が重すぎる場合、
 
-    : class C
-    :   attr_accessor :queue
-    : 
-    :   def initialize
-    :     @queue = Queue.new
-    :     Thread.start do
-    :       loop { @queue.pop.call }  # バックグランド処理を永遠と回す
-    :     end
-    :   end
-    : 
-    :   def process
-    :     @queue << proc {p 1 + 2}
-    :   end
-    : end
-    : 
-    : obj = C.new
-    : obj.process
-    : 
-    : nil until obj.queue.empty?
+#+BEGIN_SRC ruby
+class C
+  attr_accessor :queue
+
+  def initialize
+    @queue = Queue.new
+    Thread.start do
+      loop { @queue.pop.call }  # バックグランド処理を永遠と回す
+    end
+  end
+
+  def process
+    @queue << proc {p 1 + 2}
+  end
+end
+
+obj = C.new
+obj.process
+
+nil until obj.queue.empty?
+#+END_SRC
 
     C#process の中の処理が変わっただけで *インタフェースはそのまま*
 
 *** Before / After
 
-    : begin
-    :   p "before"
-    :   1 / 0
-    : rescue => error
-    :   p error
-    : ensure
-    :   p "after"
-    : end
-    : # >> "before"
-    : # >> #<ZeroDivisionError: divided by 0>
-    : # >> "after"
+#+BEGIN_SRC ruby
+begin
+  p "before"
+  1 / 0
+rescue => error
+  p error
+ensure
+  p "after"
+end
+# >> "before"
+# >> #<ZeroDivisionError: divided by 0>
+# >> "after"
+#+END_SRC
 
 *** Pluggable Selector
 
@@ -115,155 +116,174 @@
     一つのメソッドが巨大化しそうなときとかに、別のクラスを作るのが面倒という理由で似たような書き方をしてしまう。
     どうなんだろう？
 
-    : class C
-    :   def initialize(command)
-    :     @command = command
-    :   end
-    : 
-    :   def execute
-    :     send(@command)
-    :   end
-    : 
-    :   def command_x
-    :     :a
-    :   end
-    : end
-    : 
-    : C.new(:command_x).execute       # => :a
+#+BEGIN_SRC ruby
+class C
+  def initialize(command)
+    @command = command
+  end
+
+  def execute
+    send(@command)
+  end
+
+  def command_x
+    :a
+  end
+end
+
+C.new(:command_x).execute       # => :a
+#+END_SRC
 
 *** Object Pool
 
     メモ化というよりメモリと速度のトレードオフ。
 
-    : class X
-    :   attr_accessor :active
-    : end
-    : 
-    : class C
-    :   attr_accessor :pool
-    : 
-    :   def initialize
-    :     @size = 2
-    :     @pool = []
-    :   end
-    : 
-    :   def new_x
-    :     x = @pool.find {|e|!e.active}  # pool から稼働してないものを探す
-    :     unless x                      # なければ
-    :       if @pool.size < @size       # pool の空きがあれば、新たに作成
-    :         x = X.new
-    :         @pool << x
-    :       end
-    :     end
-    :     if x
-    :       x.active = true
-    :     end
-    :     x
-    :   end
-    : end
-    : 
-    : i = C.new
-    : a = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
-    : b = i.new_x                  # => #<X:0x007fd1cb08d140 @active=true>
-    : c = i.new_x                  # => nil
-    : a.active = false
-    : c = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
+#+BEGIN_SRC ruby
+class X
+  attr_accessor :active
+end
+
+class C
+  attr_accessor :pool
+
+  def initialize
+    @size = 2
+    @pool = []
+  end
+
+  def new_x
+    x = @pool.find {|e|!e.active}  # pool から稼働してないものを探す
+    unless x                      # なければ
+      if @pool.size < @size       # pool の空きがあれば、新たに作成
+        x = X.new
+        @pool << x
+      end
+    end
+    if x
+      x.active = true
+    end
+    x
+  end
+end
+
+i = C.new
+a = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
+b = i.new_x                  # => #<X:0x007fd1cb08d140 @active=true>
+c = i.new_x                  # => nil
+a.active = false
+c = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
+#+END_SRC
 
 *** Null Object
 
-    : class Logger
-    :   def info(str)
-    :     str
-    :   end
-    : end
-    : 
-    : logger = Logger.new
-    : logger.info("x")                # => "x"
+#+BEGIN_SRC ruby
+class Logger
+  def info(str)
+    str
+  end
+end
+
+logger = Logger.new
+logger.info("x")                # => "x"
+#+END_SRC
 
     logger を無効にする
 
-    : class NullObject
-    :   def info(str)
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class NullObject
+  def info(str)
+  end
+end
+#+END_SRC
 
-    : logger = NullObject.new
-    : logger.info("x")                # => nil
+#+BEGIN_SRC ruby
+logger = NullObject.new
+logger.info("x")                # => nil
 
     富豪的な感がよい
 
 *** Mediator
 
-    : class A
-    :   attr_accessor :state
-    :   def initialize(b)
-    :     @b = b
-    :     @state = true
-    :   end
-    : 
-    :   def changed
-    :     @b.visible = @state
-    :   end
-    : end
-    : 
-    : class B
-    :   attr_accessor :visible
-    : end
+#+BEGIN_SRC ruby
+class A
+  attr_accessor :state
+  def initialize(b)
+    @b = b
+    @state = true
+  end
+
+  def changed
+    @b.visible = @state
+  end
+end
+
+class B
+  attr_accessor :visible
+end
+#+END_SRC
 
     改善。A と B に Mediator のインスタンスを持たせて changed は Mediator のインスタンスに投げる。
 
-    : class Mediator
-    :   attr_reader :a, :b
-    :   def initialize
-    :     @a = A.new(self)
-    :     @b = B.new(self)
-    :   end
-    : 
-    :   def changed
-    :     @b.visible = @a.state
-    :   end
-    : end
-    : 
-    : class A
-    :   attr_accessor :state
-    :   def initialize(mediator)
-    :     @mediator = mediator
-    :     @state = true    :   end
-    : 
-    :   def  changed
-    :     @mediator.changed
-    :   end
-    : end
-    : 
-    : class B
-    :   attr_accessor :visible
-    :   def initialize(mediator)
-    :     @mediator = mediator
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Mediator
+  attr_reader :a, :b
+  def initialize
+    @a = A.new(self)
+    @b = B.new(self)
+  end
 
-    : m = Mediator.new
-    : m.a.state = true
-    : m.a.changed
-    : m.b.visible # => true
+  def changed
+    @b.visible = @a.state
+  end
+end
+
+class A
+  attr_accessor :state
+  def initialize(mediator)
+    @mediator = mediator
+    @state = true  end
+
+  def  changed
+    @mediator.changed
+  end
+end
+
+class B
+  attr_accessor :visible
+  def initialize(mediator)
+    @mediator = mediator
+  end
+end
+#+END_SRC
+
+#+BEGIN_SRC ruby
+m = Mediator.new
+m.a.state = true
+m.a.changed
+m.b.visible # => true
+#+END_SRC
 
 *** Abstract Factory
 
     都合が悪くなってきたから A と B をハードコーディングしているのをやめようってこと
 
-    : class C
-    :   def run
-    :     A.new + B.new
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class C
+  def run
+    A.new + B.new
+  end
+end
+#+END_SRC
 
     ↓
 
-    : class C
-    :   def run
-    :     @factory.new_x + @factory.new_y
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class C
+  def run
+    @factory.new_x + @factory.new_y
+  end
+end
+#+END_SRC
 
     将棋のDSLのところから抜粋した例
 
@@ -275,368 +295,402 @@
     ruby なら A 自体を引数で渡せばいいし。
     Java だとそういうことはできないから new_a のなかで A.new を呼ぶことになってるはず。
 
-    : class Builder
-    :   def initialize(factory)
-    :     @factory = factory
-    :   end
-    : 
-    :   def build
-    :     @factory.new_a("x").build
-    :   end
-    : end
-    : 
-    : class A
-    :   def initialize(value)
-    :     @value = value
-    :   end
-    : 
-    :   deff build
-    :     "(#{@value})"
-    :   end
-    : end
-    : 
-    : class FactorySet1
-    :   def new_a(*args)
-    :     A.new(*args)
-    :   end
-    : end
-    : 
-    : class B
-    :   def initialize(value)
-    :     @value = value
-    :   end
-    : 
-    :   deff build
-    :     "<#{@value}>"
-    :   end
-    : end
-    : 
-    : class FactorySet2
-    :   def new_a(*args)
-    :     B.new(*args)
-    :   end
-    : end
-    : 
-    : Builder.new(FactorySet1.new).build # => "(x)"
-    : Builder.new(FactorySet2.new).build # => "<x>"
+#+BEGIN_SRC ruby
+class Builder
+  def initialize(factory)
+    @factory = factory
+  end
+
+  def build
+    @factory.new_a("x").build
+  end
+end
+
+class A
+  def initialize(value)
+    @value = value
+  end
+
+  deff build
+    "(#{@value})"
+  end
+end
+
+class FactorySet1
+  def new_a(*args)
+    A.new(*args)
+  end
+end
+
+class B
+  def initialize(value)
+    @value = value
+  end
+
+  deff build
+    "<#{@value}>"
+  end
+end
+
+class FactorySet2
+  def new_a(*args)
+    B.new(*args)
+  end
+end
+
+Builder.new(FactorySet1.new).build # => "(x)"
+Builder.new(FactorySet2.new).build # => "<x>"
+#+END_SRC
 
 *** Factory Method
 
-    : class X
-    : end
-    : 
-    : class F
-    :   def create
-    :     X.new
-    :   end
-    : end
-    : 
-    : class C
-    :   attr_accessor :v
-    :   def initialize(f)
-    :     @v = f.create
-    :   end
-    : end
-    : 
-    : C.new(F.new).v                  # => #<X:0x007fb213905a98>
+#+BEGIN_SRC ruby
+class X
+end
+
+class F
+  def create
+    X.new
+  end
+end
+
+class C
+  attr_accessor :v
+  def initialize(f)
+    @v = f.create
+  end
+end
+
+C.new(F.new).v                  # => #<X:0x007fb213905a98>
+#+END_SRC
 
 *** Chain of Responsibility
 
-    : class Chainable
-    :   def initialize(_next = nil)
-    :     @_next = _next
-    :   end
-    : 
-    :   deff support(q)
-    :     if resolve?(q)
-    :       answer(q)
-    :     elsif @_next
-    :       @_next.support(q)
-    :     else
-    :       "知らん"
-    :     end
-    :   end
-    : end
-    : 
-    : class Alice < Chainable
-    :   def resolve?(q)
-    :     q == "1+2は？"
-    :   end
-    : 
-    :   def answer(q)
-    :     "3"
-    :   end
-    : end
-    : 
-    : class Bob < Chainable
-    :   def resolve?(q)
-    :     q == "2*3は？"
-    :   end
-    : 
-    :   defef answer(q)
-    :     "6"
-    :   end
-    : end
-    : 
-    : alice = Alice.new(Bob.new)
-    : alice.support("1+2は？") # => "3"
-    : alice.support("2*3は？") # => "6"
-    : alice.support("2/1は？") # => "知らん"
+#+BEGIN_SRC ruby
+class Chainable
+  def initialize(_next = nil)
+    @_next = _next
+  end
+
+  deff support(q)
+    if resolve?(q)
+      answer(q)
+    elsif @_next
+      @_next.support(q)
+    else
+      "知らん"
+    end
+  end
+end
+
+class Alice < Chainable
+  def resolve?(q)
+    q == "1+2は？"
+  end
+
+  def answer(q)
+    "3"
+  end
+end
+
+class Bob < Chainable
+  def resolve?(q)
+    q == "2*3は？"
+  end
+
+  defef answer(q)
+    "6"
+  end
+end
+
+alice = Alice.new(Bob.new)
+alice.support("1+2は？") # => "3"
+alice.support("2*3は？") # => "6"
+alice.support("2/1は？") # => "知らん"
+#+END_SRC
 
 *** Proxy
 
     decoratorに似ているけど decoratorほどデコレートしないし便利メソッドを追加しない。
     元のインスタンスを *呼ぶ* or *呼ばない* or *まねる* or *あとで呼ぶ* ぐらいしかない。
 
-    : class User
-    :   attr_accessor :name, :point
-    :   def initialize(name)
-    :     @name = name
-    :     @point = 0
-    :   end
-    : 
-    :   def deposit(amount)
-    :     @point += amount
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class User
+  attr_accessor :name, :point
+  def initialize(name)
+    @name = name
+    @point = 0
+  end
+
+  def deposit(amount)
+    @point += amount
+  end
+end
+#+END_SRC
 
     ガードプロキシ(呼んだり、呼ばなかったり)
 
-    : class UserProxy
-    :   BlackList = ["alice"]
-    : 
-    :   def initialize(user)
-    :     @user = user
-    :   end
-    : 
-    :   def point
-    :     @user.point
-    :   end
-    : 
-    :   def method_missing(*args)
-    :     if BlackList.include?(@user.name)
-    :       return
-    :     end
-    :     @user.send(*args)
-    :   end
-    : end
-    : 
-    : user = User.new("alice")
-    : user.deposit(1)
-    : user.point                      # => 1
-    : 
-    : user = UserProxy.new(User.new("alice"))
-    : user.deposit(1)
-    : user.point                      # => 0
+#+BEGIN_SRC ruby
+class UserProxy
+  BlackList = ["alice"]
+
+  def initialize(user)
+    @user = user
+  end
+
+  def point
+    @user.point
+  end
+
+  def method_missing(*args)
+    if BlackList.include?(@user.name)
+      return
+    end
+    @user.send(*args)
+  end
+end
+
+user = User.new("alice")
+user.deposit(1)
+user.point                      # => 1
+
+user = UserProxy.new(User.new("alice"))
+user.deposit(1)
+user.point                      # => 0
+#+END_SRC
 
     仮想プロキシ(まねる)
 
-    : class VirtualPrinter
-    :   def name
-    :     "BJ10V"
-    :   end
-    : 
-    :   def print(str)
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class VirtualPrinter
+  def name
+    "BJ10V"
+  end
+
+  def print(str)
+  end
+end
+#+END_SRC
 
     遅延実行(あとで呼ぶ)
 
-    : class VirtualPrinter
-    :   def name
-    :     "BJ10V"
-    :   end
-    : 
-    :   def print(str)
-    :     @printer ||= RealPrinter.new
-    :     @printer.print(str)
-    :   end
-    : end
-    : 
-    : class RealPrinter
-    :   def initialize
-    :     puts "とてつもなく時間がかかる初期化処理..."
-    :   end
-    : 
-    :   def name
-    :     "BJ10V"
-    :   end
-    : 
-    :   def print(str)
-    :     str
-    :   end
-    : end
-    : 
-    : printer = VirtualPrinter.new
-    : printer.name        # => "BJ10V"
-    : printer.print("ok") # => "ok"
-    : # >> とてつもなく時間がかかる初期化処理...
+#+BEGIN_SRC ruby
+class VirtualPrinter
+  def name
+    "BJ10V"
+  end
+
+  def print(str)
+    @printer ||= RealPrinter.new
+    @printer.print(str)
+  end
+end
+
+class RealPrinter
+  def initialize
+    puts "とてつもなく時間がかかる初期化処理..."
+  end
+
+  def name
+    "BJ10V"
+  end
+
+  def print(str)
+    str
+  end
+end
+
+printer = VirtualPrinter.new
+printer.name        # => "BJ10V"
+printer.print("ok") # => "ok"
+# >> とてつもなく時間がかかる初期化処理...
+#+END_SRC
 
 *** Command + Composite
 
-    : class Command
-    : end
-    : 
-    : class FooCommand < Command
-    :   def execute
-    :     "a"
-    :   end
-    : end
-    : 
-    : class BarCommand < Command
-    :   def execute
-    :     "b"
-    :   end
-    : end
-    : 
-    : class CompositeCommand < Command
-    :   def initialize
-    :     @commands = []
-    :   end
-    : 
-    :   def <<(command)
-    :     @commands << command
-    :   end
-    : 
-    :   def execute
-    :     @commands.collect(&:execute)
-    :   end
-    : end
-    : 
-    : command = CompositeCommand.new
-    : command << FooCommand.new
-    : command << BarCommand.new
-    : 
-    : command.execute                 # => ["a", "b"]
+#+BEGIN_SRC ruby
+class Command
+end
+
+class FooCommand < Command
+  def execute
+    "a"
+  end
+end
+
+class BarCommand < Command
+  def execute
+    "b"
+  end
+end
+
+class CompositeCommand < Command
+  def initialize
+    @commands = []
+  end
+
+  def <<(command)
+    @commands << command
+  end
+
+  def execute
+    @commands.collect(&:execute)
+  end
+end
+
+command = CompositeCommand.new
+command << FooCommand.new
+command << BarCommand.new
+
+command.execute                 # => ["a", "b"]
+#+END_SRC
 
     コードブロックを使ってクラス爆発を防ぐ
 
-    : class BazCommand < Command
-    :   def initialize(&block)
-    :     @command = block
-    :   end
-    : 
-    :   def execute
-    :     @command.call
-    :   end
-    : end
-    : 
-    : command << BazCommand.new {"c"}
-    : command << BazCommand.new {"d"}
-    : 
-    : command.execute                 # => ["a", "b", "c", "d"]
+#+BEGIN_SRC ruby
+class BazCommand < Command
+  def initialize(&block)
+    @command = block
+  end
+
+  def execute
+    @command.call
+  end
+end
+
+command << BazCommand.new {"c"}
+command << BazCommand.new {"d"}
+
+command.execute                 # => ["a", "b", "c", "d"]
+#+END_SRC
 
 *** Prototype
 
     クラスベース
 
-    : class Cell; end                                # 細胞
-    : class Plankton < Cell; end                     # プランクトン < 細胞
-    : class Fish < Plankton; end                     # 魚 < プランクトン
-    : class Monkey < Fish; def speek?; true end; end # 猿 < 魚
-    : class Human < Monkey; end                      # 人間 < 猿
-    : 
-    : Human.new.speek?                # => true
+#+BEGIN_SRC ruby
+class Cell; end                                # 細胞
+class Plankton < Cell; end                     # プランクトン < 細胞
+class Fish < Plankton; end                     # 魚 < プランクトン
+class Monkey < Fish; def speek?; true end; end # 猿 < 魚
+class Human < Monkey; end                      # 人間 < 猿
+
+Human.new.speek?                # => true
+#+END_SRC
 
     プロトタイプベース。JavaScript はこのタイプ。
 
-    : cell = Object.new
-    : plankton = cell.clone
-    : fish = plankton.clone
-    : monkey = fish.clone.tap {|o|def o.speek?; true end}
-    : human = monkey.clone
-    : human.speek?                    # => true
+#+BEGIN_SRC ruby
+cell = Object.new
+plankton = cell.clone
+fish = plankton.clone
+monkey = fish.clone.tap {|o|def o.speek?; true end}
+human = monkey.clone
+human.speek?                    # => true
+#+END_SRC
 
     その他の例
 
-    : class Piece < Struct.new(:name)
-    : end
-    : 
-    : class Box
-    :   attr_accessor :showcase
-    :   def initialize
-    :     @showcase = {
-    :       :rook => Piece.new("飛"),
-    :     }
-    :   end
-    : 
-    :   def create(name)
-    :     @showcase[name].clone
-    :   end
-    : end
-    : 
-    : box = Box.new
-    : box.create(:rook).name     # => "飛"
+#+BEGIN_SRC ruby
+class Piece < Struct.new(:name)
+end
+
+class Box
+  attr_accessor :showcase
+  def initialize
+    @showcase = {
+      :rook => Piece.new("飛"),
+    }
+  end
+
+  def create(name)
+    @showcase[name].clone
+  end
+end
+
+box = Box.new
+box.create(:rook).name     # => "飛"
+#+END_SRC
 
 *** Template Method
 
-    : class Base
-    :   def build
-    :     "(#{body})"
-    :   end
-    : end
-    : 
-    : class App < Base
-    :   def body
-    :     "ok"
-    :   end
-    : end
-    : 
-    : App.new.build                   # => "(ok)"
+#+BEGIN_SRC ruby
+class Base
+  def build
+    "(#{body})"
+  end
+end
+
+class App < Base
+  def body
+    "ok"
+  end
+end
+
+App.new.build                   # => "(ok)"
+#+END_SRC
 
 *** Iterator
 
     i が邪魔
 
-    : ary = ["a", "b", "c"]
-    : i = 0
-    : while i < ary.size
-    :   p ary[i]
-    :   i += 1
-    : end
+#+BEGIN_SRC ruby
+ary = ["a", "b", "c"]
+i = 0
+while i < ary.size
+  p ary[i]
+  i += 1
+end
+#+END_SRC
 
     ここで Iterator
 
-    : class Iterator
-    :   def initialize(object)
-    :     @object = object
-    :     @index = 0
-    :   end
-    : 
-    :   def has_next?
-    :     @index < @object.size
-    :   end
-    : 
-    :   def next
-    :     @object[@index].tap {@index += 1}
-    :   end
-    : end
-    : 
-    : class Array
-    :   def iterator
-    :     Iterator.new(self)
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Iterator
+  def initialize(object)
+    @object = object
+    @index = 0
+  end
+
+  def has_next?
+    @index < @object.size
+  end
+
+  def next
+    @object[@index].tap {@index += 1}
+  end
+end
+
+class Array
+  def iterator
+    Iterator.new(self)
+  end
+end
+#+END_SRC
 
     i が消えた
 
-    : it = ary.iterator
-    : while it.has_next?
-    :   p it.next
-    : end
+#+BEGIN_SRC ruby
+it = ary.iterator
+while it.has_next?
+  p it.next
+end
+#+END_SRC
 
     it も消す
 
-    : class Array
-    :   def iterator
-    :     it = Iterator.new(self)
-    :     while it.has_next?
-    :       yield it.next
-    :     end
-    :   end
-    : end
-    : 
-    : ary.iterator {|v|p v}
+#+BEGIN_SRC ruby
+class Array
+  def iterator
+    it = Iterator.new(self)
+    while it.has_next?
+      yield it.next
+    end
+  end
+end
+
+ary.iterator {|v|p v}
+#+END_SRC
 
     each とほぼ同じになった
 
@@ -644,225 +698,259 @@
 
     簡易ブラックジャックを行うプレイヤー
 
-    : class Player
-    :   attr_accessor :cards
-    : 
-    :   def initialize
-    :     @cards = []
-    :   end
-    : 
-    :   def take
-    :     @cards << rand(1..13)
-    :   end
-    : 
-    :   def score
-    :     @cards.reduce(&:+)
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Player
+  attr_accessor :cards
+
+  def initialize
+    @cards = []
+  end
+
+  def take
+    @cards << rand(1..13)
+  end
+
+  def score
+    @cards.reduce(&:+)
+  end
+end
+#+END_SRC
 
     5回カードを引くゲームを3回行うと全部21を越えてしまった
 
-    : 3.times do
-    :   player = Player.new
-    :   5.times do
-    :     player.take
-    :   end
-    :   player.score                  # => 33, 37, 52
-    : end
+#+BEGIN_SRC ruby
+3.times do
+  player = Player.new
+  5.times do
+    player.take
+  end
+  player.score                  # => 33, 37, 52
+end
+#+END_SRC
 
     そこでMementoパターン
 
-    : class Player
-    :   def create_memento
-    :     @cards.clone
-    :   end
-    : 
-    :   def restore_memento(object)
-    :     @cards = object.clone
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Player
+  def create_memento
+    @cards.clone
+  end
+
+  def restore_memento(object)
+    @cards = object.clone
+  end
+end
+#+END_SRC
 
     21点未満の状態を保持しておき21を越えたら元に戻す
 
-    : 3.times do
-    :   player = Player.new
-    :   memento = nil
-    :   5.times do
-    :     player.take
-    :     if player.score < 21
-    :       memento = player.create_memento
-    :     elsif player.score > 21
-    :       player.restore_memento(memento)
-    :     end
-    :   end
-    :   player.score                  # => 18, 19, 15
-    : end
+#+BEGIN_SRC ruby
+3.times do
+  player = Player.new
+  memento = nil
+  5.times do
+    player.take
+    if player.score < 21
+      memento = player.create_memento
+    elsif player.score > 21
+      player.restore_memento(memento)
+    end
+  end
+  player.score                  # => 18, 19, 15
+end
+#+END_SRC
 
     この例の場合なら単純に clone してそれを戻してもいい。
     少し用途が違うような気もするけど Marshal.load(Marshal.dump(player)) や marshal_dump marshal_load も考えとく。
 
 *** Visitor
 
-    : Pathname.glob("**/*.rb") {|f| }
+#+BEGIN_SRC ruby
+Pathname.glob("**/*.rb") {|f| }
 
-    : Niconico.crawler do |video|
-    :   if video.mylist >= 10000
-    :     video.download
-    :   end
-    : end
+Niconico.crawler do |video|
+  if video.mylist >= 10000
+    video.download
+  end
+end
+#+END_SRC
 
 *** Flyweight
 
     メモ化すること。インスタンスプールとも言う。
 
-    : module Wave
-    :   def self.load(file)
-    :     p "load #{file}"
-    :     file
-    :   end
-    : end
-    : 
-    : class Sound
-    :   def self.get(name)
-    :     @cache ||= {}
-    :     @cache[name] ||= Wave.load("#{name}.wav")
-    :   end
-    : end
-    : 
-    : Sound.get("blue")               # => "blue.wav"
-    : Sound.get("cyan")               # => "cyan.wav"
-    : Sound.get("blue")               # => "blue.wav"
-    : # >> "load blue.wav"
-    : # >> "load cyan.wav"
+#+BEGIN_SRC ruby
+module Wave
+  def self.load(file)
+    p "load #{file}"
+    file
+  end
+end
+
+class Sound
+  def self.get(name)
+    @cache ||= {}
+    @cache[name] ||= Wave.load("#{name}.wav")
+  end
+end
+
+Sound.get("blue")               # => "blue.wav"
+Sound.get("cyan")               # => "cyan.wav"
+Sound.get("blue")               # => "blue.wav"
+# >> "load blue.wav"
+# >> "load cyan.wav"
+#+END_SRC
 
 *** Builder
 
-    : class Node
-    :   attr_reader :name, :nodes
-    : 
-    :   def initialize(name)
-    :     @name = name
-    :     @nodes = []
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Node
+  attr_reader :name, :nodes
+
+  def initialize(name)
+    @name = name
+    @nodes = []
+  end
+end
+#+END_SRC
 
     見た目が汚い
 
-    : root = Node.new("root")
-    : root.nodes << Node.new("a")
-    : root.nodes << Node.new("b")
-    : root.nodes << (c = Node.new("c"))
-    : c.nodes << Node.new("d")
-    : c.nodes << Node.new("e")
-    : c.nodes << (f = Node.new("f"))
-    : f.nodes << Node.new("g")
-    : f.nodes << Node.new("h")
+#+BEGIN_SRC ruby
+root = Node.new("root")
+root.nodes << Node.new("a")
+root.nodes << Node.new("b")
+root.nodes << (c = Node.new("c"))
+c.nodes << Node.new("d")
+c.nodes << Node.new("e")
+c.nodes << (f = Node.new("f"))
+f.nodes << Node.new("g")
+f.nodes << Node.new("h")
 
-    : root.nodes.collect {|e|e.name}                       # => ["a", "b", "c"]
-    : root.nodes.last.nodes.collect {|e|e.name}            # => ["d", "e", "f"]
-    : root.nodes.last.nodes.last.nodes.collect {|e|e.name} # => ["g", "h"]
+root.nodes.collect {|e|e.name}                       # => ["a", "b", "c"]
+root.nodes.last.nodes.collect {|e|e.name}            # => ["d", "e", "f"]
+root.nodes.last.nodes.last.nodes.collect {|e|e.name} # => ["g", "h"]
+#+END_SRC
 
     ↓改善
 
-    : class Node
-    :   def add(name, &block)
-    :     tap do
-    :       node = self.class.new(name)
-    :       @nodes << node
-    :       if block_given?
-    :         node.instance_eval(&block)
-    :       end
-    :     end
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Node
+  def add(name, &block)
+    tap do
+      node = self.class.new(name)
+      @nodes << node
+      if block_given?
+        node.instance_eval(&block)
+      end
+    end
+  end
+end
+#+END_SRC
 
     簡潔になった
 
-    : root = Node.new("root")
-    : root.instance_eval do
-    :   add "a"
-    :   add "b"
-    :   add "c" do
-    :     add "d"
-    :     add "e"
-    :     add "f" do
-    :       add "g"
-    :       add "h"
-    :     end
-    :   end
-    : end
+#+BEGIN_SRC ruby
+root = Node.new("root")
+root.instance_eval do
+  add "a"
+  add "b"
+  add "c" do
+    add "d"
+    add "e"
+    add "f" do
+      add "g"
+      add "h"
+    end
+  end
+end
+#+END_SRC
 
     結果も同じ
 
-    : root.nodes.collect {|e|e.name}                       # => ["a", "b", "c"]
-    : root.nodes.last.nodes.collect {|e|e.name}            # => ["d", "e", "f"]
-    : root.nodes.last.nodes.last.nodes.collect {|e|e.name} # => ["g", "h"]
+#+BEGIN_SRC ruby
+root.nodes.collect {|e|e.name}                       # => ["a", "b", "c"]
+root.nodes.last.nodes.collect {|e|e.name}            # => ["d", "e", "f"]
+root.nodes.last.nodes.last.nodes.collect {|e|e.name} # => ["g", "h"]
+#+END_SRC
 
 **** mail gem の例
 
      これだと面倒なので
 
-     : mail = Mail.new
-     : mail.to = Mail::AddressContainer.new("alice <alice@example.net>")
+#+BEGIN_SRC ruby
+mail = Mail.new
+mail.to = Mail::AddressContainer.new("alice <alice@example.net>")
+#+END_SRC
 
      改善
 
-     : mail = Mail.new
-     : mail.to = "alice <alice@example.net>"
+#+BEGIN_SRC ruby
+mail = Mail.new
+mail.to = "alice <alice@example.net>"
+#+END_SRC
 
      内部でこっそりインスタンスを生成している
 
-     : mail.to.class      # => Mail::AddressContainer
+#+BEGIN_SRC ruby
+mail.to.class      # => Mail::AddressContainer
+#+END_SRC
 
 *** State
 
-    : class OpenState
-    :   def board
-    :     "営業中"
-    :   end
-    : end
-    : 
-    : class CloseState
-    :   def board
-    :     "準備中"
-    :   end
-    : end
-    : 
-    : class Shop
-    :   def change_state(hour)
-    :     if (11..17).include?(hour)
-    :       @state = OpenState.new
-    :     else
-    :       @state = CloseState.new
-    :     end
-    :   end
-    : 
-    :   def board
-    :     @state.board
-    :   end
-    : end
-    : 
-    : shop = Shop.new
-    : shop.change_state(10)
-    : shop.board                      # => "準備中"
-    : shop.change_state(11)
-    : shop.board                      # => "営業中"
+#+BEGIN_SRC ruby
+class OpenState
+  def board
+    "営業中"
+  end
+end
+
+class CloseState
+  def board
+    "準備中"
+  end
+end
+
+class Shop
+  def change_state(hour)
+    if (11..17).include?(hour)
+      @state = OpenState.new
+    else
+      @state = CloseState.new
+    end
+  end
+
+  def board
+    @state.board
+  end
+end
+
+shop = Shop.new
+shop.change_state(10)
+shop.board                      # => "準備中"
+shop.change_state(11)
+shop.board                      # => "営業中"
+#+END_SRC
 
 *** Facade
 
     例えばこんなのは
 
-    : message = Message.new(:date => Time.now)
-    : message.from = User.find_by_name("alice")
-    : message.to   = User.find_by_name("bob")
-    : message.body = "..."
-    : if message.valid?
-    :   message.save!
-    : end
+#+BEGIN_SRC ruby
+message = Message.new(:date => Time.now)
+message.from = User.find_by_name("alice")
+message.to   = User.find_by_name("bob")
+message.body = "..."
+if message.valid?
+  message.save!
+end
+#+END_SRC
 
     以下のように書きやすくまとめるというだけ？
 
-    : Message.deliver(:from => "alice", :to => "bob", :body => "...")
+#+BEGIN_SRC ruby
+Message.deliver(:from => "alice", :to => "bob", :body => "...")
+#+END_SRC
 
 *** Bridge
 
@@ -871,47 +959,51 @@
     以下のコードは x y の実装2つと、囲まない囲むの2つの機能を組み合わせると2x2で4つのクラスが必要になる。
     このまま拡張していって実装と機能がそれぞれ10個あると100個のクラスを作らないといけなくなる。
 
-    : class A
-    :   def run
-    :     "x"
-    :   end
-    : end
-    : 
-    : class B
-    :   def run
-    :     "y"
-    :   end
-    : end
-    : 
-    : class AA < A
-    :   def run
-    :     "(x)"
-    :   end
-    : end
-    : 
-    : class BB < B
-    :   def run
-    :     "(y)"
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class A
+  def run
+    "x"
+  end
+end
+
+class B
+  def run
+    "y"
+  end
+end
+
+class AA < A
+  def run
+    "(x)"
+  end
+end
+
+class BB < B
+  def run
+    "(y)"
+  end
+end
+#+END_SRC
 
     改善
 
-    : class A
-    :   def initialize(obj)
-    :     @obj = obj
-    :   end
-    : 
-    :   def run
-    :     @obj
-    :   end
-    : end
-    : 
-    : class AA < A
-    :   def run
-    :     "(#{@obj})"
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class A
+  def initialize(obj)
+    @obj = obj
+  end
+
+  def run
+    @obj
+  end
+end
+
+class AA < A
+  def run
+    "(#{@obj})"
+  end
+end
+#+END_SRC
 
 *** Decorator
 
@@ -919,63 +1011,73 @@
 
     このクラスの
 
-    : class User
-    :   def name
-    :     "alice"
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class User
+  def name
+    "alice"
+  end
+end
+#+END_SRC
 
     インスタンスを渡してラップするのが普通
 
-    : class UserDecorator
-    :   def initialize(object)
-    :     @object = object
-    :   end
-    : 
-    :   def to_xxx
-    :     "(#{@object.name})"
-    :   end
-    : end
-    : 
-    : UserDecorator.new(User.new).to_xxx # => "(alice)"
+#+BEGIN_SRC ruby
+class UserDecorator
+  def initialize(object)
+    @object = object
+  end
+
+  def to_xxx
+    "(#{@object.name})"
+  end
+end
+
+UserDecorator.new(User.new).to_xxx # => "(alice)"
+#+END_SRC
 
     もっとシンプルにするなら
 
-    : require "delegate"
-    : 
-    : class UserDecorator < SimpleDelegator
-    :   def to_xxx
-    :     "(#{name})"
-    :   end
-    : end
-    : 
-    : UserDecorator.new(User.new).to_xxx # => "(alice)"
+#+BEGIN_SRC ruby
+require "delegate"
+
+class UserDecorator < SimpleDelegator
+  def to_xxx
+    "(#{name})"
+  end
+end
+
+UserDecorator.new(User.new).to_xxx # => "(alice)"
+#+END_SRC
 
     というか最初から以下の継承すればいいような気がするけどこれだと既存のインスタンスをラップすることができない。
 
-    : class UserDecorator < User
-    :   def to_xxx
-    :     "(#{name})"
-    :   end
-    : end
-    : 
-    : UserDecorator.new.to_xxx # => "(alice)"
+#+BEGIN_SRC ruby
+class UserDecorator < User
+  def to_xxx
+    "(#{name})"
+  end
+end
+
+UserDecorator.new.to_xxx # => "(alice)"
+#+END_SRC
 
     継承なら DelegateClass でもできるようだけど利点がわからない。Userが重複していて気持ち悪いのがやや気になる。
 
-    : require "delegate"
-    : 
-    : class UserDecorator < DelegateClass(User)
-    :   def initialize
-    :     super(User.new)
-    :   end
-    : 
-    :   def to_xxx
-    :     "(#{name})"
-    :   end
-    : end
-    : 
-    : UserDecorator.new.to_xxx # => "(alice)"
+#+BEGIN_SRC ruby
+require "delegate"
+
+class UserDecorator < DelegateClass(User)
+  def initialize
+    super(User.new)
+  end
+
+  def to_xxx
+    "(#{name})"
+  end
+end
+
+UserDecorator.new.to_xxx # => "(alice)"
+#+END_SRC
 
 *** Observer
 
@@ -986,111 +1088,121 @@
 
     密結合状態を
 
-    : class Player
-    :   def initialize
-    :     @paint = Paint.new
-    :     @network = Network.new
-    :   end
-    : 
-    :   def notify
-    :     if @paint
-    :       @paint.font(0, 0, status)
-    :     end
-    :     if @network
-    :       @network.post(status)
-    :     end
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Player
+  def initialize
+    @paint = Paint.new
+    @network = Network.new
+  end
+
+  def notify
+    if @paint
+      @paint.font(0, 0, status)
+    end
+    if @network
+      @network.post(status)
+    end
+  end
+end
+#+END_SRC
 
     解消
 
-    : class Player
-    :   attr_accessor :observers
-    :   def initialize
-    :     @observers = []
-    :   end
-    : 
-    :   def notify
-    :     @observers.each do |observer|
-    :       observer.update(self)
-    :     end
-    :   end
-    : end
-    : 
-    : player = Player.new
-    : player.observers << Paint.new
-    : player.observers << Network.new
+#+BEGIN_SRC ruby
+class Player
+  attr_accessor :observers
+  def initialize
+    @observers = []
+  end
+
+  def notify
+    @observers.each do |observer|
+      observer.update(self)
+    end
+  end
+end
+
+player = Player.new
+player.observers << Paint.new
+player.observers << Network.new
+#+END_SRC
 
 **** 標準ライブラリ
 
-     : require "observer"
-     : 
-     : class Player
-     :   include Observable
-     : 
-     :   def notify
-     :     changed
-     :     notify_observers(self)
-     :   end
-     : end
-     : 
-     : player = Player.new
-     : player.add_observer(Paint.new)
-     : player.add_observer(Network.new)
-     : player.notify
+#+BEGIN_SRC ruby
+require "observer"
 
-     なんなら自分をオブザーバーにしてもいい
+class Player
+  include Observable
 
-     : require "observer"
-     : class Player
-     :   include Observable
-     : 
-     :   def initialize
-     :     add_observer(self) # add_observer(self, :draw) のように通知メソッド変更可
-     :   end
-     : 
-     :   def notify
-     :     changed
-     :     notify_observers(self)
-     :   end
-     : 
-     :   def update(player)
-     :     player                      # => #<Player:0x007ff9098472e0 ...>
-     :   end
-     : end
-     : 
-     : player = Player.new
-     : player.notify
+  def notify
+    changed
+    notify_observers(self)
+  end
+end
+
+player = Player.new
+player.add_observer(Paint.new)
+player.add_observer(Network.new)
+player.notify
+#+END_SRC
+
+    なんなら自分をオブザーバーにしてもいい
+
+#+BEGIN_SRC ruby
+require "observer"
+class Player
+  include Observable
+
+  def initialize
+    add_observer(self) # add_observer(self, :draw) のように通知メソッド変更可
+  end
+
+  def notify
+    changed
+    notify_observers(self)
+  end
+
+  def update(player)
+    player                      # => #<Player:0x007ff9098472e0 ...>
+  end
+end
+
+player = Player.new
+player.notify
+#+END_SRC
 
 *** Component Bus
 
     Observer たちがデータ共有したいので、Subject を共有することにしたパターンらしい。
     http://www002.upp.so-net.ne.jp/ys_oota/mdp/ComponentBus/ 参照。
 
-    : class Player
-    :   include Observable
-    : 
-    :   attr_accessor :data
-    : 
-    :   def notify
-    :     changed
-    :     notify_observers
-    :   end
-    : end
-    : 
-    : class Display
-    :   def initialize(player)
-    :     player.add_observer(self)
-    :     @player = player    # Subjectを握っている
-    :   end
-    : 
-    :   def update
-    :   end
-    : 
-    :   def data
-    :     @player.data
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Player
+  include Observable
+
+  attr_accessor :data
+
+  def notify
+    changed
+    notify_observers
+  end
+end
+
+class Display
+  def initialize(player)
+    player.add_observer(self)
+    @player = player    # Subjectを握っている
+  end
+
+  def update
+  end
+
+  def data
+    @player.data
+  end
+end
+#+END_SRC
 
     汎用性のあった Observer が Subject 依存になるデメリットも考慮すること。
 
@@ -1098,297 +1210,333 @@
 
     グローバル変数を使うぐらいなら
 
-    : class C
-    :   private_class_method :new
-    :   def self.instance
-    :     @instance ||= new
-    :   end
-    : end
-    : 
-    : C.instance # => #<C:0x007f98e404a518>
-    : C.instance # => #<C:0x007f98e404a518>
+#+BEGIN_SRC ruby
+class C
+  private_class_method :new
+  def self.instance
+    @instance ||= new
+  end
+end
+
+C.instance # => #<C:0x007f98e404a518>
+C.instance # => #<C:0x007f98e404a518>
+#+END_SRC
 
     標準ライブラリを使った場合
 
-    : require "singleton"
-    : 
-    : class C
-    :   include Singleton
-    : end
-    : 
-    : C.instance # => #<C:0x007f98e509f558>
-    : C.instance # => #<C:0x007f98e509f558>
+#+BEGIN_SRC ruby
+require "singleton"
+
+class C
+  include Singleton
+end
+
+C.instance # => #<C:0x007f98e509f558>
+C.instance # => #<C:0x007f98e509f558>
+#+END_SRC
 
     そこまできばらなくても次のようなコードで充分なことも多い
 
-    : module M
-    :   extend self
-    : 
-    :   def func
-    :   end
-    : end
+#+BEGIN_SRC ruby
+module M
+  extend self
+
+  def func
+  end
+end
+#+END_SRC
 
 *** Strategy
 
     基本形
 
-    : class Random
-    :   def next
-    :     rand(7)
-    :   end
-    : end
-    : 
-    : class RedOnly
-    :   def next
-    :     6
-    :   end
-    : end
-    : 
-    : # テトリミノのツモはダイス次第
-    : class Player
-    :   def initialize(dice)
-    :     @dice = dice
-    :   end
-    : 
-    :   def run
-    :     7.times.collect { @dice.next }
-    :   end
-    : end
-    : 
-    : Player.new(Random.new).run  # => [1, 5, 4, 1, 0, 0, 6]
-    : Player.new(RedOnly.new).run # => [6, 6, 6, 6, 6, 6, 6]
+#+BEGIN_SRC ruby
+class Random
+  def next
+    rand(7)
+  end
+end
+
+class RedOnly
+  def next
+    6
+  end
+end
+
+# テトリミノのツモはダイス次第
+class Player
+  def initialize(dice)
+    @dice = dice
+  end
+
+  def run
+    7.times.collect { @dice.next }
+  end
+end
+
+Player.new(Random.new).run  # => [1, 5, 4, 1, 0, 0, 6]
+Player.new(RedOnly.new).run # => [6, 6, 6, 6, 6, 6, 6]
+#+END_SRC
 
     Rubyなら
 
-    : class Player
-    :   def initialize(&dice)
-    :     @dice = dice
-    :   end
-    : 
-    :   def run
-    :     7.times.collect { @dice.call }
-    :   end
-    : end
-    : 
-    : Player.new { rand(7) }.run  # => [2, 5, 5, 6, 6, 2, 0]
-    : Player.new { 6 }.run        # => [6, 6, 6, 6, 6, 6, 6]
+#+BEGIN_SRC ruby
+class Player
+  def initialize(&dice)
+    @dice = dice
+  end
+
+  def run
+    7.times.collect { @dice.call }
+  end
+end
+
+Player.new { rand(7) }.run  # => [2, 5, 5, 6, 6, 2, 0]
+Player.new { 6 }.run        # => [6, 6, 6, 6, 6, 6, 6]
+#+END_SRC
 
     これでクラスが爆発しなくなる
 
 *** Adapter
 
-    : class C
-    :   def f1
-    :     "x"
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class C
+  def f1
+    "x"
+  end
+end
+#+END_SRC
 
     継承版
 
-    : class C2 < C
-    :   def f2
-    :     f1 * 2
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class C2 < C
+  def f2
+    f1 * 2
+  end
+end
+#+END_SRC
 
     委譲版
 
-    : class C3
-    :   def initialize
-    :     @c = C.new
-    :   end
-    : 
-    :   def f1
-    :     @c.f1
-    :   end
-    : 
-    :   def f2
-    :     f1 * 2
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class C3
+  def initialize
+    @c = C.new
+  end
+
+  def f1
+    @c.f1
+  end
+
+  def f2
+    f1 * 2
+  end
+end
+#+END_SRC
 
     f1 メソッドを書くのが面倒なとき
 
-    : require "delegate"
-    : 
-    : class C4 < SimpleDelegator
-    :   def initialize
-    :     super(C.new)
-    :   end
-    : 
-    :   def f2
-    :     f1 * 2
-    :   end
-    : end
+#+BEGIN_SRC ruby
+require "delegate"
 
-    : [C2.new.f1, C2.new.f2]      # => ["x", "xx"]
-    : [C3.new.f1, C3.new.f2]      # => ["x", "xx"]
-    : [C4.new.f1, C4.new.f2]      # => ["x", "xx"]
+class C4 < SimpleDelegator
+  def initialize
+    super(C.new)
+  end
+
+  def f2
+    f1 * 2
+  end
+end
+#+END_SRC
+
+#+BEGIN_SRC ruby
+[C2.new.f1, C2.new.f2]      # => ["x", "xx"]
+[C3.new.f1, C3.new.f2]      # => ["x", "xx"]
+[C4.new.f1, C4.new.f2]      # => ["x", "xx"]
+#+END_SRC
 
 **** Factory Method だと思っていたら Adapter だったもの
 
      こういうのはあっとゆうまに search メソッドが肥大化する。
      で、Userのクラスメソッドとしてメソッドを分離するという *間違ったリファクタリング* を行ってしまいがち。
 
-     : class User
-     :   def self.search(query)
-     :     ["name like ?", "%#{query}%"]
-     :   end
-     : end
-     : 
-     : User.search("alice")                     # => ["name like ?", "%alice%"]
+#+BEGIN_SRC ruby
+class User
+  def self.search(query)
+    ["name like ?", "%#{query}%"]
+  end
+end
 
-     そうなりそうなら次のように改善
+User.search("alice")                     # => ["name like ?", "%alice%"]
+#+END_SRC
 
-     : class User
-     :   def self.search(*args)
-     :     UserSearch.new(self, *args).run
-     :   end
-     : end
-     : 
-     : class UserSearch
-     :   def initialize(model, query)
-     :     @model = model
-     :     @query = query
-     :   end
-     : 
-     :   def run
-     :     ["name like ?", "%#{@query}%"]
-     :   end
-     : end
-     : 
-     : User.search("alice")   # => ["name like ?", "%alice%"]
+    そうなりそうなら次のように改善
 
-     UserSearch の中でいくらメソッドを増やしても元のUserには影響がない。
+#+BEGIN_SRC ruby
+class User
+  def self.search(*args)
+    UserSearch.new(self, *args).run
+  end
+end
 
-     次は例が悪いけど @color から変換するメソッドを Player 自体に入れてしまって Player クラスがカオスになってしまうケース。
+class UserSearch
+  def initialize(model, query)
+    @model = model
+    @query = query
+  end
 
-     : class Player
-     :   attr_accessor :color
-     :   def initialize
-     :     @color = :blue
-     :   end
-     : end
+  def run
+    ["name like ?", "%#{@query}%"]
+  end
+end
 
-     ここでプレイヤーの色を #00F で返したかったので rgb メソッド定義した。これがダメ。
+User.search("alice")   # => ["name like ?", "%alice%"]
+#+END_SRC
 
-     : class Player
-     :   def rgb
-     :     if @color == :blue
-     :       "#00F"
-     :     end
-     :   end
-     : end
+    UserSearch の中でいくらメソッドを増やしても元のUserには影響がない。
 
-     改善
+    次は例が悪いけど @color から変換するメソッドを Player 自体に入れてしまって Player クラスがカオスになってしまうケース。
 
-     : class ColorInfo
-     :   attr_accessor :color
-     : 
-     :   def initialize(color)
-     :     @color = color
-     :   end
-     : 
-     :   def rgb
-     :     "#00F"
-     :   end
-     : end
-     : 
-     : class Player
-     :   def color_info
-     :     ColorInfo.new(@color)
-     :   end
-     : end
-     : 
-     : Player.new.color_info.rgb            # => "#00F"
+#+BEGIN_SRC ruby
+class Player
+  attr_accessor :color
+  def initialize
+    @color = :blue
+  end
+end
+#+END_SRC
 
-     こうすればいくらでも窮屈な状態から脱出できる。
-     もし、青が欲しければ ColorInfo に足せばいい。
+    ここでプレイヤーの色を #00F で返したかったので rgb メソッド定義した。これがダメ。
 
-     : class ColorInfo
-     :   def human_name
-     :     "青"
-     :   end
-     : end
-     : 
-     : Player.new.color_info.human_name     # => "青"
+#+BEGIN_SRC ruby
+class Player
+  def rgb
+    if @color == :blue
+      "#00F"
+    end
+  end
+end
+#+END_SRC
 
-     もっと言うなら最初から @color は ColorInfo のインスタンスにしときゃいい。
+    改善
+
+#+BEGIN_SRC ruby
+class ColorInfo
+  attr_accessor :color
+
+  def initialize(color)
+    @color = color
+  end
+
+  def rgb
+    "#00F"
+  end
+end
+
+class Player
+  def color_info
+    ColorInfo.new(@color)
+  end
+end
+
+Player.new.color_info.rgb            # => "#00F"
+#+END_SRC
+
+    こうすればいくらでも窮屈な状態から脱出できる。
+    もし、青が欲しければ ColorInfo に足せばいい。
+
+#+BEGIN_SRC ruby
+class ColorInfo
+  def human_name
+    "青"
+  end
+end
+
+Player.new.color_info.human_name     # => "青"
+#+END_SRC
+
+    もっと言うなら最初から @color は ColorInfo のインスタンスにしときゃいい。
 
 *** Interpreter
 
     シンプルなDSL
 
-    : class Expression
-    : end
-    : 
-    : class Value < Expression
-    :   def initialize(value)
-    :     @value = value
-    :   end
-    : 
-    :   def evaluate
-    :     @value
-    :   end
-    : end
-    : 
-    : class Add < Expression
-    :   def initialize(left, right)
-    :     @left, @right = left, right
-    :   end
-    : 
-    :   def evaluate
-    :     @left.evaluate + @right.evaluate
-    :   end
-    : end
-    : 
-    : def A(l, r)
-    :   Add.new(Value.new(l), Value.new(r))
-    : end
-    : 
-    : expr = A 1, 2
-    : expr.evaluate # => 3
+#+BEGIN_SRC ruby
+class Expression
+end
+
+class Value < Expression
+  def initialize(value)
+    @value = value
+  end
+
+  def evaluate
+    @value
+  end
+end
+
+class Add < Expression
+  def initialize(left, right)
+    @left, @right = left, right
+  end
+
+  def evaluate
+    @left.evaluate + @right.evaluate
+  end
+end
+
+def A(l, r)
+  Add.new(Value.new(l), Value.new(r))
+end
+
+expr = A 1, 2
+expr.evaluate # => 3
+#+END_SRC
 
     他のコードに変換
 
-    : class Expression
-    : end
-    : 
-    : class Value < Expression
-    :   attr_accessor :value
-    :   def initialize(value)
-    :     @value = value
-    :   end
-    : 
-    :   def evaluate
-    :     ["mov  ax, #{@value}"]
-    :   end
-    : end
-    : 
-    : class Add < Expression
-    :   def initialize(left, right)
-    :     @left, @right = left, right
-    :   end
-    : 
-    :   def evaluate
-    :     code = []
-    :     code << @left.evaluate
-    :     code << "mov  dx, ax"
-    :     code << @right.evaluate
-    :     code << "add  ax, dx"
-    :   end
-    : end
-    : 
-    : def A(l, r)
-    :   Add.new(Value.new(l), Value.new(r))
-    : end
-    : 
-    : expr = A 1, 2
-    : puts expr.evaluate
-    : # >> mov  ax, 1
-    : # >> mov  dx, ax
-    : # >> mov  ax, 2
-    : # >> add  ax, dx
+#+BEGIN_SRC ruby
+class Expression
+end
+
+class Value < Expression
+  attr_accessor :value
+  def initialize(value)
+    @value = value
+  end
+
+  def evaluate
+    ["mov  ax, #{@value}"]
+  end
+end
+
+class Add < Expression
+  def initialize(left, right)
+    @left, @right = left, right
+  end
+
+  def evaluate
+    code = []
+    code << @left.evaluate
+    code << "mov  dx, ax"
+    code << @right.evaluate
+    code << "add  ax, dx"
+  end
+end
+
+def A(l, r)
+  Add.new(Value.new(l), Value.new(r))
+end
+
+expr = A 1, 2
+puts expr.evaluate
+# >> mov  ax, 1
+# >> mov  dx, ax
+# >> mov  ax, 2
+# >> add  ax, dx
+#+END_SRC
 
 *** Typed Message
 
@@ -1396,53 +1544,57 @@
 
     http://www002.upp.so-net.ne.jp/ys_oota/mdp/TypedMessage/index.htm 参照
 
-    : class MouseMotion
-    : end
-    : 
-    : class App
-    :   def receive(e)
-    :     case e
-    :     when MouseMotion
-    :     end
-    :   end
-    : end
-    : 
-    : app = App.new
-    : app.receive(MouseMotion.new)
+#+BEGIN_SRC ruby
+class MouseMotion
+end
+
+class App
+  def receive(e)
+    case e
+    when MouseMotion
+    end
+  end
+end
+
+app = App.new
+app.receive(MouseMotion.new)
+#+END_SRC
 
 *** Cache Manager
 
     http://www002.upp.so-net.ne.jp/ys_oota/mdp/CacheManager/index.htm 参照
 
-    : class Cache
-    :   attr_accessor :max, :pool
-    : 
-    :   def initialize
-    :     @max = 2
-    :     @pool = []
-    :   end
-    : 
-    :   def fetch(key)
-    :     v = nil
-    :     if index = @pool.find_index {|e|e[:key] == key}
-    :       v = @pool.slice!(index)[:val]
-    :     else
-    :       v = yield
-    :     end
-    :     @pool = ([:key => key, :val => v] + @pool).take(@max)
-    :     v
-    :   end
-    : end
-    : 
-    : cache = Cache.new
-    : cache.fetch(:a){1}              # => 1
-    : cache.pool                      # => [{:key=>:a, :val=>1}]
-    : cache.fetch(:b){1}              # => 1
-    : cache.pool                      # => [{:key=>:b, :val=>1}, {:key=>:a, :val=>1}]
-    : cache.fetch(:a){2}              # => 1
-    : cache.pool                      # => [{:key=>:a, :val=>1}, {:key=>:b, :val=>1}]
-    : cache.fetch(:c){1}              # => 1
-    : cache.pool                      # => [{:key=>:c, :val=>1}, {:key=>:a, :val=>1}]
+#+BEGIN_SRC ruby
+class Cache
+  attr_accessor :max, :pool
+
+  def initialize
+    @max = 2
+    @pool = []
+  end
+
+  def fetch(key)
+    v = nil
+    if index = @pool.find_index {|e|e[:key] == key}
+      v = @pool.slice!(index)[:val]
+    else
+      v = yield
+    end
+    @pool = ([:key => key, :val => v] + @pool).take(@max)
+    v
+  end
+end
+
+cache = Cache.new
+cache.fetch(:a){1}              # => 1
+cache.pool                      # => [{:key=>:a, :val=>1}]
+cache.fetch(:b){1}              # => 1
+cache.pool                      # => [{:key=>:b, :val=>1}, {:key=>:a, :val=>1}]
+cache.fetch(:a){2}              # => 1
+cache.pool                      # => [{:key=>:a, :val=>1}, {:key=>:b, :val=>1}]
+cache.fetch(:c){1}              # => 1
+cache.pool                      # => [{:key=>:c, :val=>1}, {:key=>:a, :val=>1}]
+#+END_SRC
 
     a b で pool は b a の順になり、次の a で a b になり、次の c で c a b になる。
     が、キャッシュサイズは 2 なので b が死んで c a
@@ -1453,25 +1605,27 @@
 
     排他制御のこと
 
-    : mutex = Mutex.new
-    : a = 0
-    : b = 0
-    : 2.times.collect do
-    :   Thread.start do
-    :     2.times do
-    :       mutex.synchronize do
-    :         a += 1
-    :         Thread.pass
-    :         b += 1
-    :         p [a, b, (a == b)]
-    :       end
-    :     end
-    :   end
-    : end.each(&:join)
-    : # >> [1, 1, true]
-    : # >> [2, 2, true]
-    : # >> [3, 3, true]
-    : # >> [4, 4, true]
+#+BEGIN_SRC ruby
+mutex = Mutex.new
+a = 0
+b = 0
+2.times.collect do
+  Thread.start do
+    2.times do
+      mutex.synchronize do
+        a += 1
+        Thread.pass
+        b += 1
+        p [a, b, (a == b)]
+      end
+    end
+  end
+end.each(&:join)
+# >> [1, 1, true]
+# >> [2, 2, true]
+# >> [3, 3, true]
+# >> [4, 4, true]
+#+END_SRC
 
     明示的にパスしても synchronize ブロック内はスレッドが切り替わらないことがわかる。
 
@@ -1482,94 +1636,104 @@
 
     Javaの本だとセッターがないものと書かれているけど、rubyの場合はreaderからreplaceすれば書き換えられるので気持ち程度にfreezeしてみた。
 
-    : class C
-    :   attr_reader :v
-    :   def initialize(v)
-    :     @v = v
-    :     @v.freeze
-    :   end
-    : end
-    : 
-    : a = C.new("x").freeze
-    : a.v.replace("y") rescue $! # => #<RuntimeError: can't modify frozen String>
-    : a.v += "y" rescue $!       # => #<NoMethodError: undefined method `v=' for #<C:0x007fbfc3903910 @v="x">>
-    : a.v                        # => "x"
+#+BEGIN_SRC ruby
+class C
+  attr_reader :v
+  def initialize(v)
+    @v = v
+    @v.freeze
+  end
+end
+
+a = C.new("x").freeze
+a.v.replace("y") rescue $! # => #<RuntimeError: can't modify frozen String>
+a.v += "y" rescue $!       # => #<NoMethodError: undefined method `v=' for #<C:0x007fbfc3903910 @v="x">>
+a.v                        # => "x"
+#+END_SRC
 
 *** Guarded Suspention - 実行できるまで待つ
 
-    : queue = Queue.new
-    : 
-    : send_num = 10
-    : 
-    : sender = Thread.start do
-    :   Thread.current[:data] = []
-    :   send_num.times do |i|
-    :     sleep(rand(0..0.01))
-    :     queue << i
-    :     Thread.current[:data] << i
-    :   end
-    : end
-    : 
-    : receiver = Thread.start do
-    :   Thread.current[:data] = []
-    :   send_num.times do
-    :     sleep(rand(0..0.001))
-    :     # pop出来ないとスレッドが自動停止してくれる。popだけどFIFO。間違いそう。
-    :     Thread.current[:data] << queue.pop
-    :   end
-    : end
-    : 
-    : sender.join
-    : receiver.join
-    : 
-    : # 正常にデータが受け取れているか確認
-    : sender[:data]   # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    : receiver[:data] # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+#+BEGIN_SRC ruby
+queue = Queue.new
+
+send_num = 10
+
+sender = Thread.start do
+  Thread.current[:data] = []
+  send_num.times do |i|
+    sleep(rand(0..0.01))
+    queue << i
+    Thread.current[:data] << i
+  end
+end
+
+receiver = Thread.start do
+  Thread.current[:data] = []
+  send_num.times do
+    sleep(rand(0..0.001))
+    # pop出来ないとスレッドが自動停止してくれる。popだけどFIFO。間違いそう。
+    Thread.current[:data] << queue.pop
+  end
+end
+
+sender.join
+receiver.join
+
+# 正常にデータが受け取れているか確認
+sender[:data]   # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+receiver[:data] # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+#+END_SRC
 
 *** Worker Thread - 仕事がくるまで待ち仕事がきたら働く
 
-    : class Channel < SizedQueue
-    :   attr_reader :threads
-    : 
-    :   def initialize(size)
-    :     super(size)
-    :     @threads = size.times.collect do |i|
-    :       Thread.start(i) do |i|
-    :         loop do
-    :           request = pop
-    :           p "スレッド#{i}が#{request}を担当"
-    :           sleep(1)
-    :         end
-    :       end
-    :     end
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Channel < SizedQueue
+  attr_reader :threads
+
+  def initialize(size)
+    super(size)
+    @threads = size.times.collect do |i|
+      Thread.start(i) do |i|
+        loop do
+          request = pop
+          p "スレッド#{i}が#{request}を担当"
+          sleep(1)
+        end
+      end
+    end
+  end
+end
+#+END_SRC
 
     1つのワーカーだけだと 3.3 秒。(4秒になってないのは、たぶん最後の sleep(1) が開始した時点で status == "sleep" になってるから？)
 
-    : channel = Channel.new(1)
-    : t = Time.now
-    : 4.times {|i|channel << i}
-    : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
-    : puts "%.1f s" % (Time.now - t)
-    : # >> "スレッド0が0を担当"
-    : # >> "スレッド0が1を担当"
-    : # >> "スレッド0が2を担当"
-    : # >> "スレッド0が3を担当"
-    : # >> 3.3 s
+#+BEGIN_SRC ruby
+channel = Channel.new(1)
+t = Time.now
+4.times {|i|channel << i}
+nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
+puts "%.1f s" % (Time.now - t)
+# >> "スレッド0が0を担当"
+# >> "スレッド0が1を担当"
+# >> "スレッド0が2を担当"
+# >> "スレッド0が3を担当"
+# >> 3.3 s
+#+END_SRC
 
     4つのワーカーだと処理が分散してすぐ終わる
 
-    : channel = Channel.new(4)
-    : t = Time.now
-    : 4.times {|i|channel << i}
-    : nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
-    : puts "%.1f s" % (Time.now - t)
-    : # >> "スレッド1が0を担当"
-    : # >> "スレッド0が1を担当"
-    : # >> "スレッド3が2を担当"
-    : # >> "スレッド2が3を担当"
-    : # >> 0.8 s
+#+BEGIN_SRC ruby
+channel = Channel.new(4)
+t = Time.now
+4.times {|i|channel << i}
+nil until channel.size.zero? && channel.threads.all?{|t|t.status == "sleep"}
+puts "%.1f s" % (Time.now - t)
+# >> "スレッド1が0を担当"
+# >> "スレッド0が1を担当"
+# >> "スレッド3が2を担当"
+# >> "スレッド2が3を担当"
+# >> 0.8 s
+#+END_SRC
 
 *** Balking (ボーキング) - 実行できるまで待たない
 
@@ -1580,64 +1744,70 @@
     ただ a の処理が 0.1 秒かかっているため、直後に発動した b は a が処理中のためリターンしている。
     aの処理が終わったころに発動した c は実行できていることがわかる。
 
-    : class C
-    :   include Mutex_m
-    : 
-    :   def initialize
-    :     super
-    :     @change = false
-    :   end
-    : 
-    :   def execute(str, t)
-    :     synchronize do
-    :       if @change
-    :         p "処理中のため#{str}はスキップ"
-    :         return
-    :       end
-    :       @change = true
-    : 
-    :       p str
-    :       sleep(t) # sleepはsynchronizeの中で行わないとエラーになる
-    : 
-    :       @change = false
-    :     end
-    :   end
-    : end
-    : 
-    : x = C.new
-    : threads = []
-    : threads << Thread.start {x.execute("a", 0.1)}
-    : threads << Thread.start {x.execute("b", 0)}
-    : sleep(0.1)
-    : threads << Thread.start {x.execute("c", 0)}
-    : threads.collect(&:join)
-    : # >> "a"
-    : # >> "処理中のためbはスキップ"
-    : # >> "c"
+#+BEGIN_SRC ruby
+class C
+  include Mutex_m
+
+  def initialize
+    super
+    @change = false
+  end
+
+  def execute(str, t)
+    synchronize do
+      if @change
+        p "処理中のため#{str}はスキップ"
+        return
+      end
+      @change = true
+
+      p str
+      sleep(t) # sleepはsynchronizeの中で行わないとエラーになる
+
+      @change = false
+    end
+  end
+end
+
+x = C.new
+threads = []
+threads << Thread.start {x.execute("a", 0.1)}
+threads << Thread.start {x.execute("b", 0)}
+sleep(0.1)
+threads << Thread.start {x.execute("c", 0)}
+threads.collect(&:join)
+# >> "a"
+# >> "処理中のためbはスキップ"
+# >> "c"
+#+END_SRC
 
 *** Thread Per Message - 戻値不要
 
-    : def request(x)
-    :   Thread.start(x){|x|p x}
-    : end
-    : 
-    : request("a")
-    : request("b")
-    : 
-    : (Thread.list - [Thread.main]).each(&:join)
-    : # >> "a"
-    : # >> "b"
+#+BEGIN_SRC ruby
+def request(x)
+  Thread.start(x){|x|p x}
+end
+
+request("a")
+request("b")
+
+(Thread.list - [Thread.main]).each(&:join)
+# >> "a"
+# >> "b"
+#+END_SRC
 
 *** Future - 戻値必要
 
-    : def request(x)
-    :   Thread.start(x){|x|x}
-    : end
-    : 
-    : t = []
-    : t << request("A")
-    : t << request("B")
-    : t.collect(&:value) # => ["A", "B"]
+#+BEGIN_SRC ruby
+def request(x)
+  Thread.start(x){|x|x}
+end
+
+t = []
+t << request("A")
+t << request("B")
+t.collect(&:value) # => ["A", "B"]
+#+END_SRC
 
 *** Producer Consumer
 
@@ -1645,126 +1815,140 @@
     SizedQueueのサイズの小さいほど流れが悪くなる。
     以下の例はSizedQueueのサイズが1しかないのでconsumerがpopしてくれないと次をpushできない。
 
-    : queue = SizedQueue.new(1)
-    : producer = Thread.start {
-    :   4.times {|i|
-    :     p ["作成", i]
-    :     queue.push(i)
-    :   }
-    :   p "作成側は先に終了"
-    : }
-    : consumer = Thread.start {
-    :   4.times {
-    :     p ["使用", queue.pop]
-    :     sleep(0.01)
-    :   }
-    : }
-    : producer.join
-    : consumer.join
-    : # >> ["作成", 0]
-    : # >> ["作成", 1]
-    : # >> ["使用", 0]
-    : # >> ["作成", 2]
-    : # >> ["使用", 1]
-    : # >> ["作成", 3]
-    : # >> ["使用", 2]
-    : # >> "作成側は先に終了"
-    : # >> ["使用", 3]
+#+BEGIN_SRC ruby
+queue = SizedQueue.new(1)
+producer = Thread.start {
+  4.times {|i|
+    p ["作成", i]
+    queue.push(i)
+  }
+  p "作成側は先に終了"
+}
+consumer = Thread.start {
+  4.times {
+    p ["使用", queue.pop]
+    sleep(0.01)
+  }
+}
+producer.join
+consumer.join
+# >> ["作成", 0]
+# >> ["作成", 1]
+# >> ["使用", 0]
+# >> ["作成", 2]
+# >> ["使用", 1]
+# >> ["作成", 3]
+# >> ["使用", 2]
+# >> "作成側は先に終了"
+# >> ["使用", 3]
+#+END_SRC
 
 *** Read Write Lock
 
-    : class Buffer
-    :   def initialize
-    :     @sync = Sync.new
-    :     @str = ""
-    :   end
-    : 
-    :   def write(_str)
-    :     @sync.synchronize(:EX) do
-    :       _str.chars.with_index do |c, i|
-    :         sleep(0.0001)
-    :         @str[i] = c
-    :       end
-    :     end
-    :   end
-    : 
-    :   def read
-    :     @sync.synchronize(:SH) do
-    :       @str.size.times.collect {|i|
-    :         sleep(0.001)
-    :         @str[i]
-    :       }.join
-    :     end
-    :   end
-    : end
+#+BEGIN_SRC ruby
+class Buffer
+  def initialize
+    @sync = Sync.new
+    @str = ""
+  end
+
+  def write(_str)
+    @sync.synchronize(:EX) do
+      _str.chars.with_index do |c, i|
+        sleep(0.0001)
+        @str[i] = c
+      end
+    end
+  end
+
+  def read
+    @sync.synchronize(:SH) do
+      @str.size.times.collect {|i|
+        sleep(0.001)
+        @str[i]
+      }.join
+    end
+  end
+end
+#+END_SRC
 
     書き込みスレッドと、読み込みスレッドを並列で起動して、お互いが干渉するようにする
 
-    : buffer = Buffer.new
-    : w = Thread.start do
-    :   ("A".."Z").cycle {|c|
-    :     buffer.write(c.to_s * 64)
-    :     sleep(0.001)
-    :   }
-    : end
-    : r = Thread.start do
-    :   10.times do
-    :     sleep(0.001)
-    :     p buffer.read
-    :   end
-    : end
-    : r.join
-    : w.kill
+#+BEGIN_SRC ruby
+buffer = Buffer.new
+w = Thread.start do
+  ("A".."Z").cycle {|c|
+    buffer.write(c.to_s * 64)
+    sleep(0.001)
+  }
+end
+r = Thread.start do
+  10.times do
+    sleep(0.001)
+    p buffer.read
+  end
+end
+r.join
+w.kill
+#+END_SRC
 
     でも結果は壊れてない
 
-    : # >> "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-    : # >> "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
-    : # >> "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
-    : # >> "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
-    : # >> "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
-    : # >> "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
-    : # >> "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
-    : # >> "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
-    : # >> "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
-    : # >> "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
+#+BEGIN_SRC ruby
+# >> "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+# >> "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+# >> "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+# >> "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+# >> "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+# >> "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+# >> "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
+# >> "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+# >> "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
+# >> "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
+#+END_SRC
 
     @sync.synchronize ブロックを使わなかった場合
 
-    : # >> AAAAAAA
-    : # >> BBBBBBBBBBCCCCCCCCCCCDDDDDDDDDDDEEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGG
-    : # >> IIIIIIIIIIJJJJJJJJJJJKKKKKKKKKKKLLLLLLLLLLMMMMMMMMMMMNNNNNNNNNNO
-    : # >> PPPPPPPPPPQQQQQQQQQQQRRRRRRRRRRRSSSSSSSSSSTTTTTTTTTTTUUUUUUUUUUU
-    : # >> WWWWWWWWWWXXXXXXXXXXXYYYYYYYYYYYYZZZZZZZZZZAAAAAAAAAAABBBBBBBBBB
-    : # >> DDDDDDDDDDDEEEEEEEEEEEEFFFFFFFFFFFGGGGGGGGGGHHHHHHHHHHHIIIIIIIII
-    : # >> JJKKKKKKKKKKKLLLLLLLLLLLMMMMMMMMMMNNNNNNNNNNNOOOOOOOOOOOPPPPPPPP
-    : # >> QQRRRRRRRRRRRSSSSSSSSSSTTTTTTTTTTTUUUUUUUUUUVVVVVVVVVVVWWWWWWWWW
-    : # >> XXYYYYYYYYYYYZZZZZZZZZZZAAAAAAAAAAABBBBBBBBBBBCCCCCCCCCCCDDDDDDD
-    : # >> EEEEFFFFFFFFFFFGGGGGGGGGGGHHHHHHHHHHHIIIIIIIIIIIJJJJJJJJJJJKKKKK
+#+BEGIN_SRC ruby
+# >> AAAAAAA
+# >> BBBBBBBBBBCCCCCCCCCCCDDDDDDDDDDDEEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGG
+# >> IIIIIIIIIIJJJJJJJJJJJKKKKKKKKKKKLLLLLLLLLLMMMMMMMMMMMNNNNNNNNNNO
+# >> PPPPPPPPPPQQQQQQQQQQQRRRRRRRRRRRSSSSSSSSSSTTTTTTTTTTTUUUUUUUUUUU
+# >> WWWWWWWWWWXXXXXXXXXXXYYYYYYYYYYYYZZZZZZZZZZAAAAAAAAAAABBBBBBBBBB
+# >> DDDDDDDDDDDEEEEEEEEEEEEFFFFFFFFFFFGGGGGGGGGGHHHHHHHHHHHIIIIIIIII
+# >> JJKKKKKKKKKKKLLLLLLLLLLLMMMMMMMMMMNNNNNNNNNNNOOOOOOOOOOOPPPPPPPP
+# >> QQRRRRRRRRRRRSSSSSSSSSSTTTTTTTTTTTUUUUUUUUUUVVVVVVVVVVVWWWWWWWWW
+# >> XXYYYYYYYYYYYZZZZZZZZZZZAAAAAAAAAAABBBBBBBBBBBCCCCCCCCCCCDDDDDDD
+# >> EEEEFFFFFFFFFFFGGGGGGGGGGGHHHHHHHHHHHIIIIIIIIIIIJJJJJJJJJJJKKKKK
+#+END_SRC
 
 *** Two Phase Terminatin
 
     外から Thread.kill するんじゃなくて止まるように指示
 
-    : t = Thread.start do
-    :   2.times do |i|
-    :     if Thread.current["interrupt"]
-    :       break
-    :     end
-    :     p "処理中: #{i}"
-    :     sleep(0.2)
-    :   end
-    :   p "終了処理"
-    : end
-    : sleep(0.1)
-    : t["interrupt"] = true
-    : t.join
-    : # >> "処理中: 0"
-    : # >> "終了処理"
+#+BEGIN_SRC ruby
+t = Thread.start do
+  2.times do |i|
+    if Thread.current["interrupt"]
+      break
+    end
+    p "処理中: #{i}"
+    sleep(0.2)
+  end
+  p "終了処理"
+end
+sleep(0.1)
+t["interrupt"] = true
+t.join
+# >> "処理中: 0"
+# >> "終了処理"
+#+END_SRC
 
 *** Thread Specific Storage
 
     Thread.current["a"] はスレッド内グローバル変数
 
-    : Thread.start { Thread.current["a"] = 1 }.join
-    : Thread.start { Thread.current["a"] }.value    # => nil
+#+BEGIN_SRC ruby
+Thread.start { Thread.current["a"] = 1 }.join
+Thread.start { Thread.current["a"] }.value    # => nil
+#+END_SRC
