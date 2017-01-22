@@ -6,7 +6,7 @@
    | Adapter                 | メソッドが足りなくて階層的に増やすときに使う(重要)        |
    | Observer                | 通知元は通知先のことを知らないでよいことが前提            |
    | Iterator                | each のこと                                               |
-   | Template Method         | new のこと                                                |
+   | Template Method         | new すると initialize                                     |
    | Singleton               | インスタンスをグローバル変数にしたいとき用                |
    | Prototype               | new ではなく clone で                                     |
    | Builder                 | xml.body {xml.p("x")}                                     |
