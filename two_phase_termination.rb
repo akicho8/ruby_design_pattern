@@ -1,4 +1,4 @@
-# Two-Phase Terminatin
+# Two-Phase Termination
 
 t = Thread.start do
   2.times do |i|

@@ -48,7 +48,7 @@
    | Future                    | 処理を投げる → 戻値いる              |
    | Producer-Consumer         | 作る → キュー → 使う                |
    | Read-Write Lock           | 読み込み中は書き込まない              |
-   | Two-Phase Terminatin      | 外から殺さない                        |
+   | Two-Phase Termination     | 外から殺さない                        |
    | Thread Specific Storage   | スレッド個別のグローバル変数          |
 
 ** 一般
@@ -1923,7 +1923,7 @@ w.kill
 # >> EEEEFFFFFFFFFFFGGGGGGGGGGGHHHHHHHHHHHIIIIIIIIIIIJJJJJJJJJJJKKKKK
 #+END_SRC
 
-*** Two Phase Terminatin
+*** Two Phase Termination
 
     外から Thread.kill するんじゃなくて止まるように指示
 
