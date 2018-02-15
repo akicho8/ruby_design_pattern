@@ -1,207 +1,74 @@
 * デザインパターン覚え書き
-** 一般
+** 一般 (GOF)
 
-   | 名前                    | 概要                                                      |
-   |-------------------------+-----------------------------------------------------------|
-   | Adapter                 | メソッドが足りなくて階層的に増やすときに使う(重要)        |
-   | Observer                | 通知元は通知先のことを知らないでよいことが前提            |
-   | Iterator                | each のこと                                               |
-   | Template Method         | new すると initialize                                     |
-   | Singleton               | インスタンスをグローバル変数にしたいとき用                |
-   | Prototype               | new ではなく clone で                                     |
-   | Builder                 | xml.body {xml.p("x")}                                     |
-   | Abstract Factory        | クラスをハードコーディングしない                          |
-   | Strategy                | テトリミノのツモ                                          |
-   | Composite               | def x; @commands.collect(&:x); end                        |
-   | Decorator               | to_html をつけたいけど元のクラスは汚したくないとき用      |
-   | Visitor                 | Pathname.glob("*.rb") {...}                               |
-   | Chain of Responsibility | resolve? なら受ける。(順にリンクしてないといけないか疑問) |
-   | Facade                  | 単にメソッド化？                                          |
-   | Mediator                | A と B で困ったら Mediator クラスが必要                   |
-   | Memento                 | 前の状態に戻りたいとき用                                  |
-   | State                   | 一段階層を深くしてフラットにインスタンスを切り替える      |
-   | Flyweight               | メモ化のこと                                              |
-   | Proxy                   | 必要になってから作る                                      |
-   | Command                 | 命令をクラスにする                                        |
-   | Interpreter             | 文法規則をクラスで表現                                    |
-   | Null Object             | なにもしないオブジェクトにしてかわす                      |
-   | Object Pool             | 生成に時間がかかるものを使い回す                          |
-   | Pluggable Selector      | 横着ポルモルフィック(？)                                  |
-   | Before / After          | 後処理を必ず実行                                          |
-   | Factory Method          | new を別オブジェクトが行うだけ(？)                        |
-   | Bridge                  | 要はDRYにしとけば拡張が楽ちんってことっぽい               |
-   | Typed Message           | GUIでよくある SDL::Event::Quit みたいなアレ               |
-   | Cache Manager           | 使ったキャッシュは先頭に移動                              |
-   | Component Bus           | Observer が Subject を握っている                          |
-   | Composed Method         | メソッド化してなんなら再利用できるようにする              |
+| 名前                    | 概要                                                      |
+|-------------------------+-----------------------------------------------------------|
+| Adapter                 | メソッドが足りなくて階層的に増やすときに使う(重要)        |
+| Observer                | 通知元は通知先のことを知らないでよいことが前提            |
+| Iterator                | each のこと                                               |
+| Template Method         | new すると initialize                                     |
+| Singleton               | インスタンスをグローバル変数にしたいとき用                |
+| Prototype               | new ではなく clone で                                     |
+| Builder                 | xml.body {xml.p("x")}                                     |
+| Abstract Factory        | クラスをハードコーディングしない                          |
+| Strategy                | テトリミノのツモ                                          |
+| Composite               | def x; @commands.collect(&:x); end                        |
+| Decorator               | to_html をつけたいけど元のクラスは汚したくないとき用      |
+| Visitor                 | Pathname.glob("*.rb") {...}                               |
+| Chain of Responsibility | resolve? なら受ける。(順にリンクしてないといけないか疑問) |
+| Facade                  | 単にメソッド化？                                          |
+| Mediator                | A と B で困ったら Mediator クラスが必要                   |
+| Memento                 | 前の状態に戻りたいとき用                                  |
+| State                   | 一段階層を深くしてフラットにインスタンスを切り替える      |
+| Flyweight               | メモ化のこと                                              |
+| Proxy                   | 必要になってから作る                                      |
+| Command                 | 命令をクラスにする                                        |
+| Interpreter             | 文法規則をクラスで表現                                    |
 
 ** スレッド用
 
-   | 名前                      | 備考                                  |
-   |---------------------------+---------------------------------------|
-   | Single Threaded Execution | 排他制御 → する                      |
-   | Immutable                 | 排他制御 → しないでいい              |
-   | Guarded Suspension        | 処理できるまで → 待つ (別に増えない) |
-   | Worker Thread             | 処理できるまで → 待つ (増えると速い) |
-   | Balking                   | 処理できるまで → 待たない            |
-   | Thread Per Message        | 処理を投げる → 戻値いらん            |
-   | Future                    | 処理を投げる → 戻値いる              |
-   | Producer-Consumer         | 作る → キュー → 使う                |
-   | Read-Write Lock           | 読み込み中は書き込まない              |
-   | Two-Phase Termination     | 外から殺さない                        |
-   | Thread Specific Storage   | スレッド個別のグローバル変数          |
+| 名前                      | 備考                                  |
+|---------------------------+---------------------------------------|
+| Single Threaded Execution | 排他制御 → する                      |
+| Immutable                 | 排他制御 → しないでいい              |
+| Guarded Suspension        | 処理できるまで → 待つ (別に増えない) |
+| Worker Thread             | 処理できるまで → 待つ (増えると速い) |
+| Balking                   | 処理できるまで → 待たない            |
+| Thread Per Message        | 処理を投げる → 戻値いらん            |
+| Future                    | 処理を投げる → 戻値いる              |
+| Producer-Consumer         | 作る → キュー → 使う                |
+| Read-Write Lock           | 読み込み中は書き込まない              |
+| Two-Phase Termination     | 外から殺さない                        |
+| Thread Specific Storage   | スレッド個別のグローバル変数          |
 
-** 一般
+** その他
 
-*** Active Object - 非同期メッセージを受け取る
+| 名前               | 概要                                         |
+|--------------------+----------------------------------------------|
+| Active Object      | 非同期メッセージを受け取る                   |
+| Null Object        | なにもしないオブジェクトにしてかわす         |
+| Object Pool        | 生成に時間がかかるものを使い回す             |
+| Pluggable Selector | 横着ポルモルフィック(？)                     |
+| Before / After     | 後処理を必ず実行                             |
+| Factory Method     | new を別オブジェクトが行うだけ(？)           |
+| Bridge             | 要はDRYにしとけば拡張が楽ちんってことっぽい  |
+| Typed Message      | GUIでよくある SDL::Event::Quit みたいなアレ  |
+| Cache Manager      | 使ったキャッシュは先頭に移動                 |
+| Component Bus      | Observer が Subject を握っている             |
+| Composed Method    | メソッド化してなんなら再利用できるようにする |
 
-    どんなときに有用か？
+** SOLID
 
-#+BEGIN_SRC ruby
-class C
-  def process
-    1 + 2
-  end
-end
+| 略  | 名前                            | 日本語             | ダメ                                       | 改善方法                   | 備考               |
+|-----+---------------------------------+--------------------+--------------------------------------------+----------------------------+--------------------|
+| SRP | Single Responsibility Principle | 単一責任           | 1つのクラスに複数の機能                    | クラス分割                 |                    |
+| OCP | Open-Closed Principle           | オープンクローズド | 拡張しずらく、拡張するとクラスの変更が必要 | 処理するインスタンスを渡す | ストラテジーのこと |
+| LSP | Liskov Substitution Principle   | リスコフの置換     | 継承したメソッドをまったく違うものにした   | 親クラスの方針を察する     |                    |
+| ISP | Interface Segregation Principle | インタフェース分離 | 抽象クラスが複雑                           | 抽象クラスを分割           |                    |
+| DIP | Dependency Inversion Principle  | 依存関係逆転       | ストラテジー用のオブジェクトに依存         | 依存してはいけない         |                    |
 
-obj = C.new
-obj.process
-#+END_SRC
-
-    ここで、すぐに実行する必要がない 1 + 2 の処理が重すぎる場合、
-
-#+BEGIN_SRC ruby
-class C
-  attr_accessor :queue
-
-  def initialize
-    @queue = Queue.new
-    Thread.start do
-      loop { @queue.pop.call }  # バックグランド処理を永遠と回す
-    end
-  end
-
-  def process
-    @queue << proc {p 1 + 2}
-  end
-end
-
-obj = C.new
-obj.process
-
-nil until obj.queue.empty?
-#+END_SRC
-
-    C#process の中の処理が変わっただけで *インタフェースはそのまま*
-
-*** Before / After
-
-#+BEGIN_SRC ruby
-begin
-  p "before"
-  1 / 0
-rescue => error
-  p error
-ensure
-  p "after"
-end
-# >> "before"
-# >> #<ZeroDivisionError: divided by 0>
-# >> "after"
-#+END_SRC
-
-*** Pluggable Selector
-
-    よくわかってない。
-    一つのメソッドが巨大化しそうなときとかに、別のクラスを作るのが面倒という理由で似たような書き方をしてしまう。
-    どうなんだろう？
-
-#+BEGIN_SRC ruby
-class C
-  def initialize(command)
-    @command = command
-  end
-
-  def execute
-    send(@command)
-  end
-
-  def command_x
-    :a
-  end
-end
-
-C.new(:command_x).execute       # => :a
-#+END_SRC
-
-*** Object Pool
-
-    メモ化というよりメモリと速度のトレードオフ。
-
-#+BEGIN_SRC ruby
-class X
-  attr_accessor :active
-end
-
-class C
-  attr_accessor :pool
-
-  def initialize
-    @size = 2
-    @pool = []
-  end
-
-  def new_x
-    x = @pool.find {|e|!e.active}  # pool から稼働してないものを探す
-    unless x                      # なければ
-      if @pool.size < @size       # pool の空きがあれば、新たに作成
-        x = X.new
-        @pool << x
-      end
-    end
-    if x
-      x.active = true
-    end
-    x
-  end
-end
-
-i = C.new
-a = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
-b = i.new_x                  # => #<X:0x007fd1cb08d140 @active=true>
-c = i.new_x                  # => nil
-a.active = false
-c = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
-#+END_SRC
-
-*** Null Object
-
-#+BEGIN_SRC ruby
-class Logger
-  def info(str)
-    str
-  end
-end
-
-logger = Logger.new
-logger.info("x")                # => "x"
-#+END_SRC
-
-    logger を無効にする
-
-#+BEGIN_SRC ruby
-class NullObject
-  def info(str)
-  end
-end
-#+END_SRC
-
-#+BEGIN_SRC ruby
-logger = NullObject.new
-logger.info("x")                # => nil
-#+END_SRC
-
-    富豪的な感がよい
+* コード
+** 一般 (GOF)
 
 *** Mediator
 
@@ -1953,3 +1820,155 @@ t.join
 Thread.start { Thread.current["a"] = 1 }.join
 Thread.start { Thread.current["a"] }.value    # => nil
 #+END_SRC
+
+** その他
+
+*** Active Object - 非同期メッセージを受け取る
+
+    どんなときに有用か？
+
+#+BEGIN_SRC ruby
+class C
+  def process
+    1 + 2
+  end
+end
+
+obj = C.new
+obj.process
+#+END_SRC
+
+    ここで、すぐに実行する必要がない 1 + 2 の処理が重すぎる場合、
+
+#+BEGIN_SRC ruby
+class C
+  attr_accessor :queue
+
+  def initialize
+    @queue = Queue.new
+    Thread.start do
+      loop { @queue.pop.call }  # バックグランド処理を永遠と回す
+    end
+  end
+
+  def process
+    @queue << proc {p 1 + 2}
+  end
+end
+
+obj = C.new
+obj.process
+
+nil until obj.queue.empty?
+#+END_SRC
+
+    C#process の中の処理が変わっただけで *インタフェースはそのまま*
+
+*** Before / After
+
+#+BEGIN_SRC ruby
+begin
+  p "before"
+  1 / 0
+rescue => error
+  p error
+ensure
+  p "after"
+end
+# >> "before"
+# >> #<ZeroDivisionError: divided by 0>
+# >> "after"
+#+END_SRC
+
+*** Pluggable Selector
+
+    よくわかってない。
+    一つのメソッドが巨大化しそうなときとかに、別のクラスを作るのが面倒という理由で似たような書き方をしてしまう。
+    どうなんだろう？
+
+#+BEGIN_SRC ruby
+class C
+  def initialize(command)
+    @command = command
+  end
+
+  def execute
+    send(@command)
+  end
+
+  def command_x
+    :a
+  end
+end
+
+C.new(:command_x).execute       # => :a
+#+END_SRC
+
+*** Object Pool
+
+    メモ化というよりメモリと速度のトレードオフ。
+
+#+BEGIN_SRC ruby
+class X
+  attr_accessor :active
+end
+
+class C
+  attr_accessor :pool
+
+  def initialize
+    @size = 2
+    @pool = []
+  end
+
+  def new_x
+    x = @pool.find {|e|!e.active}  # pool から稼働してないものを探す
+    unless x                      # なければ
+      if @pool.size < @size       # pool の空きがあれば、新たに作成
+        x = X.new
+        @pool << x
+      end
+    end
+    if x
+      x.active = true
+    end
+    x
+  end
+end
+
+i = C.new
+a = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
+b = i.new_x                  # => #<X:0x007fd1cb08d140 @active=true>
+c = i.new_x                  # => nil
+a.active = false
+c = i.new_x                  # => #<X:0x007fd1cb08d5c8 @active=true>
+#+END_SRC
+
+*** Null Object
+
+#+BEGIN_SRC ruby
+class Logger
+  def info(str)
+    str
+  end
+end
+
+logger = Logger.new
+logger.info("x")                # => "x"
+#+END_SRC
+
+    logger を無効にする
+
+#+BEGIN_SRC ruby
+class NullObject
+  def info(str)
+  end
+end
+#+END_SRC
+
+#+BEGIN_SRC ruby
+logger = NullObject.new
+logger.info("x")                # => nil
+#+END_SRC
+
+    富豪的な感がよい
