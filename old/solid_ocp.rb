@@ -7,7 +7,7 @@ class C
     @type = type
   end
 
-  def f(v)                      # ここがどんどん肥大化する可能性あり
+  def color
     if @type == 0
       "[#{v}]"
     else

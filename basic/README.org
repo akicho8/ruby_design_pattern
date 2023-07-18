@@ -1,0 +1,5 @@
+- https://ruby-numo.github.io/numo-narray/yard/Numo/NArray.html
+- https://ruby-numo.github.io/numo-narray/yard/Numo/DFloat.html
+- https://github.com/ruby-numo/numo-narray/wiki/Numo::NArray-Overview-(Japanese)
+- https://github.com/ruby-numo/numo-narray/wiki/Numo-vs-numpy
+- https://qiita.com/kojix2/items/0bc5efda0f65e58693a0

@@ -1,0 +1,2339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="ja" xml:lang="ja">
+<head>
+<title>README</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2013-02-06 00:41:53 JST"/>
+<meta name="author" content="Akira Ikeda"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+
+<h1 class="title">README</h1>
+
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1">デザパタ覚書 </h2>
+<div class="outline-text-2" id="text-1">
+
+
+</div>
+
+<div id="outline-container-1.1" class="outline-3">
+<h3 id="sec-1.1">一般 </h3>
+<div class="outline-text-3" id="text-1.1">
+
+
+<table  border="1" cellspacing="0" cellpadding="6" rules="all" frame="all">
+<caption></caption>
+<colgroup><col align="left" /><col align="left" />
+</colgroup>
+<thead>
+<tr><th scope="col">名前</th><th scope="col">備考</th></tr>
+</thead>
+<tbody>
+<tr><td>Adapter</td><td>メソッドが足りなくて階層的に増やすときに使う(重要)</td></tr>
+<tr><td>Observer</td><td>通知元は通知先のことを知らないでよいことが前提</td></tr>
+<tr><td>Iterator</td><td>each のこと</td></tr>
+<tr><td>Template Method</td><td>new のこと</td></tr>
+<tr><td>Singleton</td><td>インスタンスをグローバル変数にしたいとき用</td></tr>
+<tr><td>Prototype</td><td>new ではなく clone で</td></tr>
+<tr><td>Builder</td><td>xml.body {xml.p("x")}</td></tr>
+<tr><td>Abstract Factory</td><td>A.new ではなく @factory.new<sub>a</sub> 的なやつ</td></tr>
+<tr><td>Strategy</td><td>テトリミノのツモ</td></tr>
+<tr><td>Composite</td><td>def x; @commands.collect(&amp;:x); end</td></tr>
+<tr><td>Decorator</td><td>to<sub>html</sub> をつけたいけど元のクラスは汚したくないとき用</td></tr>
+<tr><td>Visitor</td><td>Pathname.glob("*.rb"){&hellip;}</td></tr>
+<tr><td>Chain of Responsibility</td><td>resolve? なら受ける。(順にリンクしてないといけないか疑問)</td></tr>
+<tr><td>Facade</td><td>単にメソッド化？</td></tr>
+<tr><td>Mediator</td><td>A と B で困ったら Mediator クラスが必要</td></tr>
+<tr><td>Memento</td><td>前の状態に戻りたいとき用</td></tr>
+<tr><td>State</td><td>一段階層を深くしてフラットにインスタンスを切り替える</td></tr>
+<tr><td>Flyweight</td><td>メモ化のこと</td></tr>
+<tr><td>Proxy</td><td>必要になってから作る</td></tr>
+<tr><td>Command</td><td>命令をクラスにする</td></tr>
+<tr><td>Interpreter</td><td>文法規則をクラスで表現する</td></tr>
+<tr><td>Null Object</td><td>なにもしないオブジェクトにしてかわす</td></tr>
+<tr><td>Object Pool</td><td>生成に時間がかかるものを使い回して高速化</td></tr>
+<tr><td>Pluggable Selector</td><td>やっつけポルモルフィック(？)</td></tr>
+<tr><td>Before/After</td><td>後処理を必ず実行する</td></tr>
+<tr><td>Factory Method</td><td>new を別オブジェクトが行うだけ(？)</td></tr>
+<tr><td>Bridge</td><td>要はDRYにしとけば拡張が楽ちんってことっぽい</td></tr>
+</tbody>
+</table>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.2" class="outline-3">
+<h3 id="sec-1.2">スレッド用 </h3>
+<div class="outline-text-3" id="text-1.2">
+
+
+<table  border="1" cellspacing="0" cellpadding="6" rules="all" frame="all">
+<caption></caption>
+<colgroup><col align="left" /><col align="left" />
+</colgroup>
+<thead>
+<tr><th scope="col">名前</th><th scope="col">備考</th></tr>
+</thead>
+<tbody>
+<tr><td>Single Threaded Execution</td><td>排他制御 → する</td></tr>
+<tr><td>Immutable</td><td>排他制御 → しないでいい</td></tr>
+<tr><td>Guarded Suspension</td><td>処理できるまで → 待つ (別に増えない)</td></tr>
+<tr><td>Worker Thread</td><td>処理できるまで → 待つ (増えると速い)</td></tr>
+<tr><td>Balking</td><td>処理できるまで → 待たない</td></tr>
+<tr><td>Thread Per Message</td><td>処理を投げる → 戻値いらん</td></tr>
+<tr><td>Future</td><td>処理を投げる → 戻値いる</td></tr>
+<tr><td>Producer-Consumer</td><td>作る → キュー → 使う</td></tr>
+<tr><td>Read-Write Lock</td><td>読み込み中は書き込まない</td></tr>
+<tr><td>Two-Phase Termination</td><td>外から殺さない</td></tr>
+<tr><td>Thread Specific Storage</td><td>スレッド個別のグローバル変数</td></tr>
+</tbody>
+</table>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3" class="outline-3">
+<h3 id="sec-1.3">一般 </h3>
+<div class="outline-text-3" id="text-1.3">
+
+
+
+</div>
+
+<div id="outline-container-1.3.1" class="outline-4">
+<h4 id="sec-1.3.1">Active Object - 非同期メッセージを受け取る </h4>
+<div class="outline-text-4" id="text-1.3.1">
+
+
+<p>
+どんなときに有用か？
+</p>
+<pre class="example">
+class C
+  def process
+    1 + 2
+  end
+end
+
+obj = C.new
+obj.process
+</pre>
+
+
+<p>
+ここで、すぐに実行する必要がない 1 + 2 の処理が重すぎる場合。
+</p>
+<pre class="example">
+class C
+  attr_accessor :queue
+
+  def initialize
+    @queue = Queue.new
+    Thread.start do
+      loop { @queue.pop.call }  # バックグランド処理を永遠と回す
+    end
+  end
+
+  def process
+    @queue &lt;&lt; proc {p 1 + 2}
+  end
+end
+
+obj = C.new
+obj.process
+
+nil until obj.queue.empty?
+</pre>
+
+
+<p>
+C.process の中の処理が変わっただけでインタフェースはそのまま、というところが重要
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-1.3.2" class="outline-4">
+<h4 id="sec-1.3.2">Before/After </h4>
+<div class="outline-text-4" id="text-1.3.2">
+
+
+<pre class="example">
+begin
+  p "before"
+  1 / 0
+rescue =&gt; error
+  p error
+ensure
+  p "after"
+end
+# &gt;&gt; "before"
+# &gt;&gt; #&lt;ZeroDivisionError: divided by 0&gt;
+# &gt;&gt; "after"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.3" class="outline-4">
+<h4 id="sec-1.3.3">Pluggable Selector </h4>
+<div class="outline-text-4" id="text-1.3.3">
+
+
+<p>
+やっつけポルモルフィック(？)
+まだよくわかってない
+</p>
+<pre class="example">
+class C
+  def initialize(command)
+    @command = command
+  end
+
+  def execute
+    send(@command)
+  end
+
+  def command_x
+    :a
+  end
+end
+
+C.new(:command_x).execute       # =&gt; :a
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.4" class="outline-4">
+<h4 id="sec-1.3.4">Object Pool </h4>
+<div class="outline-text-4" id="text-1.3.4">
+
+
+<pre class="example">
+class X
+  attr_accessor :active
+end
+
+class C
+  attr_accessor :pool
+
+  def initialize
+    @size = 2
+    @pool = []
+  end
+
+  def new_x
+    x = @pool.find {|e|!e.active}  # pool から稼働してないものを探す
+    unless x                      # なければ
+      if @pool.size &lt; @size       # pool の空きがあれば、新たに作成
+        x = X.new
+        @pool &lt;&lt; x
+      end
+    end
+    if x
+      x.active = true
+    end
+    x
+  end
+end
+
+i = C.new
+a = i.new_x                  # =&gt; #&lt;X:0x007fd1cb08d5c8 @active=true&gt;
+b = i.new_x                  # =&gt; #&lt;X:0x007fd1cb08d140 @active=true&gt;
+c = i.new_x                  # =&gt; nil
+a.active = false
+c = i.new_x                  # =&gt; #&lt;X:0x007fd1cb08d5c8 @active=true&gt;
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.5" class="outline-4">
+<h4 id="sec-1.3.5">Null Object </h4>
+<div class="outline-text-4" id="text-1.3.5">
+
+
+<pre class="example">
+class Logger
+  def info(str)
+    str
+  end
+end
+
+logger = Logger.new
+logger.info("x")                # =&gt; "x"
+</pre>
+
+
+<p>
+logger を無効にする
+</p>
+<pre class="example">
+class NullObject
+  def info(str)
+  end
+end
+</pre>
+
+
+<pre class="example">
+logger = NullObject.new
+logger.info("x")                # =&gt; nil
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.6" class="outline-4">
+<h4 id="sec-1.3.6">Mediator </h4>
+<div class="outline-text-4" id="text-1.3.6">
+
+
+<pre class="example">
+class A
+  attr_accessor :state
+  def initialize(b)
+    @b = b
+    @state = true
+  end
+  def changed
+    @b.visible = @state
+  end
+end
+
+class B
+  attr_accessor :visible
+end
+</pre>
+
+
+<p>
+改善。A と B に Mediator のインスタンスを持たせて changed は Mediator のインスタンスに投げる。
+</p>
+<pre class="example">
+class Mediator
+  attr_reader :a, :b
+  def initialize
+    @a = A.new(self)
+    @b = B.new(self)
+  end
+  def changed
+    @b.visible = @a.state
+  end
+end
+
+class A
+  attr_accessor :state
+  def initialize(mediator)
+    @mediator = mediator
+    @state = true
+  end
+  def changed
+    @mediator.changed
+  end
+end
+
+class B
+  attr_accessor :visible
+  def initialize(mediator)
+    @mediator = mediator
+  end
+end
+</pre>
+
+
+<pre class="example">
+m = Mediator.new
+m.a.state = true
+m.a.changed
+m.b.visible # =&gt; true
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.7" class="outline-4">
+<h4 id="sec-1.3.7">Abstract Factory </h4>
+<div class="outline-text-4" id="text-1.3.7">
+
+
+<pre class="example">
+class C
+  def run
+    A.new + B.new
+  end
+end
+</pre>
+
+
+<p>
+↓
+</p>
+<pre class="example">
+class C
+  def run
+    @factory.new_x + @factory.new_y
+  end
+end
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.8" class="outline-4">
+<h4 id="sec-1.3.8">Factory Method </h4>
+<div class="outline-text-4" id="text-1.3.8">
+
+
+<pre class="example">
+class X
+end
+
+class F
+  def create
+    X.new
+  end
+end
+
+class C
+  attr_accessor :v
+  def initialize(f)
+    @v = f.create
+  end
+end
+
+C.new(F.new).v                  # =&gt; #&lt;X:0x007fb213905a98&gt;
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.9" class="outline-4">
+<h4 id="sec-1.3.9">Chain of Responsibility </h4>
+<div class="outline-text-4" id="text-1.3.9">
+
+
+<pre class="example">
+class Chainable
+  def initialize(_next = nil)
+    @_next = _next
+  end
+  def support(q)
+    if resolve?(q)
+      answer(q)
+    elsif @_next
+      @_next.support(q)
+    else
+      "知らん"
+    end
+  end
+end
+
+class Alice &lt; Chainable
+  def resolve?(q)
+    q == "1+2は？"
+  end
+  def answer(q)
+    "3"
+  end
+end
+
+class Bob &lt; Chainable
+  def resolve?(q)
+    q == "2*3は？"
+  end
+  def answer(q)
+    "6"
+  end
+end
+
+alice = Alice.new(Bob.new)
+alice.support("1+2は？") # =&gt; "3"
+alice.support("2*3は？") # =&gt; "6"
+alice.support("2/1は？") # =&gt; "知らん"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.10" class="outline-4">
+<h4 id="sec-1.3.10">Proxy </h4>
+<div class="outline-text-4" id="text-1.3.10">
+
+
+<p>
+decoratorに似ているけど decoratorほどデコレートしないし便利メソッドを追加しない。
+元のインスタンスを <b>呼ぶ</b> <b>呼ばない</b> <b>まねる</b> <b>あとで呼ぶ</b> ぐらいしかない。
+</p>
+<pre class="example">
+class User
+  attr_accessor :name, :point
+  def initialize(name)
+    @name = name
+    @point = 0
+  end
+  def deposit(amount)
+    @point += amount
+  end
+end
+</pre>
+
+
+<p>
+ガードプロキシ(呼んだり、呼ばなかったり)
+</p>
+<pre class="example">
+class UserProxy
+  BlackList = ["alice"]
+
+  def initialize(user)
+    @user = user
+  end
+
+  def point
+    @user.point
+  end
+
+  def method_missing(*args)
+    if BlackList.include?(@user.name)
+      return
+    end
+    @user.send(*args)
+  end
+end
+
+user = User.new("alice")
+user.deposit(1)
+user.point                      # =&gt; 1
+
+user = UserProxy.new(User.new("alice"))
+user.deposit(1)
+user.point                      # =&gt; 0
+</pre>
+
+
+<p>
+仮想プロキシ(まねる)
+</p>
+<pre class="example">
+class VirtualPrinter
+  def name
+    "BJ10V"
+  end
+  def print(str)
+  end
+end
+</pre>
+
+
+<p>
+遅延実行(あとで呼ぶ)
+</p>
+<pre class="example">
+class VirtualPrinter
+  def name
+    "BJ10V"
+  end
+  def print(str)
+    @printer ||= RealPrinter.new
+    @printer.print(str)
+  end
+end
+
+class RealPrinter
+  def initialize
+    puts "とてつもなく時間がかかる初期化処理..."
+  end
+  def name
+    "BJ10V"
+  end
+  def print(str)
+    str
+  end
+end
+
+printer = VirtualPrinter.new
+printer.name        # =&gt; "BJ10V"
+printer.print("ok") # =&gt; "ok"
+# &gt;&gt; とてつもなく時間がかかる初期化処理...
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.11" class="outline-4">
+<h4 id="sec-1.3.11">Command + Composite </h4>
+<div class="outline-text-4" id="text-1.3.11">
+
+
+<pre class="example">
+class Command
+  def execute
+    raise NotImplementedError, "#{__method__} is not implemented"
+  end
+end
+
+class FooCommand &lt; Command
+  def execute
+    "a"
+  end
+end
+
+class BarCommand &lt; Command
+  def execute
+    "b"
+  end
+end
+
+class CompositeCommand &lt; Command
+  def initialize
+    @commands = []
+  end
+  def &lt;&lt;(command)
+    @commands &lt;&lt; command
+  end
+  def execute
+    @commands.collect(&amp;:execute)
+  end
+end
+
+command = CompositeCommand.new
+command &lt;&lt; FooCommand.new
+command &lt;&lt; BarCommand.new
+
+command.execute                 # =&gt; ["a", "b"]
+</pre>
+
+
+<p>
+コードブロックを使ってクラス爆発を防ぐ
+</p>
+<pre class="example">
+class BazCommand &lt; Command
+  def initialize(&amp;block)
+    @command = block
+  end
+  def execute
+    @command.call
+  end
+end
+
+command &lt;&lt; BazCommand.new {"c"}
+command &lt;&lt; BazCommand.new {"d"}
+
+command.execute                 # =&gt; ["a", "b", "c", "d"]
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.12" class="outline-4">
+<h4 id="sec-1.3.12">Prototype </h4>
+<div class="outline-text-4" id="text-1.3.12">
+
+
+<p>
+クラスベース
+</p>
+<pre class="example">
+class Cell; end                                # 細胞
+class Plankton &lt; Cell; end                     # プランクトン &lt; 細胞
+class Fish &lt; Plankton; end                     # 魚 &lt; プランクトン
+class Monkey &lt; Fish; def speek?; true end; end # 猿 &lt; 魚
+class Human &lt; Monkey; end                      # 人間 &lt; 猿
+
+Human.new.speek?                # =&gt; true
+</pre>
+
+
+<p>
+プロトタイプベース。JavaScript はこのタイプ。
+</p>
+<pre class="example">
+cell = Object.new
+plankton = cell.clone
+fish = plankton.clone
+monkey = fish.clone.tap {|o|def o.speek?; true end}
+human = monkey.clone
+human.speek?                    # =&gt; true
+</pre>
+
+
+<p>
+その他の例
+</p>
+<pre class="example">
+class Piece &lt; Struct.new(:name)
+end
+
+class Box
+  attr_accessor :showcase
+  def initialize
+    @showcase = {
+      :rook =&gt; Piece.new("飛"),
+    }
+  end
+  def create(name)
+    @showcase[name].clone
+  end
+end
+
+box = Box.new
+box.create(:rook).name     # =&gt; "飛"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.13" class="outline-4">
+<h4 id="sec-1.3.13">Template Method </h4>
+<div class="outline-text-4" id="text-1.3.13">
+
+
+<pre class="example">
+class Base
+  def build
+    "(#{body})"
+  end
+end
+
+class App &lt; Base
+  def body
+    "ok"
+  end
+end
+
+App.new.build                   # =&gt; "(ok)"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.14" class="outline-4">
+<h4 id="sec-1.3.14">Iterator </h4>
+<div class="outline-text-4" id="text-1.3.14">
+
+
+<p>
+i が邪魔
+</p>
+<pre class="example">
+ary = ["a", "b", "c"]
+i = 0
+while i &lt; ary.size
+  p ary[i]
+  i += 1
+end
+</pre>
+
+
+<p>
+ここで Iterator
+</p>
+<pre class="example">
+class Iterator
+  def initialize(object)
+    @object = object
+    @index = 0
+  end
+  def has_next?
+    @index &lt; @object.size
+  end
+  def next
+    @object[@index].tap {@index += 1}
+  end
+end
+
+class Array
+  def iterator
+    Iterator.new(self)
+  end
+end
+</pre>
+
+
+<p>
+i が消えた
+</p>
+<pre class="example">
+it = ary.iterator
+while it.has_next?
+  p it.next
+end
+</pre>
+
+
+<p>
+it も消す
+</p>
+<pre class="example">
+class Array
+  def iterator
+    it = Iterator.new(self)
+    while it.has_next?
+      yield it.next
+    end
+  end
+end
+
+ary.iterator {|v|p v}
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.15" class="outline-4">
+<h4 id="sec-1.3.15">Memento </h4>
+<div class="outline-text-4" id="text-1.3.15">
+
+
+<p>
+簡易ブラックジャックを行うプレイヤー
+</p>
+<pre class="example">
+class Player
+  attr_accessor :cards
+
+  def initialize
+    @cards = []
+  end
+
+  def take
+    @cards &lt;&lt; rand(1..13)
+  end
+
+  def score
+    @cards.reduce(&amp;:+)
+  end
+end
+</pre>
+
+
+<p>
+5回カードを引くゲームを3回行うと全部21を越えてしまった
+</p>
+<pre class="example">
+3.times do
+  player = Player.new
+  5.times do
+    player.take
+  end
+  player.score                  # =&gt; 33, 37, 52
+end
+</pre>
+
+
+<p>
+そこでMementoパターン
+</p>
+<pre class="example">
+class Player
+  def create_memento
+    @cards.clone
+  end
+
+  def restore_memento(object)
+    @cards = object.clone
+  end
+end
+</pre>
+
+
+<p>
+21点未満の状態を保持しておき21を越えたら元に戻す
+</p>
+<pre class="example">
+3.times do
+  player = Player.new
+  memento = nil
+  5.times do
+    player.take
+    if player.score &lt; 21
+      memento = player.create_memento
+    elsif player.score &gt; 21
+      player.restore_memento(memento)
+    end
+  end
+  player.score                  # =&gt; 18, 19, 15
+end
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.16" class="outline-4">
+<h4 id="sec-1.3.16">Visitor </h4>
+<div class="outline-text-4" id="text-1.3.16">
+
+
+<pre class="example">
+Pathname.glob("**/*.rb") do |filename|
+  p filename
+end
+</pre>
+
+
+<pre class="example">
+NiconicoCrawler.run do |video|
+  if video.mylist &gt;= 10000 &amp;&amp; video.title.match(/初音ミク/)
+    open("#{video.title}.mp4", "w"){|f|f &lt;&lt; video.read}
+  end
+end
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.17" class="outline-4">
+<h4 id="sec-1.3.17">Flyweight </h4>
+<div class="outline-text-4" id="text-1.3.17">
+
+
+<pre class="example">
+module Wave
+  def self.load(file)
+    p "load #{file}"
+    file
+  end
+end
+
+class Sound
+  def self.get(name)
+    @cache ||= {}
+    @cache[name] ||= Wave.load("#{name}.wav")
+  end
+end
+
+Sound.get("blue")               # =&gt; "blue.wav"
+Sound.get("cyan")               # =&gt; "cyan.wav"
+Sound.get("blue")               # =&gt; "blue.wav"
+# &gt;&gt; "load blue.wav"
+# &gt;&gt; "load cyan.wav"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.18" class="outline-4">
+<h4 id="sec-1.3.18">Builder </h4>
+<div class="outline-text-4" id="text-1.3.18">
+
+
+<pre class="example">
+class Node
+  attr_reader :name, :nodes
+
+  def initialize(name)
+    @name = name
+    @nodes = []
+  end
+end
+</pre>
+
+
+<p>
+nodes &lt;&lt; Node.new ばっかり
+</p>
+<pre class="example">
+root = Node.new("root")
+root.nodes &lt;&lt; Node.new("a")
+root.nodes &lt;&lt; Node.new("b")
+root.nodes &lt;&lt; (c = Node.new("c"))
+c.nodes &lt;&lt; Node.new("d")
+c.nodes &lt;&lt; Node.new("e")
+c.nodes &lt;&lt; (f = Node.new("f"))
+f.nodes &lt;&lt; Node.new("g")
+f.nodes &lt;&lt; Node.new("h")
+</pre>
+
+
+<pre class="example">
+root.nodes.collect {|e|e.name}                       # =&gt; ["a", "b", "c"]
+root.nodes.last.nodes.collect {|e|e.name}            # =&gt; ["d", "e", "f"]
+root.nodes.last.nodes.last.nodes.collect {|e|e.name} # =&gt; ["g", "h"]
+</pre>
+
+
+<p>
+改善
+</p>
+<pre class="example">
+class Builder
+  attr_reader :root
+
+  def self.build(*args, &amp;block)
+    new(*args).tap(&amp;block).root
+  end
+
+  def initialize(root = nil)
+    @root = root || Node.new("root")
+  end
+
+  def &lt;&lt;(name)
+    @root.nodes &lt;&lt; Node.new(name)
+  end
+
+  def directory(name)
+    node = Node.new(name)
+    yield self.class.new(node)
+    @root.nodes &lt;&lt; node
+  end
+end
+</pre>
+
+
+<p>
+簡潔になった
+</p>
+<pre class="example">
+root = Builder.build do |o|
+  o &lt;&lt; "a"
+  o &lt;&lt; "b"
+  o.directory("c") do |c|
+    c &lt;&lt; "d"
+    c &lt;&lt; "e"
+    c.directory("f") do |f|
+      f &lt;&lt; "g"
+      f &lt;&lt; "h"
+    end
+  end
+end
+</pre>
+
+
+<p>
+結果も同じ
+</p>
+<pre class="example">
+root.nodes.collect {|e|e.name}                       # =&gt; ["a", "b", "c"]
+root.nodes.last.nodes.collect {|e|e.name}            # =&gt; ["d", "e", "f"]
+root.nodes.last.nodes.last.nodes.collect {|e|e.name} # =&gt; ["g", "h"]
+</pre>
+
+
+<ul>
+<li id="sec-1.3.18.1">mail gem の例 <br/>
+
+<p>
+これだと面倒なので
+</p>
+<pre class="example">
+mail = Mail.new
+mail.from    = Mail::AddressContainer.new("alice &lt;alice@example.net&gt;")
+mail.to      = Mail::AddressContainer.new("bob &lt;bob@example.net&gt;")
+mail.subject = "題名"
+mail.body    = Mail::Body.new("本文")
+</pre>
+
+
+<p>
+改善
+</p>
+<pre class="example">
+mail = Mail.new
+mail.from    = "alice &lt;alice@example.net&gt;"
+mail.to      = "bob &lt;alice@example.net&gt;"
+mail.subject = "題名"
+mail.body    = "本文"
+</pre>
+
+
+<p>
+内部でこっそりインスタンスを生成している
+</p>
+<pre class="example">
+mail.from.class    # =&gt; Mail::AddressContainer
+mail.to.class      # =&gt; Mail::AddressContainer
+mail.subject.class # =&gt; String
+mail.body.class    # =&gt; Mail::Body
+</pre>
+
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-1.3.19" class="outline-4">
+<h4 id="sec-1.3.19">State </h4>
+<div class="outline-text-4" id="text-1.3.19">
+
+
+<pre class="example">
+class OpenState
+  def board
+    "営業中"
+  end
+end
+
+class CloseState
+  def board
+    "準備中"
+  end
+end
+
+class Shop
+  def change_state(hour)
+    if (11..17).include?(hour)
+      @state = OpenState.new
+    else
+      @state = CloseState.new
+    end
+  end
+  def board
+    @state.board
+  end
+end
+
+shop = Shop.new
+shop.change_state(10)
+shop.board                      # =&gt; "準備中"
+shop.change_state(11)
+shop.board                      # =&gt; "営業中"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.20" class="outline-4">
+<h4 id="sec-1.3.20">Facade </h4>
+<div class="outline-text-4" id="text-1.3.20">
+
+
+<p>
+例えばこんなのは
+</p>
+<pre class="example">
+from = User.find_by_name("alice")
+to = User.find_by_name("bob")
+message = Message.new
+message.from = from
+message.to = to
+message.body = "こんちは"
+if message.valid?
+  message.save!
+end
+</pre>
+
+
+<p>
+以下のように書きやすくまとめる。だけ？
+</p>
+<pre class="example">
+Message.deliver(:from =&gt; "alice", :to =&gt; "bob", :body =&gt; "こんちは")
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.21" class="outline-4">
+<h4 id="sec-1.3.21">Bridge </h4>
+<div class="outline-text-4" id="text-1.3.21">
+
+
+<p>
+機能の階層と実装の階層を分けるって言ってもStrategyと何が違うのかよくわからない。
+要はDRYにしとけば拡張が楽ちんことらしい。
+以下のコードは x y の実装2つと、囲まない囲むの2つの機能を組み合わせると2x2で4つのクラスが必要になる。
+このまま拡張していって実装と機能がそれぞれ10個あると100個のクラスを作らないといけない。
+</p>
+<pre class="example">
+class A
+  def run
+    "x"
+  end
+end
+
+class B
+  def run
+    "y"
+  end
+end
+
+class AA &lt; A
+  def run
+    "(x)"
+  end
+end
+
+class BB &lt; B
+  def run
+    "(y)"
+  end
+end
+</pre>
+
+
+<p>
+改善
+</p>
+<pre class="example">
+class A
+  def initialize(obj)
+    @obj = obj
+  end
+  def run
+    @obj
+  end
+end
+
+class AA &lt; A
+  def run
+    "(#{@obj})"
+  end
+end
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.22" class="outline-4">
+<h4 id="sec-1.3.22">Decorator </h4>
+<div class="outline-text-4" id="text-1.3.22">
+
+
+<p>
+proxyにそっくりだけど、遅延実行や実行条件には関心がない。
+</p>
+<p>
+このクラスの
+</p>
+<pre class="example">
+class User
+  def name
+    "alice"
+  end
+end
+</pre>
+
+
+<p>
+インスタンスを渡してラップするのが普通
+</p>
+<pre class="example">
+class UserDecorator
+  def initialize(object)
+    @object = object
+  end
+  def to_xxx
+    "(#{@object.name})"
+  end
+end
+
+UserDecorator.new(User.new).to_xxx # =&gt; "(alice)"
+</pre>
+
+
+<p>
+もっとシンプルにするなら
+</p>
+<pre class="example">
+require "delegate"
+
+class UserDecorator &lt; SimpleDelegator
+  def to_xxx
+    "(#{name})"
+  end
+end
+
+UserDecorator.new(User.new).to_xxx # =&gt; "(alice)"
+</pre>
+
+
+<p>
+というか最初から以下の継承すればいいような気がするけどこれだと既存のインスタンスをラップすることができない。
+</p>
+<pre class="example">
+class UserDecorator &lt; User
+  def to_xxx
+    "(#{name})"
+  end
+end
+
+UserDecorator.new.to_xxx # =&gt; "(alice)"
+</pre>
+
+
+<p>
+継承なら DelegateClass でもできるようだけどこれまた利点がわからない。Userが重複していて気持ち悪いのが気になる。
+</p>
+<pre class="example">
+require "delegate"
+
+class UserDecorator &lt; DelegateClass(User)
+  def initialize
+    super(User.new)
+  end
+  def to_xxx
+    "(#{name})"
+  end
+end
+
+UserDecorator.new.to_xxx # =&gt; "(alice)"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.23" class="outline-4">
+<h4 id="sec-1.3.23">Observer </h4>
+<div class="outline-text-4" id="text-1.3.23">
+
+
+<p>
+実行結果が不要なときに使う。
+結果が必要ならStrategyへ。
+Observer側に player を渡して player.add<sub>observer</sub>(self) は、くどいのでやらない。
+</p>
+<p>
+密結合状態を
+</p>
+<pre class="example">
+class Player
+  def initialize
+    @paint = Paint.new
+    @network = Network.new
+  end
+
+  def notify
+    if @paint
+      @paint.font(0, 0, status)
+    end
+    if @network
+      @network.post(status)
+    end
+  end
+end
+</pre>
+
+
+<p>
+解消
+</p>
+<pre class="example">
+class Player
+  attr_accessor :observers
+  def initialize
+    @observers = []
+  end
+  def notify
+    @observers.each do |observer|
+      observer.update(self)
+    end
+  end
+end
+
+player = Player.new
+player.observers &lt;&lt; Paint.new
+player.observers &lt;&lt; Network.new
+</pre>
+
+
+<ul>
+<li id="sec-1.3.23.1">標準ライブラリ <br/>
+
+<pre class="example">
+require "observer"
+class Player
+  include Observable
+  def notify
+    changed
+    notify_observers(self)
+  end
+end
+
+player = Player.new
+player.add_observer(Paint.new)
+player.add_observer(Network.new)
+player.notify
+</pre>
+
+
+<p>
+自分をオブザーバーにしてもいい
+</p>
+<pre class="example">
+require "observer"
+class Player
+  include Observable
+  def initialize
+    add_observer(self)
+  end
+  def notify
+    changed
+    notify_observers(self)
+  end
+  def update(player)
+    player                      # =&gt; #&lt;Player:0x007ff9098472e0 ...&gt;
+  end
+end
+
+player = Player.new
+player.notify
+</pre>
+
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-1.3.24" class="outline-4">
+<h4 id="sec-1.3.24">Singleton </h4>
+<div class="outline-text-4" id="text-1.3.24">
+
+
+<p>
+グローバル変数を使うぐらいなら
+</p>
+<pre class="example">
+class C
+  private_class_method :new
+  def self.instance
+    @instance ||= new
+  end
+end
+
+C.instance # =&gt; #&lt;C:0x007f98e404a518&gt;
+C.instance # =&gt; #&lt;C:0x007f98e404a518&gt;
+</pre>
+
+
+<p>
+標準ライブラリを使った場合
+</p>
+<pre class="example">
+require "singleton"
+class C
+  include Singleton
+end
+C.instance # =&gt; #&lt;C:0x007f98e509f558&gt;
+C.instance # =&gt; #&lt;C:0x007f98e509f558&gt;
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.3.25" class="outline-4">
+<h4 id="sec-1.3.25">Strategy </h4>
+<div class="outline-text-4" id="text-1.3.25">
+
+
+<p>
+基本形
+</p>
+<pre class="example">
+class Random
+  def next
+    rand(7)
+  end
+end
+
+class RedOnly
+  def next
+    6
+  end
+end
+
+# テトリミノのツモはダイス次第
+class Player
+  def initialize(dice)
+    @dice = dice
+  end
+  def run
+    7.times.collect {@dice.next}
+  end
+end
+
+Player.new(Random.new).run  # =&gt; [1, 5, 4, 1, 0, 0, 6]
+Player.new(RedOnly.new).run # =&gt; [6, 6, 6, 6, 6, 6, 6]
+</pre>
+
+
+<p>
+Rubyなら
+</p>
+<pre class="example">
+class Player
+  def initialize(&amp;dice)
+    @dice = dice
+  end
+  def run
+    7.times.collect {@dice.call}
+  end
+end
+
+Player.new {rand(7)}.run  # =&gt; [2, 5, 5, 6, 6, 2, 0]
+Player.new {6}.run        # =&gt; [6, 6, 6, 6, 6, 6, 6]
+</pre>
+
+
+<p>
+これでクラスが爆発しなくなる
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-1.3.26" class="outline-4">
+<h4 id="sec-1.3.26">Adapter </h4>
+<div class="outline-text-4" id="text-1.3.26">
+
+
+<pre class="example">
+class C
+  def f1
+    "x"
+  end
+end
+</pre>
+
+
+<p>
+継承版
+</p>
+<pre class="example">
+class C2 &lt; C
+  def f2
+    f1 * 2
+  end
+end
+</pre>
+
+
+<p>
+委譲版
+</p>
+<pre class="example">
+class C3
+  def initialize
+    @c = C.new
+  end
+
+  def f1
+    @c.f1
+  end
+
+  def f2
+    f1 * 2
+  end
+end
+</pre>
+
+
+<p>
+f1 メソッドを書くのが面倒なとき
+</p>
+<pre class="example">
+require "delegate"
+
+class C4 &lt; SimpleDelegator
+  def initialize
+    super(C.new)
+  end
+
+  def f2
+    f1 * 2
+  end
+end
+</pre>
+
+
+<pre class="example">
+[C2.new.f1, C2.new.f2]      # =&gt; ["x", "xx"]
+[C3.new.f1, C3.new.f2]      # =&gt; ["x", "xx"]
+[C4.new.f1, C4.new.f2]      # =&gt; ["x", "xx"]
+</pre>
+
+
+<ul>
+<li id="sec-1.3.26.1">Factory Method だと思っていたら Adapter だったもの <br/>
+
+<p>
+こういうのはあっとゆうまに search メソッドが肥大化する。
+で、Userのクラスメソッドとしてメソッドを分離するという <b>間違ったリファクタリング</b> を行ってしまいがち。
+</p>
+<pre class="example">
+class User
+  def self.search(query)
+    ["name like ?", "%#{query}%"]
+  end
+end
+
+User.search("alice")                     # =&gt; ["name like ?", "%alice%"]
+</pre>
+
+
+<p>
+そうなりそうなら次のように改善
+</p>
+<pre class="example">
+class User
+  def self.search(*args)
+    UserSearch.new(self, *args).run
+  end
+end
+
+class UserSearch
+  def initialize(model, query)
+    @model = model
+    @query = query
+  end
+  def run
+    ["name like ?", "%#{@query}%"]
+  end
+end
+
+User.search("alice")   # =&gt; ["name like ?", "%alice%"]
+</pre>
+
+
+<p>
+UserSearch の中でいくらメソッドを増やしても元のUserには影響がない。
+</p>
+<p>
+次は例が悪いけど @color から変換するメソッドを Player 自体に入れてしまって Player がクラスがカオスになってしまうケース。
+</p>
+<pre class="example">
+class Player
+  attr_accessor :color
+  def initialize
+    @color = :blue
+  end
+end
+</pre>
+
+
+<p>
+ここでプレイヤーの色を #00F で返したかったので rgb メソッド定義した。これがダメ。
+</p>
+<pre class="example">
+class Player
+  def rgb
+    if @color == :blue
+      "#00F"
+    end
+  end
+end
+</pre>
+
+
+<p>
+改善
+</p>
+<pre class="example">
+class ColorInfo
+  attr_accessor :color
+  def initialize(color)
+    @color = color
+  end
+  def rgb
+    "#00F"
+  end
+end
+
+class Player
+  def color_info
+    ColorInfo.new(@color)
+  end
+end
+
+Player.new.color_info.rgb            # =&gt; "#00F"
+</pre>
+
+
+<p>
+こうすればいくらでも窮屈な状態から脱出できる。
+もし、青が欲しければ ColorInfo に足せばいい。
+</p>
+<pre class="example">
+class ColorInfo
+  def human_name
+    "青"
+  end
+end
+
+Player.new.color_info.human_name     # =&gt; "青"
+</pre>
+
+
+<p>
+もっと言うなら最初から @color は ColorInfo のインスタンスにしときゃいい。
+</p>
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-1.3.27" class="outline-4">
+<h4 id="sec-1.3.27">Interpreter </h4>
+<div class="outline-text-4" id="text-1.3.27">
+
+
+<p>
+シンプルなDSL
+</p>
+<pre class="example">
+class Expression
+end
+
+class Value &lt; Expression
+  def initialize(value)
+    @value = value
+  end
+  def evaluate
+    @value
+  end
+end
+
+class Add &lt; Expression
+  def initialize(left, right)
+    @left, @right = left, right
+  end
+  def evaluate
+    @left.evaluate + @right.evaluate
+  end
+end
+
+def A(l, r)
+  Add.new(Value.new(l), Value.new(r))
+end
+
+expr = A 1, 2
+expr.evaluate # =&gt; 3
+</pre>
+
+
+<p>
+他のコードに変換
+</p>
+<pre class="example">
+class Expression
+end
+
+class Value &lt; Expression
+  attr_accessor :value
+  def initialize(value)
+    @value = value
+  end
+  def evaluate
+    ["mov  ax, #{@value}"]
+  end
+end
+
+class Add &lt; Expression
+  def initialize(left, right)
+    @left, @right = left, right
+  end
+  def evaluate
+    code = []
+    code &lt;&lt; @left.evaluate
+    code &lt;&lt; "mov  dx, ax"
+    code &lt;&lt; @right.evaluate
+    code &lt;&lt; "add  ax, dx"
+  end
+end
+
+def A(l, r)
+  Add.new(Value.new(l), Value.new(r))
+end
+
+expr = A 1, 2
+puts expr.evaluate
+# &gt;&gt; mov  ax, 1
+# &gt;&gt; mov  dx, ax
+# &gt;&gt; mov  ax, 2
+# &gt;&gt; add  ax, dx
+</pre>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-1.4" class="outline-3">
+<h3 id="sec-1.4">スレッド用 </h3>
+<div class="outline-text-3" id="text-1.4">
+
+
+</div>
+
+<div id="outline-container-1.4.1" class="outline-4">
+<h4 id="sec-1.4.1">Single Threaded Execution </h4>
+<div class="outline-text-4" id="text-1.4.1">
+
+
+<p>
+排他制御のこと
+</p>
+<pre class="example">
+mutex = Mutex.new
+a = 0
+b = 0
+2.times.collect do
+  Thread.start do
+    2.times do
+      mutex.synchronize do
+        a += 1
+        Thread.pass
+        b += 1
+        p [a, b, (a == b)]
+      end
+    end
+  end
+end.each(&amp;:join)
+# &gt;&gt; [1, 1, true]
+# &gt;&gt; [2, 2, true]
+# &gt;&gt; [3, 3, true]
+# &gt;&gt; [4, 4, true]
+</pre>
+
+
+<p>
+明示的にパスしても synchronize ブロック内はスレッドが切り替わらないことがわかる。
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-1.4.2" class="outline-4">
+<h4 id="sec-1.4.2">Immutable </h4>
+<div class="outline-text-4" id="text-1.4.2">
+
+
+<p>
+スレッドから参照するオブジェクトの内容が変わる可能性があるなら排他制御が必要だけど、
+そのオブジェクトが不変(イミュータブル)ならば排他制御が必要がないということ。たぶん。
+</p>
+<p>
+Javaの本だとセッターがないものと書かれているけど、rubyの場合はreaderからreplaceすれば書き換えられるので気持ち程度にfreezeしてみた。
+</p>
+<pre class="example">
+class C
+  attr_reader :v
+  def initialize(v)
+    @v = v
+    @v.freeze
+  end
+end
+
+a = C.new("x").freeze
+a.v.replace("y") rescue $! # =&gt; #&lt;RuntimeError: can't modify frozen String&gt;
+a.v += "y" rescue $!       # =&gt; #&lt;NoMethodError: undefined method `v=' for #&lt;C:0x007fbfc3903910 @v="x"&gt;&gt;
+a.v                        # =&gt; "x"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.4.3" class="outline-4">
+<h4 id="sec-1.4.3">Guarded Suspention - 実行できるまで待つ </h4>
+<div class="outline-text-4" id="text-1.4.3">
+
+
+<pre class="example">
+queue = Queue.new
+
+send_num = 10
+
+sender = Thread.start do
+  Thread.current[:data] = []
+  send_num.times do |i|
+    sleep(rand(0..0.01))
+    queue &lt;&lt; i
+    Thread.current[:data] &lt;&lt; i
+  end
+end
+
+receiver = Thread.start do
+  Thread.current[:data] = []
+  send_num.times do
+    sleep(rand(0..0.001))
+    # pop出来ないとスレッドが自動停止してくれる。popだけどFIFO。間違いそう。
+    Thread.current[:data] &lt;&lt; queue.pop
+  end
+end
+
+sender.join
+receiver.join
+
+# 正常にデータが受け取れているか確認
+sender[:data]   # =&gt; [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+receiver[:data] # =&gt; [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.4.4" class="outline-4">
+<h4 id="sec-1.4.4">Worker Thread - 仕事がくるまで待ち仕事がきたら働く </h4>
+<div class="outline-text-4" id="text-1.4.4">
+
+
+<pre class="example">
+class Channel &lt; SizedQueue
+  attr_reader :threads
+
+  def initialize(size)
+    super(size)
+    @threads = size.times.collect do |i|
+      Thread.start(i) do |i|
+        loop do
+          request = pop
+          p "スレッド#{i}が#{request}を担当"
+          sleep(1)
+        end
+      end
+    end
+  end
+end
+</pre>
+
+
+<p>
+1つのワーカーだけだと 3.3 秒。(4秒になってないのは、たぶん最後の sleep(1) が開始した時点で status == "sleep" になってるから？)
+</p>
+<pre class="example">
+channel = Channel.new(1)
+t = Time.now
+4.times {|i|channel &lt;&lt; i}
+nil until channel.size.zero? &amp;&amp; channel.threads.all?{|t|t.status == "sleep"}
+puts "%.1f s" % (Time.now - t)
+# &gt;&gt; "スレッド0が0を担当"
+# &gt;&gt; "スレッド0が1を担当"
+# &gt;&gt; "スレッド0が2を担当"
+# &gt;&gt; "スレッド0が3を担当"
+# &gt;&gt; 3.3 s
+</pre>
+
+
+<p>
+4つのワーカーだと処理が分散してすぐ終わる
+</p>
+<pre class="example">
+channel = Channel.new(4)
+t = Time.now
+4.times {|i|channel &lt;&lt; i}
+nil until channel.size.zero? &amp;&amp; channel.threads.all?{|t|t.status == "sleep"}
+puts "%.1f s" % (Time.now - t)
+# &gt;&gt; "スレッド1が0を担当"
+# &gt;&gt; "スレッド0が1を担当"
+# &gt;&gt; "スレッド3が2を担当"
+# &gt;&gt; "スレッド2が3を担当"
+# &gt;&gt; 0.8 s
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.4.5" class="outline-4">
+<h4 id="sec-1.4.5">Balking (ボーキング) - 実行できるまで待たない </h4>
+<div class="outline-text-4" id="text-1.4.5">
+
+
+<p>
+待つのではなく、すぐに <b>リターン</b> する。待つ場合は Guarded Suspention になる。
+一つのインスタンスの複数のスレッドで実行しているとき一部だけ排他制御を行うには synchronize ブロックで囲む。
+</p>
+<p>
+以下の例は a b c を順番に発動していく。
+ただ a の処理が 0.1 秒かかっているため、直後に発動した b は a が処理中のためリターンしている。
+aの処理が終わったころに発動した c は実行できていることがわかる。
+</p>
+<pre class="example">
+class C
+  include Mutex_m
+
+  def initialize
+    super
+    @change = false
+  end
+
+  def execute(str, t)
+    synchronize do
+      if @change
+        p "処理中のため#{str}はスキップ"
+        return
+      end
+      @change = true
+
+      p str
+      sleep(t) # sleepはsynchronizeの中で行わないとエラーになる
+
+      @change = false
+    end
+  end
+end
+
+x = C.new
+threads = []
+threads &lt;&lt; Thread.start {x.execute("a", 0.1)}
+threads &lt;&lt; Thread.start {x.execute("b", 0)}
+sleep(0.1)
+threads &lt;&lt; Thread.start {x.execute("c", 0)}
+threads.collect(&amp;:join)
+# &gt;&gt; "a"
+# &gt;&gt; "処理中のためbはスキップ"
+# &gt;&gt; "c"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.4.6" class="outline-4">
+<h4 id="sec-1.4.6">Thread Per Message - 戻値不要 </h4>
+<div class="outline-text-4" id="text-1.4.6">
+
+
+<pre class="example">
+def request(x)
+  Thread.start(x){|x|p x}
+end
+
+request("a")
+request("b")
+
+(Thread.list - [Thread.main]).each(&amp;:join)
+# &gt;&gt; "a"
+# &gt;&gt; "b"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.4.7" class="outline-4">
+<h4 id="sec-1.4.7">Future - 戻値必要 </h4>
+<div class="outline-text-4" id="text-1.4.7">
+
+
+<pre class="example">
+def request(x)
+  Thread.start(x){|x|x}
+end
+
+t = []
+t &lt;&lt; request("A")
+t &lt;&lt; request("B")
+t.collect(&amp;:value) # =&gt; ["A", "B"]
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.4.8" class="outline-4">
+<h4 id="sec-1.4.8">Producer Consumer </h4>
+<div class="outline-text-4" id="text-1.4.8">
+
+
+<p>
+生産スレが作ってキューに入れて使用スレがpopする。
+SizedQueueのサイズの小さいほど流れが悪くなる。
+以下の例はSizedQueueのサイズが1しかないのでconsumerがpopしてくれないと次をpushできない。
+</p>
+<pre class="example">
+queue = SizedQueue.new(1)
+producer = Thread.start {
+  4.times {|i|
+    p ["作成", i]
+    queue.push(i)
+  }
+  p "作成側は先に終了"
+}
+consumer = Thread.start {
+  4.times {
+    p ["使用", queue.pop]
+    sleep(0.01)
+  }
+}
+producer.join
+consumer.join
+# &gt;&gt; ["作成", 0]
+# &gt;&gt; ["作成", 1]
+# &gt;&gt; ["使用", 0]
+# &gt;&gt; ["作成", 2]
+# &gt;&gt; ["使用", 1]
+# &gt;&gt; ["作成", 3]
+# &gt;&gt; ["使用", 2]
+# &gt;&gt; "作成側は先に終了"
+# &gt;&gt; ["使用", 3]
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.4.9" class="outline-4">
+<h4 id="sec-1.4.9">Read Write Lock </h4>
+<div class="outline-text-4" id="text-1.4.9">
+
+
+<pre class="example">
+class Buffer
+  def initialize
+    @sync = Sync.new
+    @str = ""
+  end
+
+  def write(_str)
+    @sync.synchronize(:EX) do
+      _str.chars.with_index do |c, i|
+        sleep(0.0001)
+        @str[i] = c
+      end
+    end
+  end
+
+  def read
+    @sync.synchronize(:SH) do
+      @str.size.times.collect {|i|
+        sleep(0.001)
+        @str[i]
+      }.join
+    end
+  end
+end
+</pre>
+
+
+<p>
+書き込みスレッドと、読み込みスレッドを並列で起動して、お互いが干渉するようにする
+</p>
+<pre class="example">
+buffer = Buffer.new
+w = Thread.start do
+  ("A".."Z").cycle {|c|
+    buffer.write(c.to_s * 64)
+    sleep(0.001)
+  }
+end
+r = Thread.start do
+  10.times do
+    sleep(0.001)
+    p buffer.read
+  end
+end
+r.join
+w.kill
+</pre>
+
+
+<p>
+でも結果は壊れてない
+</p>
+<pre class="example">
+# &gt;&gt; "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+# &gt;&gt; "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+# &gt;&gt; "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+# &gt;&gt; "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+# &gt;&gt; "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+# &gt;&gt; "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+# &gt;&gt; "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
+# &gt;&gt; "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+# &gt;&gt; "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
+# &gt;&gt; "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
+</pre>
+
+
+<p>
+@sync.synchronize ブロックを使わなかった場合は以下の通り
+</p>
+<pre class="example">
+# &gt;&gt; AAAAAAA
+# &gt;&gt; BBBBBBBBBBCCCCCCCCCCCDDDDDDDDDDDEEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGG
+# &gt;&gt; IIIIIIIIIIJJJJJJJJJJJKKKKKKKKKKKLLLLLLLLLLMMMMMMMMMMMNNNNNNNNNNO
+# &gt;&gt; PPPPPPPPPPQQQQQQQQQQQRRRRRRRRRRRSSSSSSSSSSTTTTTTTTTTTUUUUUUUUUUU
+# &gt;&gt; WWWWWWWWWWXXXXXXXXXXXYYYYYYYYYYYYZZZZZZZZZZAAAAAAAAAAABBBBBBBBBB
+# &gt;&gt; DDDDDDDDDDDEEEEEEEEEEEEFFFFFFFFFFFGGGGGGGGGGHHHHHHHHHHHIIIIIIIII
+# &gt;&gt; JJKKKKKKKKKKKLLLLLLLLLLLMMMMMMMMMMNNNNNNNNNNNOOOOOOOOOOOPPPPPPPP
+# &gt;&gt; QQRRRRRRRRRRRSSSSSSSSSSTTTTTTTTTTTUUUUUUUUUUVVVVVVVVVVVWWWWWWWWW
+# &gt;&gt; XXYYYYYYYYYYYZZZZZZZZZZZAAAAAAAAAAABBBBBBBBBBBCCCCCCCCCCCDDDDDDD
+# &gt;&gt; EEEEFFFFFFFFFFFGGGGGGGGGGGHHHHHHHHHHHIIIIIIIIIIIJJJJJJJJJJJKKKKK
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.4.10" class="outline-4">
+<h4 id="sec-1.4.10">Two Phase Termination </h4>
+<div class="outline-text-4" id="text-1.4.10">
+
+
+<p>
+外から Thread.kill するんじゃなくて止まるように指示
+</p>
+<pre class="example">
+t = Thread.start do
+  2.times do |i|
+    if Thread.current["interrupt"]
+      break
+    end
+    p "処理中: #{i}"
+    sleep(0.2)
+  end
+  p "終了処理"
+end
+sleep(0.1)
+t["interrupt"] = true
+t.join
+# &gt;&gt; "処理中: 0"
+# &gt;&gt; "終了処理"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1.4.11" class="outline-4">
+<h4 id="sec-1.4.11">Thread Specific Storage </h4>
+<div class="outline-text-4" id="text-1.4.11">
+
+
+<p>
+Thread.current["a"] はスレッド内グローバル変数
+</p>
+<pre class="example">
+Thread.start {Thread.current["a"] = 1}.join
+Thread.start {Thread.current["a"]}.value    # =&gt; nil
+</pre>
+
+
+</div>
+</div>
+</div>
+</div>
+<div id="postamble">
+<p class="date"> Date: 2013-02-06 00:41:53 JST</p>
+</div>
+</div>
+</body>
+</html>

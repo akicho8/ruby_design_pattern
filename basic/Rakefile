@@ -1,0 +1,22 @@
+task :default => :generate
+
+task :g => :generate
+task :generate do
+  system "sh", "-vec", <<~EOT, exception: true
+saferenum -x .
+~/src/source2md/.bin/source2md generate --xmp-out-exclude --no-debug -o ~/src/zenn-content/articles/efb43f3c80f021.md 0*
+EOT
+end
+
+task :open do
+  system "sh", "-vec", <<~EOT, exception: true
+open https://zenn.dev/megeton/articles/efb43f3c80f021
+EOT
+end
+
+task :r => :renum
+task :renum do
+  system "sh", "-vec", <<~EOT, exception: true
+saferenum . -x
+EOT
+end
